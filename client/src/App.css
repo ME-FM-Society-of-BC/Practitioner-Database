@@ -1,0 +1,185 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.vertical-group {
+	display: flex;
+	flex-direction: column;	
+}
+.horizontal-group {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.bordered {
+	border: 2px solid #dce4ec;
+	border-radius: 4px;
+}
+/* These are for the Practitioner Information and Practitioner Evaluation fields */
+
+.info-field {
+	max-width: 15em !important;
+	width: 15em;
+	max-height: 32px;
+	padding: 4px 5px;
+	border: 2px solid #dce4ec;
+	border-radius: 4px;
+	background-color: #ecf0f1;
+	color: #2c3e50;
+	margin-top: 3px;
+}
+
+.info-label {
+	text-align: right;
+	color: #2c3e50;
+	font-size: 15px;
+	padding-left: 0px;
+	line-height: 1.42857143;
+	margin-top: 5px;
+	margin-right: 1em;
+	width: 8em;
+}
+.info-label-group {
+	text-align: left;
+	color: #2c3e50;
+	font-size: 15px;
+	padding-left: 0px;
+	line-height: 1.42857143;
+	margin-top: 10px;
+	margin-right: 1em;
+	width: 100% !important;
+}
+.right {
+	text-align: right !important;
+}
+
+.question {
+	text-align: left !important;
+	margin-top: 0.5em;
+	padding-left: 0 !important;
+}
+.bold {
+	font-weight: bold;
+}
+.question-wrapper {
+	max-width: 700px !important;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 1em;
+	padding: 5px;
+}
+.button-small {
+	width: 5em;
+	margin: 10px;
+}
+.button-large {
+	margin: 10px;
+}
+.input-wrapper {
+	display: flex;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	-webkit-box-orient: horizontal;
+	-webkit-flex-direction: row;
+			-ms-flex-direction: row;
+					flex-direction: row;
+					align-items: center;					
+}
+.radio-group {
+    height: 30px;
+	padding: 5px 5px;
+	margin-top: 3px;
+}
+
+/*****************************************************************************/
+/* Responsive table styles */
+table {
+  margin:auto; 
+  width: 80%; 
+  border-collapse: collapse; 
+}
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+  background: #eee; 
+}
+th { 
+  background: #2c3e50; 
+  color: white; 
+}
+td, th { 
+  padding: 6px; 
+  border: 1px solid #ccc; 
+  text-align: left; 
+}
+
+
+@media 
+only screen and (max-width: 768px)  {
+
+	.question-wrapper {
+		max-width: 450px !important;
+		width: 450px;
+	}
+
+	/* Force table to not be like tables anymore */
+	table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: 1px solid #ccc; }
+	
+	td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 30%; 
+	}
+	
+	td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 65%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/* To convert a table, the column labels must be duplicated here */
+
+	#practitioner-list td:nth-of-type(1):before { content: "Name"; }
+	#practitioner-list td:nth-of-type(2):before { content: "Address"; }
+	#practitioner-list td:nth-of-type(3):before { content: "Phone"; }
+	#practitioner-list td:nth-of-type(4):before { content: "Specialty"; }
+
+}
+
+
+
