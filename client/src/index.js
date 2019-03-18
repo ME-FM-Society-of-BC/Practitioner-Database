@@ -36,7 +36,7 @@ const rootReducer = combineReducers(
     // axios.defaults.baseURL = 'http://localhost:8080/rest';
 
     console.log(document.baseURI);
-    if (document.baseURI == "http://localhost:3000/"){
+    if (document.baseURI === "http://localhost:3000/"){
       // Client loaded from VSCode local server 
       axios.defaults.baseURL ="http://localhost:8080/rest/"; 
     }

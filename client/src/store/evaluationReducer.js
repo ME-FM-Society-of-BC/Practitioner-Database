@@ -67,7 +67,7 @@ const evaluationReducer = (state = initialState, action) => {
                     return recommendation
                 };
                 // Look for a matching questionId
-                if (action.recommendation.questionId == recommendation.questionId){
+                if (action.recommendation.questionId === recommendation.questionId){
                     // Replace the previous rating value
                     isReplacement = true;
                     return {...recommendation, value: action.recommendation.value}
