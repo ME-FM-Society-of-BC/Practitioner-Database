@@ -6,8 +6,8 @@ import axios from 'axios';
 /******* Synchronous actions *********/
 export const STORE_PRACTITIONERS = 'STORE_PRACTITIONERS';
 export const STORE_SPECIALTIES = 'STORE_SPECIALTIES';
-export const STORE_PRACTITIONER_ID_MAP = 'STORE_PRACTITIONER_ID_MAP';
 export const UPDATE_PRACTITIONER = 'UPDATE_PRACTITIONER';
+export const CREATE_PRACTITIONER = 'CREATE_PRACTITIONER';
 
 /******* Asynchronous actions ********/
 
@@ -28,4 +28,6 @@ export const updatePractitioner = (practitioner) => {
         );        
     }
 };
+
+
 

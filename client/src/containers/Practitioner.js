@@ -1,5 +1,13 @@
 /**
- * Implements the Practitioner View
+ * Implements the Practitioner View. It contains three expandable panels:
+ * <li>Practitioner Information</li>
+ * <li>Evaluation</li>
+ * <li>Comments</li>
+ * <p>
+ * When a Practitioner is being created rather than viewed, only the
+ * Practitioner Information panel will be displayed.
+ * <p>
+ * The Evaluation and Comments panels are by default collapsed
  */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
@@ -13,20 +21,22 @@ import PractitionerComments from './PractitionerComments';
  * 
  */
 class Practitioner extends Component {
-    state = {
-        mode: undefined
-    }
-    
-    componentWillMount() {
-        // The mode is passed as a URL parameter in the route
-        // Note: URLSearchParams does not work in IE11
-//        const search = this.props.location.search;
-//        const mode = search.substring(search.indexOf('=') + 1);
-//        this.setState({mode: mode});
+
+    state = {}
+
+    constructor(props){
+        super(props);
+        const queryParams = new URLSearchParams(props.location.search);
+        for (let param of queryParams.entries()) {
+            if (param[0] === 'newPractitioner'){
+                this.setState({
+                    newPractitioner: true
+                });
+            }
+        }    
     }
     
     render() {
-        // <PractitionerInfo mode={this.state.mode} />
         return (
             <>
                 <Panel>
@@ -37,24 +47,27 @@ class Practitioner extends Component {
                         <PractitionerInfo/>
                     </Panel.Body>
                 </Panel>
-                <PanelGroup accordion id="practitioner-panels">
-                    <Panel eventKey="1">
-                        <Panel.Heading>
-                            <Panel.Title toggle>Evaluation</Panel.Title>
-                        </Panel.Heading>
-                        <Panel.Body collapsible>
-                            <PractitionerEval/>
-                        </Panel.Body>
-                    </Panel>
-                    <Panel eventKey="2">
-                        <Panel.Heading>
-                            <Panel.Title toggle>Comments</Panel.Title>
-                        </Panel.Heading>
-                        <Panel.Body collapsible>
-                            <PractitionerComments/>
-                        </Panel.Body>
-                    </Panel>
-                </PanelGroup>
+                {this.props.match.params['id'] >= 0 ?
+                    <PanelGroup accordion id="practitioner-panels">
+                        <Panel eventKey="1">
+                            <Panel.Heading>
+                                <Panel.Title toggle>Evaluation</Panel.Title>
+                            </Panel.Heading>
+                            <Panel.Body collapsible>
+                                <PractitionerEval newPractitioner={this.state.newPractitioner}/>
+                            </Panel.Body>
+                        </Panel>
+                        <Panel eventKey="2">
+                            <Panel.Heading>
+                                <Panel.Title toggle>Comments</Panel.Title>
+                            </Panel.Heading>
+                            <Panel.Body collapsible>
+                                <PractitionerComments/>
+                            </Panel.Body>
+                        </Panel>
+                    </PanelGroup>
+                    : ''
+                } 
             </>
         );
     }

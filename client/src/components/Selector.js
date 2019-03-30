@@ -42,7 +42,7 @@ const selector = (props) => {
         if (props.answers) {
             let sum = props.answers.reduce((sum, answer) => {
                 return sum + answer;
-            });
+            }, 0);
             component = <StarRating className={valueClasses} value={sum / props.answers.length}/>
         }
         else {

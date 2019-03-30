@@ -44,8 +44,16 @@ class PractitionerEval extends Component {
         this.saveEvaluation = this.saveEvaluation.bind(this);
 
         const practitionerId = this.props.match.params['id'];
-        this.state.practitionerId = practitionerId;
-        this.state.mode ='viewAll';
+        if (practitionerId) {
+            // An existing Practitioner is being viewed
+            this.state.practitionerId = practitionerId;
+            this.state.mode ='viewAll';
+        }
+        else {
+            // A new Practitioner is being created
+            this.state.mode = 'create';
+        }
+
     }
 
     createQuestionItems(){

@@ -56,24 +56,34 @@ const evaluationReducer = (state = initialState, action) => {
             const userId = action.recommendation.userId;
             let allRecommendations = {...state.allRecommendations};
             
-            const forThisPractitioner = [...allRecommendations[practitionerId]];
+            // An existing Practitioner will have at least an empty recommendation list.
+            // A Practitioner who has just been created, and for whom the user has
+            // not yet selected any evaluation answers will not
             let isReplacement = false;
-            let newForThisPractitioner = forThisPractitioner.map(recommendation => {
-                // Ignore if not a rating or action was by another user
-                if (recommendation.actionType !== 'RATE'){
-                    return recommendation
-                };
-                if (recommendation.userId !== userId){
-                    return recommendation
-                };
-                // Look for a matching questionId
-                if (action.recommendation.questionId === recommendation.questionId){
-                    // Replace the previous rating value
-                    isReplacement = true;
-                    return {...recommendation, value: action.recommendation.value}
-                }
-                return recommendation;
-            })
+            let newForThisPractitioner = undefined;
+            if (allRecommendations[practitionerId]) {
+                const forThisPractitioner = [...allRecommendations[practitionerId]];
+                newForThisPractitioner = forThisPractitioner.map(recommendation => {
+                    // Ignore if not a rating or action was by another user
+                    if (recommendation.actionType !== 'RATE'){
+                        return recommendation
+                    };
+                    if (recommendation.userId !== userId){
+                        return recommendation
+                    };
+                    // Look for a matching questionId
+                    if (action.recommendation.questionId === recommendation.questionId){
+                        // Replace the previous rating value
+                        isReplacement = true;
+                        return {...recommendation, value: action.recommendation.value}
+                    }
+                    return recommendation;
+                })
+            } 
+            else {
+                // The Practitioner has just been created by the user
+                newForThisPractitioner = [];
+            }  
             // If not replacement of an old value, add it
             if (!isReplacement){
                 newForThisPractitioner.push(action.recommendation)
@@ -95,7 +105,6 @@ const evaluationReducer = (state = initialState, action) => {
             return state;
     }
 }
-
     
 /** 
 * Finds all actions by a given user, and all rating actions from within

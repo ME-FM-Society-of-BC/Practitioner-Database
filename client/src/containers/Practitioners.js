@@ -5,9 +5,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import PractitionerListItem from '../components/PractitionerListItem';
-import { STORE_PRACTITIONERS, STORE_PRACTITIONER_ID_MAP} from '../store/practitionerActions';
+import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import { STORE_ALL_RECOMMENDATION_ACTIONS} from '../store/evaluationActions';
-import { mapIdsToIndices } from '../common/utilities';
+import { Button } from 'react-bootstrap';
 
 class Practitioners extends Component {
 
@@ -32,12 +32,7 @@ class Practitioners extends Component {
                     });
                     // Dispatch practitioners to the store
                     this.props.storePractitioners(practitioners);
-                    
-                    // Create a map of practitioner ids to their index in the 
-                    // practitioners array, and dispatch to store
-                    const map = mapIdsToIndices(practitioners);
-                    this.props.storePractitionerIdMap(map);            
-                })
+                 })
                 .catch (error => {
                     console.log(error);
                     alert(error)
@@ -49,6 +44,12 @@ class Practitioners extends Component {
     render() {
         return (
             <>
+            {this.props.loggedInUser ?
+                <Button type="button" key='1' className='button-large' onClick={this.recommend}>
+                    Recommend a Practitioner
+                </Button>
+                : ''
+            }
             <table id='practitioner-list'>
                 <thead>
                     <tr>
@@ -70,6 +71,13 @@ class Practitioners extends Component {
             </table>
             </>
         )
+    }
+
+    // Responds to the the "Recommend a Pratitioner" button
+    recommend = () => {
+        // Go to the Practitioner View. The negative id value in 
+        // the path signifies a practitioner is being created    
+        this.props.history.push(this.props.match.url + '/-1');
     }
 
     // Handles clicks on the View button in the child PractitionerListItem component
@@ -98,7 +106,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners: practitioners }),
-        storePractitionerIdMap: (map) => dispatch({ type: STORE_PRACTITIONER_ID_MAP, idMap: map }),
         storeAllRecommendationActions: (allRecommendations, practitionerId, userId) => dispatch({ 
             type: STORE_ALL_RECOMMENDATION_ACTIONS, 
             allRecommendations: allRecommendations, 

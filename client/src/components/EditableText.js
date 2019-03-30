@@ -17,6 +17,8 @@
  *                  where x1 = column width of label
  *                        x2 = column width of the value
  *                        x3 = column odffset of label (optional)
+ * 
+ * TODO: Either implement placeholder or remove it
  */
 import React from 'react';
 import { parseDimensions } from '../common/utilities';
@@ -33,7 +35,7 @@ const editableText = (props) => {
         
     const component = (
         <input type="text" 
-            value={props.value}
+            value={props.value || ''}
             name={props.name}
             disabled={props.mode === 'view'}
             className={valueClasses}
