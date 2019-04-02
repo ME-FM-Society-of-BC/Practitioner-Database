@@ -22,9 +22,14 @@ class PractitionerInfo extends Component {
             // An existing Practitioner os being displayed
             // Find the index in the practioners array given the practitioner id
             const index = props.idToIndex[props.match.params.id]
+
+            // Set the city list options according to province
+            const practitioner = props.practitioners[index];
+            const cityOptions = practitioner.province ? this.props.citiesMap[practitioner.province]: [];
         
             this.state = {
-                practitioner: props.practitioners[index],                
+                practitioner: practitioner,
+                cityOptions: cityOptions,                
                 // If the user is logged , the Edit/Save buttons not be displayed
                 canEdit: props.loggedInUser ? true : false,
                 // When user saves, update will be sent to server only if there are changes 
@@ -60,6 +65,27 @@ class PractitionerInfo extends Component {
         })
     }
 
+    selectProvince(event){
+        const practitioner = {...this.state.practitioner};
+        practitioner.province = event.target.value;
+        this.setState({
+            ...this.state,
+            practitioner: practitioner,
+            cityOptions: this.props.citiesMap[event.target.value],
+            infoChanged: true
+        })
+    }
+
+    selectCity(event){
+        const practitioner = {...this.state.practitioner};
+        practitioner.city = event.target.value;
+        this.setState({
+            ...this.state,
+            practitioner: practitioner,
+            infoChanged: true
+        })
+    }
+
     changeTextValue(event, attribute) {
         const alteredPractitioner = {...this.state.practitioner};
         alteredPractitioner[attribute] = event.target.value;
@@ -87,10 +113,14 @@ class PractitionerInfo extends Component {
     }
 
     saveNew(){
-
         axios.post('/practitioners', this.state.practitioner)
             .then(response => {
-                this.state.practitioner.id = response.data;
+                const practitioner = {...this.state.practitioner};
+                practitioner.id = response.data;
+                this.setState({
+                    ...this.state,
+                    practitioner: practitioner
+                });
                 this.props.saveNewPractitioner(this.state.practitioner);
                 this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
             })
@@ -113,6 +143,7 @@ class PractitionerInfo extends Component {
             width:'90%',
             margin: 'auto'
         };
+        
         const queryParams = new URLSearchParams(this.props.location.search);
         let newPractitioner = false;
         for (let param of queryParams.entries()) {
@@ -120,6 +151,7 @@ class PractitionerInfo extends Component {
                 newPractitioner = true
             }
         }
+
         return (
             <Panel style={panelStyle}>
             <Panel.Body>
@@ -138,12 +170,30 @@ class PractitionerInfo extends Component {
                     <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Address'  mode={this.state.mode} value={this.state.practitioner.address} placeholder='Street address'
                         attribute='address' changeHandler =  {(event) => this.changeTextValue(event, 'address')}/>
-                    <EditableText valueClass='info-field' labelClass='info-label' 
-                        label='City'  mode={this.state.mode} value={this.state.practitioner.city} placeholder='City or town'
-                        attribute='city' changeHandler =  {(event) => this.changeTextValue(event, 'city')}/>
+                    {/*    
                     <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Province'  mode={this.state.mode} value={this.state.practitioner.province} placeholder='Province'
                         attribute='province' changeHandler =  {(event) => this.changeTextValue(event, 'province')}/>
+                    <EditableText valueClass='info-field' labelClass='info-label' 
+                        label='City'  mode={this.state.mode} value={this.state.practitioner.city} placeholder='City or town'
+                        attribute='city' changeHandler =  {(event) => this.changeTextValue(event, 'city')}/>
+                    */}
+                    <Selector label='Province'
+                        valueClass='info-field' labelClass='info-label'  
+                        mode={this.state.mode} 
+                        options={this.props.provinces}
+                        value={this.state.practitioner.province} 
+                        placeholder='Select ...'
+                        onChange =  {(event) => this.selectProvince(event)}/>
+                    <Selector label='City'
+                        valueClass='info-field' labelClass='info-label'  
+                        mode={this.state.mode} 
+                        options={this.state.cityOptions}
+                        value={this.state.practitioner.city} 
+                        placeholder='Select after province...'
+                        onChange =  {(event) => this.selectCity(event)}/>
+
+
                     </div>
                     <div className='vertical-group'>    
                     <EditableText valueClass='info-field' labelClass='info-label' 
@@ -201,7 +251,9 @@ const mapStateToProps = state => {
         practitioners: state.practitionersReducer.practitioners,
         specialties: state.practitionersReducer.specialties,
         idToIndex: state.practitionersReducer.practitionerIdsToIndices,
-        loggedInUser: state.userReducer.loggedInUser
+        loggedInUser: state.userReducer.loggedInUser,
+        provinces: state.locationReducer.provinces,
+        citiesMap: state.locationReducer.citiesMap
     }
 }
 const mapDispatchToProps = dispatch => {

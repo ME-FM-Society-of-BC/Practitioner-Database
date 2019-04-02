@@ -4,7 +4,7 @@
  * The view's appearance and behaviour take three forms, determined by the local mode:
  * - viewAll: each question is displayed read only with the averaged recommendations of all users
  * - edit: each question is displayed editable with the recommendation values of the current user
- *         (which will be )
+ * - create: the Practitioner has just been created; all fields re editable
  * 
  * Edit mode corresponds to either the first time a user makes a recommendation, or subsequent changes
  * by the user.

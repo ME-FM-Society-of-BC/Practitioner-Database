@@ -28,6 +28,8 @@ public class DataAccess {
 			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Specialty"));
 			ObjectifyService.register(Class.forName("ca.bc.mefm.data.User"));
 			ObjectifyService.register(Class.forName("ca.bc.mefm.data.UserRole"));
+			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Province"));
+			ObjectifyService.register(Class.forName("ca.bc.mefm.data.City"));
 		}
 		catch (ClassNotFoundException e){
 			log.warning(e.getMessage());

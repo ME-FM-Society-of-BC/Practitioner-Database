@@ -3,6 +3,8 @@ package ca.bc.mefm.resource;
 import java.util.List;
 
 import javax.ws.rs.OPTIONS;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -24,11 +26,12 @@ public abstract class AbstractResource {
      * @return  the Response
      */
     @OPTIONS
+    @Produces(MediaType.TEXT_PLAIN)
     public Response options(){
     	ResponseBuilder builder = Response.status(Response.Status.OK);
     	builder.header("Access-Control-Allow-Origin", "*");
     	builder.header("Access-Control-Allow-Headers", "content-type");
-    	builder.header("Access-Control-Allow-Methods", "HEAD,POST,GET,OPTIONS,PUT,DELETE");
+    	builder.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     	return builder.build();
     }
     
@@ -106,11 +109,4 @@ public abstract class AbstractResource {
     	return builder.build();
     }
 
-//    protected String keyToString(Key key){
-//    	return key.getString();
-//    }
-//
-//    protected Key keyFromString(String s){
-//    	return Key.create(s);
-//    }
 }

@@ -23,6 +23,7 @@
 import React from 'react';
 import { parseDimensions } from '../common/utilities';
 import StarRating from './StarRating';
+import Select from 'react-select';
 
 const selector = (props) => {
     
@@ -33,37 +34,51 @@ const selector = (props) => {
         labelClasses += ' ' + d.labelWidth + ' ' + d.labelOffset;
         valueClasses += ' ' + d.valueWidth;
     }
-    // TODO: resolve mode definitions
-//    const mode = props.mode === 'viewAll' ? 'view' : props.mode;
 
-    const options = [props.placeholder].concat(props.options);
+    let options = props.options;
+    if (!props.type || props.type === 'select'){
+        options = [props.placeholder].concat(options);
+    }
+
     let component = undefined;
     if (props.mode === 'viewAll'){
         if (props.answers) {
             let sum = props.answers.reduce((sum, answer) => {
                 return sum + answer;
             }, 0);
-            component = <StarRating className={valueClasses} value={sum / props.answers.length}/>
+            const value = props.answers.length === 0 ? 0 : sum / props.answers.length
+            component = <StarRating className={valueClasses} value={value}/>
         }
         else {
             component = <span className={valueClasses}>No answers</span>
         }
     }
     else {
-        component = (
-        <select
-            name={props.name}
-            disabled={props.mode === 'view'} 
-            onChange={(event) => props.onChange(event)} 
-            className={valueClasses}
-            value={props.value}>
-            {
-                options.map((text, index) => {
-                    return (<option value={text} key={index} >{text}</option>)
-                }, this)
-            }
-        </select>
-        )
+        if (props && props.type === 'react-select'){
+            component = (
+            <Select
+                className={valueClasses}
+                options={props.options}
+                onInputChange={props.onChange}
+            /> 
+            )
+        }
+        else {
+            component = (
+            <select
+                name={props.name}
+                disabled={props.mode === 'view'} 
+                onChange={(event) => props.onChange(event)} 
+                className={valueClasses}
+                value={props.value}>
+                {
+                    options.map((text, index) => {
+                        return (<option value={text} key={index} >{text}</option>)
+                    }, this)
+                }
+            </select>
+            )
+        }  
      }
         
     return (

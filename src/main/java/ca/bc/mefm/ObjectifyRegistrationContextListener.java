@@ -5,8 +5,10 @@ import javax.servlet.ServletContextListener;
 
 import com.googlecode.objectify.ObjectifyService;
 
+import ca.bc.mefm.data.City;
 import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.Practitioner;
+import ca.bc.mefm.data.Province;
 import ca.bc.mefm.data.Question;
 import ca.bc.mefm.data.QuestionChoice;
 import ca.bc.mefm.data.QuestionChoiceSet;
@@ -30,6 +32,8 @@ public class ObjectifyRegistrationContextListener implements ServletContextListe
     	ObjectifyService.register(User.class);
     	ObjectifyService.register(UserRole.class);
     	ObjectifyService.register(Specialty.class);
+    	ObjectifyService.register(Province.class);
+    	ObjectifyService.register(City.class);
     }
 
     @Override

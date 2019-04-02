@@ -19,7 +19,7 @@ public class Practitioner {
 	private String 	firstName;
 	private String 	address;
 	private String 	city;
-	private String 	province;
+	private String  province;
 	private String 	country;
 	private String 	postalCode;
 	private String 	phone;
