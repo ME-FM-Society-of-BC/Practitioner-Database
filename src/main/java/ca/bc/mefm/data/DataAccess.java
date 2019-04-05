@@ -52,9 +52,16 @@ public class DataAccess {
 		return list;
 	}
 	
+	/**
+	 * Saves a list of City entities
+	 * @param list
+	 */
+	public void ofyPut(List<City> list){
+		ofy().save().entities(list).now();
+	}
+	
 	public void ofyPut(Object o){
 		ofy().save().entity(o).now();
-		log.log(Level.INFO, "+++ Put " + o.getClass().getName() + "\n" + o.toString());
 	}
 	
 	public <T> void ofyDelete(Class<T> clazz, long id){

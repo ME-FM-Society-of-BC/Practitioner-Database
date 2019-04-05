@@ -1,8 +1,11 @@
 package ca.bc.mefm.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -78,13 +81,12 @@ public class InitializationResource extends AbstractResource {
         return responseNoContent();
     }
     
-    // TODO: This is a temporary kludge
-//    List<Practitioner> practitioners = Arrays.asList(new Practitioner[]{
-//    	new Practitioner(1L, "smith", "john","1234 somewhere ave","victoria","BC","Canada",    "v8v8v8","2501112222","www.aldaily.com",9L,
-//    		new Date(), new Date()),
-//    	new Practitioner(2L, "does",  "jane","9876 somewhere st","victoria","BC","Canada",    "v0v0v0","2503334444","www.xxxx.com",15L,
-//    		new Date(), new Date())        
-//    });
+    /** Builds a city list for a specified province */
+    private void addCities(Long provinceId, String[] cityNames, DataAccess da){
+    	List<City> cities =	Stream.of(cityNames).map(cityName -> new City(provinceId, cityName)).collect(Collectors.toList());
+    	da.ofyPut(cities);
+    }
+
     
     List<UserRole> roles = Arrays.asList(new UserRole[]{
         new UserRole(1L, UserRole.Type.ACTIVE),
@@ -226,7 +228,7 @@ public class InitializationResource extends AbstractResource {
         new Question( 15L, 15, 2L,    null,   Question.Type.SINGLE_CHOICE,  "7 How is the parctitioner's bedside manner at your visit?"),
         new Question( 16L, 16, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Developing a treatment plan? "),
         new Question( 17L, 17, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Overseeing a treatment plan?"),
-        new Question( 18L, 18, null,  null,   Question.Type.SINGLE_CHOICE,  "9 How willing is the practitioner to read information you bring to the consult?"),
+        new Question( 18L, 18, 3L,    null,   Question.Type.SINGLE_CHOICE,  "9 How willing is the practitioner to read information you bring to the consult?"),
         new Question( 19L, 19, 4L,    null,   Question.Type.SINGLE_CHOICE,  "10 How willing is the practitioner to prescribe alternative or off-label treatments?"),
         new Question( 20L, 20, 5L,    null,   Question.Type.SINGLE_CHOICE,  "11 How effective was is practitioner at helping to manage pain issues?"),
         new Question( 21L, 21, 3L,    null,   Question.Type.SINGLE_CHOICE,  "12 How helpful was the practitioner with completing insurance/disability forms?"),
@@ -239,7 +241,7 @@ public class InitializationResource extends AbstractResource {
         new Question( 28L, 28, 7L,    null,   Question.Type.SINGLE_CHOICE,  "16 How punctual was the practitioner?"),
         new Question( 29L, 29, null,  null,   Question.Type.YES_NO,         "17 Did the practitioner offer you follow ups and/or continuous support?"),
         new Question( 30L, 30, null,  null,   Question.Type.YES_NO,         "18 Was your visit with the parctitioner's service covered by MSP?"),
-        new Question( 31L, 31, 8L,    null,   Question.Type.SINGLE_CHOICE,  "19 If answer to Q.17 is NO, what is the parctitioner's consult fee?"),
+        new Question( 31L, 31, 8L,    null,   Question.Type.SINGLE_CHOICE,  "19 If answer to Q.18 is NO, what is the parctitioner's consult fee?"),
         new Question( 32L, 32, 9L,    null,   Question.Type.SINGLE_CHOICE,  "20 How likely are you to recommend this practitioner?")
         });
 
@@ -259,14 +261,6 @@ public class InitializationResource extends AbstractResource {
             new Province(13L, "Yukon", "YU")
         });
     
-    /** Builds a city list for a specified province */
-    private void addCities(Long provinceId, String[] cityNames, DataAccess da){
-    	for (String cityName: cityNames) {
-    		City city = new City(provinceId, cityName); 
-    		da.ofyPut(city);
-    	}
-    }
-
     static String[] namesBC = new String[]{
     		"Abbotsford",
     		"Armstrong",
