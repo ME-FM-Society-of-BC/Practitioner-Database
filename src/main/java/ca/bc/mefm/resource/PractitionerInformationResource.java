@@ -69,7 +69,7 @@ public class PractitionerInformationResource extends AbstractResource{
     }
 
     /**
-     * Updates a new Practitioner
+     * Updates a Practitioner
      * @param practitioner
      * @return
      */

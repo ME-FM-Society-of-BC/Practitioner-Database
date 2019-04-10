@@ -33,7 +33,7 @@ class PractitionerEval extends Component {
         this.createQuestionItems();        
 
         // Map of questionId to question
-        // TODO: Could be done in reducer 
+        // TODO: Could be done in reducer. Not put in state because it is fixed 
         this.questionMap = [];
         this.props.questions.forEach(question => {
             this.questionMap[question.id] = question;
@@ -45,7 +45,8 @@ class PractitionerEval extends Component {
 
         const practitionerId = this.props.match.params['id'];
         if (practitionerId) {
-            // An existing Practitioner is being viewed
+            // An existing Practitioner is being viewed. The user can switch the
+            // mode to 'edit' with the button in the EvalHeaderFooter component
             this.state.practitionerId = practitionerId;
             this.state.mode ='viewAll';
         }
@@ -187,6 +188,8 @@ class PractitionerEval extends Component {
             }
         });
         // Send to the server
+        // TODO: These all are created as new RecommendationAction objects
+        // Updated ones should be PUT rather than POST
         axios.post('/actions/', newOrChanged)
             .catch(error => {
                 console.log(error);
@@ -249,10 +252,12 @@ const mapStateToProps = state => {
         allAnswers: state.evaluationReducer.allAnswers
     }
 }
+
 const mapDispatchToProps = dispatch => {
     return {
         saveUserRatingAction: (recommendation) => 
             dispatch({ type: actions.SAVE_USER_RATING_ACTION, recommendation: recommendation })
-    };
-};
+    }
+}
+
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PractitionerEval));

@@ -6,19 +6,37 @@
  * 
  */
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Comment from '../components/Comment';
+import * as actions from '../store/commentActions';
 
-class Comments extends Component {
+
+class PractitionerComments extends Component {
 
     render() {
-        return <h1>Comments</h1>
+        return (
+            <>
+            <h1>Comments</h1>
+            <Comment mode='edit' value='current value'/>
+            <Comment mode='view' value='this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only '/>
+            </>
+        )
     }
 
 }
 const mapStateToProps = state => {
     return {
-        loggedInUser: state.userReducer.loggedInUser
+        loggedInUser: state.userReducer.loggedInUser,
+        allUsers: state.userReducer.allUsers,
+        allComments: state.commentReducer.allComments
     }
 }
 
-export default connect(mapStateToProps)(Comments);
+const mapDispatchToProps = dispatch => {
+    return {
+        saveComment: (comment) => dispatch(actions.saveComment(comment))
+    }
+}
+
+export default  withRouter(connect(mapStateToProps)(PractitionerComments));

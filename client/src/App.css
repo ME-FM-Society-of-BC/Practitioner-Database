@@ -109,6 +109,19 @@
 	margin-top: 3px;
 }
 
+.comment{  
+  overflow:hidden;
+  padding:10px;
+  width:90%;  
+  display:inline-block;
+  border-radius:4px;
+	border:2px solid #dce4ec;
+}
+
+.level2 {
+	margin-left: 5em;
+}
+
 /*****************************************************************************/
 /* Responsive table styles */
 table {

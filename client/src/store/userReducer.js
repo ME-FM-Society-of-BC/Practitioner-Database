@@ -35,8 +35,15 @@ const userReducer = (state = initialState, action) => {
                 loggedInUser: user
             }
 
+        case actions.STORE_ALL_USERS :
+            const allUsers = action.users;
+            return {
+                ...state,
+                allUsers: allUsers
+            }
+
         default: return state;
     }
-};
+}
 
 export default userReducer;

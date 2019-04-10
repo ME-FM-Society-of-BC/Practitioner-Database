@@ -12,6 +12,8 @@ export const REGISTER_USER_COMPLETED = 'REGISTER_USER_COMPLETED';
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_IN_COMPLETED = 'SIGN_IN_COMPLETED';
 
+export const STORE_ALL_USERS = 'STORE_ALL_USERS';
+
 export const registerUser = (user) => {
     return dispatch => {
         axios.post('/users/', user)

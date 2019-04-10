@@ -29,8 +29,7 @@ public class CommentResource extends AbstractResource{
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Comment comment) {
-    	
+    public Response create(Comment comment) {    	
     	comment.setStatus(Comment.Status.PENDING);
         DataAccess da = new DataAccess();
         da.ofyPut(comment);

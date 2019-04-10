@@ -113,6 +113,8 @@ class PractitionerInfo extends Component {
     }
 
     saveNew(){
+        // New practitioner is sent to the server here rather than in the
+        // reducer action, because the id is needed immediately for routing
         axios.post('/practitioners', this.state.practitioner)
             .then(response => {
                 const practitioner = {...this.state.practitioner};
@@ -170,14 +172,6 @@ class PractitionerInfo extends Component {
                     <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Address'  mode={this.state.mode} value={this.state.practitioner.address} placeholder='Street address'
                         attribute='address' changeHandler =  {(event) => this.changeTextValue(event, 'address')}/>
-                    {/*    
-                    <EditableText valueClass='info-field' labelClass='info-label' 
-                        label='Province'  mode={this.state.mode} value={this.state.practitioner.province} placeholder='Province'
-                        attribute='province' changeHandler =  {(event) => this.changeTextValue(event, 'province')}/>
-                    <EditableText valueClass='info-field' labelClass='info-label' 
-                        label='City'  mode={this.state.mode} value={this.state.practitioner.city} placeholder='City or town'
-                        attribute='city' changeHandler =  {(event) => this.changeTextValue(event, 'city')}/>
-                    */}
                     <Selector label='Province'
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
@@ -192,8 +186,6 @@ class PractitionerInfo extends Component {
                         value={this.state.practitioner.city} 
                         placeholder='Select after province...'
                         onChange =  {(event) => this.selectCity(event)}/>
-
-
                     </div>
                     <div className='vertical-group'>    
                     <EditableText valueClass='info-field' labelClass='info-label' 

@@ -23,7 +23,7 @@ import PractitionerComments from './PractitionerComments';
 class Practitioner extends Component {
 
     state = {}
-
+/*
     constructor(props){
         super(props);
         const queryParams = new URLSearchParams(props.location.search);
@@ -35,13 +35,13 @@ class Practitioner extends Component {
             }
         }    
     }
-    
+*/    
     render() {
         return (
             <>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title toggle>Practitioner Information</Panel.Title>
+                        <Panel.Title>Practitioner Information</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <PractitionerInfo/>
@@ -54,7 +54,7 @@ class Practitioner extends Component {
                                 <Panel.Title toggle>Evaluation</Panel.Title>
                             </Panel.Heading>
                             <Panel.Body collapsible>
-                                <PractitionerEval newPractitioner={this.state.newPractitioner}/>
+                                <PractitionerEval/>
                             </Panel.Body>
                         </Panel>
                         <Panel eventKey="2">

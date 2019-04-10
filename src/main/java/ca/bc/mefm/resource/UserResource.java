@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -25,14 +26,20 @@ public class UserResource extends AbstractResource{
 
     /**
      * Fetches all User entities
+     * @param basicOnly if in the request, and has value "true", only the id and username are returned
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers(){
+    public Response getUsers(@QueryParam("basic") String basicOnly){
         DataAccess da = new DataAccess();
         List<User> list = da.getAll(User.class);
-        return responseOkWithBody(list);
+        if (basicOnly != null) {
+         	return responseOkWithBody(list.stream().map(user -> user.withoutPassword()).toArray());
+        }
+        else {
+        	return responseOkWithBody(da.getAll(User.class));
+        }
     }    
     
     /**

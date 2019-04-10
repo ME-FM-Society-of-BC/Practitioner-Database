@@ -24,4 +24,10 @@ public class User {
 	private Status	status;
 	
 	public User() {}
+	
+	/** Clears the password TODO Review in security implementation */
+	public User withoutPassword () {
+		password = null;
+		return this;
+	}
 }

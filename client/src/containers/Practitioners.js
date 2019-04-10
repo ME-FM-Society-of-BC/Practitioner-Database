@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import PractitionerListItem from '../components/PractitionerListItem';
 import { STORE_PRACTITIONERS } from '../store/practitionerActions';
+import { STORE_COMMENTS } from '../store/commentActions';
 import { STORE_ALL_RECOMMENDATION_ACTIONS} from '../store/evaluationActions';
 import { Button } from 'react-bootstrap';
 
@@ -80,14 +81,28 @@ class Practitioners extends Component {
         this.props.history.push(this.props.match.url + '/-1');
     }
 
-    // Handles clicks on the View button in the child PractitionerListItem component
+    // Handles selection of a Practitioner in a child PractitionerListItem component
     selectHandler = (index) => {
         const practitionerId = this.props.practitioners[index].id;
+        const userId = this.props.loggedInUser ? this.props.loggedInUser.id : null;
 
+        // The Practitioner may have been selected before, so only fetch actions
+        // or comments if they were not previously fetched 
+        // Fetch all the recommendation actions for this practitioner
         axios.get('/actions/' + practitionerId)
         .then(response => {
-            const userId = this.props.loggedInUser ? this.props.loggedInUser.id : null;
             this.props.storeAllRecommendationActions(response.data, practitionerId, userId);
+        })
+        .then(() => {
+            // Fetch all the comments on this practitioner
+            // TODO Figure out how to perform either or both fetches concurrently
+            axios.get('/comments/' + practitionerId)
+        })
+        .then(response => {
+            if (response){
+                // Why is reponse null if list is empty? Should be identical behaviour to comments request
+                this.props.storeComments(response.data, practitionerId);
+            }
         })
         .then(() => {
             // Go to the Practitioner View      
@@ -100,7 +115,8 @@ const mapStateToProps = state => {
     return {
         practitioners: state.practitionersReducer.practitioners,
         specialties: state.practitionersReducer.specialties,
-        loggedInUser: state.userReducer.loggedInUser
+        loggedInUser: state.userReducer.loggedInUser,
+        allRecommendations: state.evaluationReducer.allRecommendations
     }
 }
 const mapDispatchToProps = dispatch => {
@@ -111,7 +127,13 @@ const mapDispatchToProps = dispatch => {
             allRecommendations: allRecommendations, 
             practitionerId: practitionerId,
             userId: userId 
+        }),
+        storeComments: (comments, practitionerId) => dispatch({ 
+            type: STORE_COMMENTS, 
+            comments: comments, 
+            practitionerId: practitionerId 
         })
+
     };
 };
 
