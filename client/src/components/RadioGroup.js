@@ -19,7 +19,6 @@ const radioGroup = (props) => {
         <div className={'radio-group bordered ' + props.className}>
             {
                 props.options.map((option, index) => {
-                    if (option.checked) {
                         return (
                             <div 
                                 key={index} 
@@ -30,31 +29,14 @@ const radioGroup = (props) => {
                                     disabled={props.disabled}
                                     onChange={props.onChange}
                                     name={props.name}
-                                    id={option.value}
                                     value={option.value}
-                                    checked
+                                    checked={option.checked}
                                 />
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </div>
                         )
                     }
-                    else {
-                        return (
-                            <div key={index} style={{ display: 'inline', float: 'left' }}>
-                                <label htmlFor={option.value}>{option.label}</label>
-                                &nbsp;
-                                <input type='radio'
-                                    disabled={props.disabled}
-                                    onChange={props.onChange}
-                                    name={props.name}
-                                    id={option.value}
-                                    value={option.value}
-                                />
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </div>
-                        )
-                    }
-                })
+                )
             }
         </div>
     )
