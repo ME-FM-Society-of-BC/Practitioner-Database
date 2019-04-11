@@ -10,10 +10,11 @@
  * answers
  */
 import React from 'react';
+
 const radioResults = (props) => {
     if (props.answers) {    
-        const totalNo = props.answers.filter(x => x === 0).reduce((total, x) => {return total + x}, 0);
-        const totalYes = props.answers.filter(x => x === 1).reduce((total, x) =>{return total + x}, 0);
+        const totalNo = countValues(props.answers, 0);
+        const totalYes = countValues(props.answers, 1);
         return (
             <div className={'radio-group bordered ' + props.className}>
                 <div style={{ display: 'inline', float: 'left' }}>
@@ -34,5 +35,15 @@ const radioResults = (props) => {
     else {
         return <span className={'radio-group bordered ' + props.className}>No answers</span>
     }
+}
+
+const countValues = (answers, value) => {
+    return answers.map(x => {
+        const result = x === value;
+        return result 
+    })
+    .reduce((total, x) => {
+        return total + x
+    }, 0)
 }
 export default radioResults;

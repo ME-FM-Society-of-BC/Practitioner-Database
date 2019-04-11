@@ -144,7 +144,7 @@ const findUserActionsAndAnswers = (userId, allActions) => {
         if (!map[recommendation.questionId]){
             map[recommendation.questionId] = [];
         }
-        if (recommendation.value){
+        if (recommendation.value || recommendation.value === 0){
             map[recommendation.questionId].push(recommendation.value);
         }
         return map;

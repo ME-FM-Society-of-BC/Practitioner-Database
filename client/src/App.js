@@ -22,13 +22,22 @@ class App extends Component {
     
 /** Temporary for simulating login **/
     onChange = ((event) => {
-        const user = {
-            username: 'Bob',
-            email: 'robertt.t.toms@gmail.com',
-            id: 1
+        if (event.target.defaultValue === 'Active'){
+            this.props.storeUser({
+                username: 'Active',
+                email: 'robertt.t.toms@gmail.com',
+                id: 1,
+                roleId: 1
+            })
         }
-        user.roleId = event.target.defaultValue === 'Active' ? 1: 2;
-        this.props.storeUser(user);
+        else {
+            this.props.storeUser({
+                username: 'Admin',
+                email: 'robertt.t.toms@gmail.com',
+                id: 2,
+                roleId: 2
+            })
+        }
     });
 /** End temp **/
 
