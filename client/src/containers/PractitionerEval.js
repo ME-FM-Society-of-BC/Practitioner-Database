@@ -29,6 +29,7 @@ class PractitionerEval extends Component {
 
     constructor(props){
         super(props);
+        console.log('constructor----------------------\n' + props);
 
         this.createQuestionItems();        
 
@@ -75,7 +76,7 @@ class PractitionerEval extends Component {
                 component.items = [];
                 const groupId = question.questionGroupId;
 
-                while (question.questionGroupId === groupId){
+                while (i < this.props.questions.length && question.questionGroupId === groupId){
                     component.items.push(question);
                     question = this.props.questions[++i];
                 }
@@ -90,6 +91,7 @@ class PractitionerEval extends Component {
     }
 
     render() {
+        console.log('render-------------------------\n');
         const userHasEvaluated = this.props.userAnswers != null 
             && Object.keys(this.props.userAnswers).length > 0;
         return (
@@ -179,23 +181,20 @@ class PractitionerEval extends Component {
     }
 
     saveEvaluation(){
-        // Collect the items that changed or were added
-        const questionIds = Object.getOwnPropertyNames(this.props.userAnswers);
-        const newOrChanged = [];
-        questionIds.forEach( id => {
-            if (this.props.userAnswers[id].isNewValue){
-                newOrChanged.push(this.props.userAnswers[id]);
-            }
-        });
-        // Send to the server
-        // TODO: These all are created as new RecommendationAction objects
-        // Updated ones should be PUT rather than POST
-        axios.post('/actions/', newOrChanged)
+        const questionIds = Object.getOwnPropertyNames(this.props.queuedUserRatings);
+        const ratings = Object.getOwnPropertyNames(this.props.queuedUserRatings).reduce( (userRatingsArray, questionId) => {
+            userRatingsArray.push(this.props.queuedUserRatings[questionId]);
+            return userRatingsArray;
+        }, [])
+        axios.post('/actions/', ratings)
+            .then( response => {
+                this.props.storeRatingActionIds(ratings, response.data);
+            })
             .catch(error => {
                 console.log(error);
                 alert(error);
             }
-        );        
+        );
         this.setState(() => ({ 
             mode: 'viewAll'
         }));
@@ -233,8 +232,9 @@ class PractitionerEval extends Component {
                 userId: this.props.loggedInUser.id,
                 actionType: 'RATE',
                 questionId: questionId,
-                value: value,
-                isNewValue: true
+                value: value
+                /*,
+                isNewValue: true*/
             };
             this.props.saveUserRatingAction(recommendationAction);
         }
@@ -242,6 +242,7 @@ class PractitionerEval extends Component {
 }
 
 const mapStateToProps = state => {
+    console.log('mapStateToProps--------------');
     return {
         questions: state.evaluationReducer.questions,
         questionGroups: state.evaluationReducer.questionGroups,
@@ -249,14 +250,17 @@ const mapStateToProps = state => {
         loggedInUser: state.userReducer.loggedInUser,
         allRecommendations: state.evaluationReducer.allRecommendations,
         userAnswers: state.evaluationReducer.userAnswers,
-        allAnswers: state.evaluationReducer.allAnswers
+        allAnswers: state.evaluationReducer.allAnswers,
+        queuedUserRatings: state.evaluationReducer.queuedUserRatings
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         saveUserRatingAction: (recommendation) => 
-            dispatch({ type: actions.SAVE_USER_RATING_ACTION, recommendation: recommendation })
+            dispatch({ type: actions.SAVE_USER_RATING_ACTION, recommendation: recommendation }),
+        storeRatingActionIds: (ratings, idArray) => 
+            dispatch({ type: actions.STORE_RATING_ACTION_IDS, ratings: ratings, idArray: idArray})
     }
 }
 

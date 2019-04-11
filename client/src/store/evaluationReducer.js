@@ -10,6 +10,7 @@ const initialState = {
     allRecommendations: {},
     userActions: [],
     userAnswers: {},
+    queuedUserRatings: {},
     allAnswers: {}
 }
 
@@ -36,8 +37,8 @@ const evaluationReducer = (state = initialState, action) => {
                 questionChoices: state.questionChoices.concat(action.questionChoices)
             }
             
+        // Stores all actions by all users for a practitioner, received from the server
         case actions.STORE_ALL_RECOMMENDATION_ACTIONS:
-            // Stores all actions by all users for a practitioner, received from the server
             const newAllRecommendations = {...state.allRecommendations};
             newAllRecommendations[action.practitionerId] = action.allRecommendations;
 
@@ -51,6 +52,8 @@ const evaluationReducer = (state = initialState, action) => {
                 allAnswers: allActionsAndAnswers.allAnswers
             }
         
+        // Saves a single rating action. It will only be sent to the server when
+        // the "Save My Evaluations" button is pressed   
         case actions.SAVE_USER_RATING_ACTION:
             const practitionerId = action.recommendation.practitionerId;
             const userId = action.recommendation.userId;
@@ -60,47 +63,55 @@ const evaluationReducer = (state = initialState, action) => {
             // A Practitioner who has just been created, and for whom the user has
             // not yet selected any evaluation answers will not
             let isReplacement = false;
-            let newForThisPractitioner = undefined;
-            if (allRecommendations[practitionerId]) {
-                const forThisPractitioner = [...allRecommendations[practitionerId]];
-                newForThisPractitioner = forThisPractitioner.map(recommendation => {
-                    // Ignore if not a rating or action was by another user
-                    if (recommendation.actionType !== 'RATE'){
-                        return recommendation
-                    };
-                    if (recommendation.userId !== userId){
-                        return recommendation
-                    };
-                    // Look for a matching questionId
-                    if (action.recommendation.questionId === recommendation.questionId){
-                        // Replace the previous rating value
-                        isReplacement = true;
-                        return {...recommendation, value: action.recommendation.value}
-                    }
-                    return recommendation;
-                })
-            } 
-            else {
-                // The Practitioner has just been created by the user
-                newForThisPractitioner = [];
-            }  
+            let forThisPractitioner = allRecommendations[practitionerId];
+            // Look for a rating action by the current user with matching questionId
+            for (let i = 0; i < forThisPractitioner.length; i++){
+                const recommendation = forThisPractitioner[i];
+                if (recommendation.actionType === 'RATE' 
+                && recommendation.userId === userId 
+                && recommendation.questionId === action.recommendation.questionId){
+                    isReplacement = true;
+                    // Existing id may be undefined if this is just a change the answer 
+                    // to a question that was first answered before being previously saved
+                    action.recommendation.id = recommendation.id;
+                    recommendation.value = action.recommendation.value;
+                    break;
+                }
+            }
             // If not replacement of an old value, add it
             if (!isReplacement){
-                newForThisPractitioner.push(action.recommendation)
+                forThisPractitioner.push(action.recommendation)
             }
-            allRecommendations[practitionerId] = newForThisPractitioner;
+            allRecommendations[practitionerId] = forThisPractitioner;
             
             // Now re-calculate all user actions
-            allActionsAndAnswers = findUserActionsAndAnswers(userId, newForThisPractitioner);
-            
+            allActionsAndAnswers = findUserActionsAndAnswers(userId, forThisPractitioner);
+
+            // Save new user actions for later transmission to server.
+            const queuedUserRatings = {...state.queuedUserRatings}; 
+            queuedUserRatings[action.recommendation.questionId] = action.recommendation;
+
             return {
                 ...state,
-                allRecommendations,
+                allRecommendations: allRecommendations,
                 userActions: allActionsAndAnswers.userActions,
                 userAnswers: allActionsAndAnswers.userAnswers,
-                allAnswers: allActionsAndAnswers.allAnswers
+                allAnswers: allActionsAndAnswers.allAnswers,
+                queuedUserRatings: queuedUserRatings
             };
 
+        case actions.STORE_RATING_ACTION_IDS:
+            // Does not need to be immutable,because ids have no effect on UI
+            const idArray = action.idArray;
+            const ratings = action.ratings;
+            for (let i = 0; i < ratings.length; i++){
+                state.userAnswers[ratings[i].questionId].id = idArray[i];
+            }
+            return {
+                ...state,
+                queuedUserRatings: {}
+            }
+            
         default: 
             return state;
     }
@@ -115,21 +126,18 @@ const evaluationReducer = (state = initialState, action) => {
 */
 const findUserActionsAndAnswers = (userId, allActions) => {
     // Find all actions by the user
-    const userActions = userId ?
-        allActions.filter(action =>{
-            return action.userId === userId 
-        })
-        : [];
+    const userActions = allActions.filter(action =>{
+        return action.userId === userId 
+    });
     
     // Find all answers by the user, and convert it to a map of questionId to question
-    const userAnswers = userActions.length > 0 ?
-        userActions.filter(action =>{
-            return action.actionType = 'RATE' 
-        })
-        .reduce((map, answer) => {
-            map[answer.questionId] = answer;
-            return map;
-        }, {}) : {};
+    const userAnswers = userActions.filter(action =>{
+        return action.actionType = 'RATE' 
+    })
+    .reduce((map, answer) => {
+        map[answer.questionId] = answer;
+        return map;
+    }, {})
 
     // Convert all answers by all users into a map of question id to an array of answer values 
     const allAnswers = allActions.reduce((map, recommendation) => {
