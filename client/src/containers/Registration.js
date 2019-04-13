@@ -7,6 +7,7 @@ import EditableText from './../components/EditableText';
 import * as actions from '../store/userActions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 class Registration extends Component {
     state = {
@@ -19,38 +20,38 @@ class Registration extends Component {
 
     onChange = (event) => {
         const {name, value} = event.target;
-
         this.setState({
             [name]: value
         });
     }
 
     register = () => {
-        console.log(this.state)
-        this.props.registerUser(this.state);
+        axios.post('/users/', this.state)
+        .then( response => {
+            if (response.data.nameAlreadyTaken){
+                alert("That username is already taken. Please enter a new value");
+            }
+            else {
+                this.props.storeLoggedInUser(response.data);
+                // TODO replace() ?
+                this.props.history.push('/home');
+            }            
+        })
+        .catch(error => {
+            console.log(error);
+        });        
     }
 
     render() {
         return <Form horizontal>
-                <h1>Registration</h1>
-                <EditableText   label='First Name'
-                                name='firstName'
-                                labelClass='info-label'
-                                valueClass='info-field'
-                                placeholder='First name'
-                                changeHandler={this.onChange} />
-
-                <EditableText   label='Last Name'
-                                name='lastName'
-                                labelClass='info-label'
-                                valueClass='info-field'
-                                placeholder='Last name'
-                                changeHandler={this.onChange} />
-
-                <EditableText   label='Email' 
+            <div className='horizontal-group'>
+            <div className='vertical-group'>
+                <EditableText   label='Email'
+                                type='email' 
                                 name='email'
                                 labelClass='info-label'
                                 valueClass='info-field'
+                                value={this.state.email}
                                 placeholder='Email'
                                 changeHandler={this.onChange} />
 
@@ -59,6 +60,7 @@ class Registration extends Component {
                                 labelClass='info-label'
                                 valueClass='info-field'
                                 placeholder='Username'
+                                value={this.state.username}
                                 changeHandler={this.onChange} />
 
                 <EditableText   label='Password' 
@@ -66,9 +68,12 @@ class Registration extends Component {
                                 labelClass='info-label'
                                 valueClass='info-field'
                                 placeholder='Password'
+                                value={this.state.password}
                                 changeHandler={this.onChange} />
                 <br/>
                 <Button type='button' onClick={this.register}>Register</Button>
+            </div>
+            </div>
             </Form>
     }
 
@@ -80,7 +85,7 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        registerUser: (user) => dispatch(actions.registerUser(user))
+        storeLoggedInUser: user => dispatch({ type: actions.STORE_LOGGED_IN_USER, user: user })
     };
 };
 

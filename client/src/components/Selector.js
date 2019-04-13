@@ -44,9 +44,12 @@ const selector = (props) => {
     if (props.mode === 'viewAll'){
         if (props.answers) {
             let sum = props.answers.reduce((sum, answer) => {
-                return sum + answer;
+                // Choice values start at zero, so add an offset 
+                return sum + answer + 1;
             }, 0);
-            const value = props.answers.length === 0 ? 0 : sum / props.answers.length
+            let value = props.answers.length === 0 ? 0 : sum / props.answers.length;
+            // TODO Number of answers may vary in the future, so scale to 5
+            // Requires acces to the choice set for the question 
             component = <StarRating className={valueClasses} value={value}/>
         }
         else {

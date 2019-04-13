@@ -35,11 +35,6 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 //axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
 axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
 
-/*********** For development  **************/
-// Mimic server with Json  Server
-// axios.defaults.baseURL = 'http://localhost:4000';
-// axios.defaults.baseURL = 'http://localhost:8080/rest';
-
 console.log(document.baseURI);
 if (document.baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
@@ -51,13 +46,13 @@ else {
 }
 
 // Log all responses
-axios.interceptors.request.use(request => {
-    console.log(request);
-    return request;
-}, error => {
-    console.log(error);
-    return Promise.reject(error);
-});
+// axios.interceptors.request.use(request => {
+//     console.log(request);
+//     return request;
+// }, error => {
+//     console.log(error);
+//     return Promise.reject(error);
+// });
 /*******************************************/
 
 // Fetch the "static" data from the server
@@ -122,9 +117,9 @@ axios.get('/initialize')
 
 const app = (
     <Provider store={store}>
-    <BrowserRouter>
-    <App />
-    </BrowserRouter>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
     </Provider>
     );
     

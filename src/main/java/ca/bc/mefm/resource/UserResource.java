@@ -1,6 +1,7 @@
 package ca.bc.mefm.resource;
 
 import java.util.List;
+import java.util.Date;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,11 +15,12 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
+import ca.bc.mefm.data.UserRole;
 
 import com.googlecode.objectify.Key;
 
 /**
- * Service endpoint for retrieval and creation of USer entities 
+ * Service endpoint for retrieval and creation of User entities 
  * @author Robert
  */
 @Path("/users")
@@ -49,10 +51,41 @@ public class UserResource extends AbstractResource{
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(User user) {
+    public Response create(User newUser) {
         DataAccess da = new DataAccess();
-        da.ofyPut(user);
-        return responseCreated(user.getId());
+        // Check if username already taken
+    	User existingUser = da.ofyFindByQuery(User.class, "username", newUser.getUsername());
+    	if (existingUser != null) {
+//    		return responseOkWithBody(new AuthResultNameAlreadyTaken());
+    	}
+
+        if (newUser.getRoleId() == null) {
+        	newUser.setRoleId(new Integer(UserRole.TYPE_ACTIVE));
+        }
+        newUser.setCreated(new Date());
+        da.ofyPut(newUser);
+        return responseCreated(newUser.getId());
+    }
+    
+    /**
+     * Authenticates a user
+     * @param User
+     * TODO: Temporary for demo
+     */
+    @POST
+    @Path("auth")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response authenticate(User credentials) {
+        DataAccess da = new DataAccess();
+    	User user = da.ofyFindByQuery(User.class, "username", credentials.getUsername());
+    	if (user == null) {
+    		return responseOkWithBody(new AuthResultBadUser());
+    	}
+    	if (!user.getPassword().equals(credentials.getPassword())) {
+    		return responseOkWithBody(new AuthResultWrongPassword());
+    	}
+    	return responseOkWithBody(user);
     }
     
     /**
@@ -69,4 +102,23 @@ public class UserResource extends AbstractResource{
         User user = da.ofyFind(key);
         return responseOkWithBody(user);
     }
+	
+	public class AuthResultBadUser {
+		private boolean userNotFound = true;
+		public boolean getUserNotFound() {
+			return userNotFound;
+		}
+	}
+	public class AuthResultWrongPassword {
+		private boolean invalidPassword = true;
+		public boolean getInvalidPassword() {
+			return invalidPassword;
+		}
+	}
+	public class AuthResultNameAlreadyTaken {
+		private boolean nameAlreadyTaken = true;
+		public boolean getNameAlreadyTaken() {
+			return nameAlreadyTaken;
+		}
+	}
 }

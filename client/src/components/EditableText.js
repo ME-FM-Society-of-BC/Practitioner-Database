@@ -6,6 +6,7 @@
  * 'edit':   renders as an enabled text input, with the current value instead of a placeholder
  * 
  * Additional props:
+ * type:            the html input type, defaults to 'text'
  * label:           the control label
  * labelClass:      label style class
  * valueClass:      value style class
@@ -25,8 +26,10 @@ import { parseDimensions } from '../common/utilities';
 
 const editableText = (props) => {
 
+    const type = props.type ? props.type : 'text' 
     let labelClasses = props.labelClass;
     let valueClasses = props.valueClass;
+    
     if (props.dimensions){
         let d = parseDimensions(props.dimensions);
         labelClasses += ' ' + d.labelWidth + ' ' + d.labelOffset;
@@ -34,7 +37,7 @@ const editableText = (props) => {
     }
         
     const component = (
-        <input type="text" 
+        <input type={type} 
             value={props.value || ''}
             name={props.name}
             disabled={props.mode === 'view'}

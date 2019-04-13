@@ -14,10 +14,10 @@ const userReducer = (state = initialState, action) => {
         case actions.STORE_USER_ROLES :
 
             // Convert the array of UserRole object to a map of role id to type
-            const roleMap = {};
-            action.roles.forEach( role => {
-                roleMap[role.id] = role.type;
-            });
+            const roleMap = action.roles.reduce( (map, role) => {
+                map[role.id] = role;
+                return map;
+            }, {});
             // Store the map rather than the array
             return {
                 ...state,
@@ -26,8 +26,8 @@ const userReducer = (state = initialState, action) => {
             
         case actions.STORE_LOGGED_IN_USER :
             // If the user is an Administrator, add an "isAdministrator" property]
-            const user = action.value;
-            if (state.roles[user.roleId] === 'Administrator'){
+            const user = action.user;
+            if (state.roles[user.roleId].type === 'Administrator'){
                 user.isAdministrator = true;
             } 
             return {

@@ -10,11 +10,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserRole {
-	public enum Type {ACTIVE, ADMINISTRATOR};
+	public static final String TYPE_ACTIVE = "Active";
+	public static final String TYPE_ADMINISTRATOR = "Administrator";
+	public static final String TYPE_SUPPORT= "Support";
 	
 	@Id
 	private Long	id;
-	private Type	type;
+	private String	type;
 	
 	public UserRole() {}
 }

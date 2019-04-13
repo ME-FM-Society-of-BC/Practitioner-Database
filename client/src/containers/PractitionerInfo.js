@@ -153,12 +153,15 @@ class PractitionerInfo extends Component {
                 newPractitioner = true
             }
         }
-
+//  style={panelStyle}
         return (
             <Panel style={panelStyle}>
             <Panel.Body>
                 {this.state.mode === 'create' ?
-                    <span> Please enter as much information as you can</span>
+                    <div className='instructions'> 
+                        Enter information for a new practitioner if you have checked that he or she is not already in the list.
+                        You must provide at least first and last names, address and telephone number
+                    </div>
                     : ''
                 }
                 <div className='horizontal-group'>

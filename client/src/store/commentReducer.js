@@ -15,7 +15,7 @@ const commentReducer = (state = initialState, action) => {
         case actions.STORE_COMMENTS:
             const practitionerId = action.practitionerId;
             const allComments = {...state.allComments};
-            allComments[practitionerId] = action.comments;
+            allComments[practitionerId] = orderComments(action.comments);
             return {
                 ...state,
                 allComments: allComments
@@ -69,6 +69,41 @@ const commentReducer = (state = initialState, action) => {
         default: 
             return state;
     }
+}
+
+/** Orders and nests a practitioner's comments earliest to latest, with responses nested */
+const orderComments = comments => {
+    // Convert received date strings to Date objects
+    // new Date("2015-03-25T12:00:00Z");
+    comments.forEach( comment => {
+        comment.date = new Date(comment.date);
+    });
+    // Extract all level 1 comments
+    const level1 = comments.filter( comment => {
+        return !comment.parentId
+    });
+    // Sort by ascending date
+    level1.sort( (a, b) => {
+        return a.date.getTime() - b.date.getTime();
+    });
+    // Map of id to "comment block", an object containing the level1 comment array for its children
+    const map = level1.reduce(( map, comment) => {
+        map[comment.id] = { comment: comment, responses: []}
+        return map;
+    }, {});
+
+    for (let id in map){
+        const commentBlock = map[id];
+        // Find all responses, and sort by date
+        const responses = comments.filter( comment => {
+            return comment.parentId === id;
+        });
+        responses.sort( (a, b) => {
+            return a.date.getTime() - b.date.getTime();
+        });
+        map[i].responses = responses;
+    }
+    return map;
 }
 
 export default commentReducer;

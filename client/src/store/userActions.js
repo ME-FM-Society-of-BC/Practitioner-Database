@@ -14,18 +14,18 @@ export const SIGN_IN_COMPLETED = 'SIGN_IN_COMPLETED';
 
 export const STORE_ALL_USERS = 'STORE_ALL_USERS';
 
-export const registerUser = (user) => {
-    return dispatch => {
-        axios.post('/users/', user)
-            .then(() => {
-                dispatch({ type: REGISTER_USER_COMPLETED, value: 1 })
-            })
-            .catch(error => {
-                console.log(error);
-            }
-        );        
-    }
-};
+// export const registerUser = (user) => {
+//     return dispatch => {
+//         axios.post('/users/', user)
+//             .then(() => {
+//                 dispatch({ type: REGISTER_USER_COMPLETED, value: 1 })
+//             })
+//             .catch(error => {
+//                 console.log(error);
+//             }
+//         );        
+//     }
+// };
 
 export const signIn = (username, password) => {
     return dispatch => {

@@ -14,10 +14,15 @@ import * as actions from '../store/commentActions';
 
 class PractitionerComments extends Component {
 
+    
+
     render() {
         return (
             <>
-            <h1>Comments</h1>
+            <Button type="button" className='button-large' onClick={this.enableEdit}>Add a Comment</Button>
+            <div 
+            <Comment mode='edit' value='current value'/>
+            <h5>Comments</h5>
             <Comment mode='edit' value='current value'/>
             <Comment mode='view' value='this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only this is view only '/>
             </>

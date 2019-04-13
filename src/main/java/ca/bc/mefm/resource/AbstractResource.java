@@ -26,15 +26,16 @@ public abstract class AbstractResource {
      * in its own environment, rather than being deployed with the web application 
      * @return  the Response
      */
-    @OPTIONS
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response options(){
-    	ResponseBuilder builder = Response.status(Response.Status.OK);
-    	builder.header("Access-Control-Allow-Origin", "*");
-    	builder.header("Access-Control-Allow-Headers", "content-type");
-    	builder.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    	return builder.build();
-    }
+//    @OPTIONS
+//    @Path("(.*?)")
+//    @Produces(MediaType.TEXT_PLAIN)
+//    public Response options(){
+//    	ResponseBuilder builder = Response.status(Response.Status.OK);
+//    	builder.header("Access-Control-Allow-Origin", "*");
+//    	builder.header("Access-Control-Allow-Headers", "content-type");
+//    	builder.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+//    	return builder.build();
+//    }
     
     /**
      * Generates a normal return (200 Ok) with a body

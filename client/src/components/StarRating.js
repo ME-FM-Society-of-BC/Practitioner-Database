@@ -1,3 +1,6 @@
+/**
+ * A "Star" rating widget to display average rsult for a single choice question
+ */
 import React from 'react';
 import Ratings from 'react-ratings-declarative';
 

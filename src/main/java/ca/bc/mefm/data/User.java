@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,10 +17,11 @@ public class User {
 	
 	@Id
 	private Long	id;
+	@Index
 	private String 	username;
 	private String 	password;
 	private String 	email;
-	private Long 	roleId;
+	private Integer	roleId;
 	private Date	created;
 	private Status	status;
 	

@@ -89,8 +89,8 @@ public class InitializationResource extends AbstractResource {
 
     
     List<UserRole> roles = Arrays.asList(new UserRole[]{
-        new UserRole(1L, UserRole.Type.ACTIVE),
-        new UserRole(2L, UserRole.Type.ADMINISTRATOR)
+        new UserRole(1L, UserRole.TYPE_ACTIVE),
+        new UserRole(2L, UserRole.TYPE_ADMINISTRATOR)
     });
 
     // Two built in accounts are created. The first is for the MEFM administrative user
@@ -100,8 +100,8 @@ public class InitializationResource extends AbstractResource {
     // modifications to the question definitions
     
     List<User> users = Arrays.asList(new User[]{
-            new User(1L, "admin", "password", "your-email-here", 2L, new Date(), User.Status.ENABLED),
-            new User(2L, "techadmin", "DumD0nald", "robert.t.toms@gmail.com", 2L, new Date(), User.Status.ENABLED)
+            new User(1L, "admin", "password", "your-email-here", 2, new Date(), User.Status.ENABLED),
+            new User(2L, "techadmin", "DumD0nald", "robert.t.toms@gmail.com", 3, new Date(), User.Status.ENABLED)
     });
     
     List<Specialty> specialties = Arrays.asList(new Specialty[]{

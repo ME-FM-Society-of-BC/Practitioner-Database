@@ -122,6 +122,11 @@
 	margin-left: 5em;
 }
 
+.instructions {
+	padding: 1em 5em;
+	text-align: left;
+}
+
 /*****************************************************************************/
 /* Responsive table styles */
 table {
@@ -146,6 +151,11 @@ td, th {
 
 @media 
 only screen and (max-width: 768px)  {
+
+	.instructions {
+		padding: 1em 2em;
+		text-align: left;
+	}
 
 	.question-wrapper {
 		max-width: 450px !important;

@@ -77,6 +77,11 @@ public class DataAccess {
 		return o;
 	}
 	
+	public <T> T ofyFindByQuery(Class<T> clazz, String field, String value) {
+		T o = ofy().load().type(clazz).filter(field, value).first().now();
+		return o;
+	}
+	
 	@Data
 	public static class Filter {
 		public String 	expression;

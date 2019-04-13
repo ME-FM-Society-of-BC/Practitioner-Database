@@ -41,6 +41,10 @@ class App extends Component {
     });
 /** End temp **/
 
+    componentDidMount() {
+        this.props.history.replace('/sign-in');
+    }
+//<a href="#brand">MEFM Database</a>
     render() {
         return (
             <div className="App">
@@ -54,19 +58,26 @@ class App extends Component {
                     <Navbar.Collapse>
                         <Nav pullRight>
                             {/* LinkContainer accepts the same parameters as react-router NavLink and Link */}
+                            {/* 
                             <LinkContainer to="/home">
                                 <NavItem>Home</NavItem>
                             </LinkContainer>
+                            */}
                             <LinkContainer to="/practitioners">
-                                <NavItem>Practitioners</NavItem>
+                                <NavItem>View All</NavItem>
                             </LinkContainer>
                             <LinkContainer to="/search">
-                                <NavItem>Find a Practitioner</NavItem>
+                                <NavItem>Search</NavItem>
                             </LinkContainer>
-                            {this.props.loggedInUser ? 
+                            {this.props.loggedInUser ?
+                                <> 
+                                <LinkContainer to="/practitioners/-1">
+                                    <NavItem>Recommend</NavItem>
+                                </LinkContainer>
                                 <LinkContainer to="/my-activity">
                                     <NavItem>My Activity</NavItem>
                                 </LinkContainer>
+                                </>
                                 : <></>
                             }
                             {this.props.loggedInUser && this.props.loggedInUser.isAdministrator ?
@@ -79,7 +90,6 @@ class App extends Component {
                     </Navbar.Collapse>
                 </Navbar>
     
-                <Route path="/" exact component={Home} />
                 <Route path="/practitioners" exact component={Practitioners} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
                 <Route path="/search" component={Search} />
@@ -87,10 +97,17 @@ class App extends Component {
                 <Route path="/my-activity" component={MyActivity} />
                 <Route path="/registration" component={Registration} />
                 <Route path="/sign-in" component={SignIn} />
+                <Route path="/home" component={Home} />
+                 {/*
+               <Route path="/" exact component={Home} />
+
+                */}
                 
-                {/* Temporary for simulating login */}
+                {/* Temporary for simulating login 
                 <input type='button' value='Active' name={this} onClick={this.onChange}/>
                 <input type='button' value='Admin' name={this} onClick={this.onChange}/>
+                */}
+
             </div>
         );
     }
