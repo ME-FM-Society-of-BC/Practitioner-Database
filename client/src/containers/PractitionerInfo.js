@@ -13,13 +13,12 @@ import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
 
 class PractitionerInfo extends Component {
-    state = {}
 
     constructor(props){
         super(props);
 
         if (props.match.params.id >= 0){
-            // An existing Practitioner os being displayed
+            // An existing Practitioner is being displayed
             // Find the index in the practioners array given the practitioner id
             const index = props.idToIndex[props.match.params.id]
 

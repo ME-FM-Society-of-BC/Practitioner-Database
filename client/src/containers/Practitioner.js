@@ -23,19 +23,7 @@ import PractitionerComments from './PractitionerComments';
 class Practitioner extends Component {
 
     state = {}
-/*
-    constructor(props){
-        super(props);
-        const queryParams = new URLSearchParams(props.location.search);
-        for (let param of queryParams.entries()) {
-            if (param[0] === 'newPractitioner'){
-                this.setState({
-                    newPractitioner: true
-                });
-            }
-        }    
-    }
-*/    
+
     render() {
         return (
             <>

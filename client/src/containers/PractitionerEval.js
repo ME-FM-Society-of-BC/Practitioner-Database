@@ -181,7 +181,6 @@ class PractitionerEval extends Component {
     }
 
     saveEvaluation(){
-        const questionIds = Object.getOwnPropertyNames(this.props.queuedUserRatings);
         const ratings = Object.getOwnPropertyNames(this.props.queuedUserRatings).reduce( (userRatingsArray, questionId) => {
             userRatingsArray.push(this.props.queuedUserRatings[questionId]);
             return userRatingsArray;

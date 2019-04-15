@@ -30,7 +30,6 @@ public class CommentResource extends AbstractResource{
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Comment comment) {    	
-    	comment.setStatus(Comment.Status.PENDING);
         DataAccess da = new DataAccess();
         da.ofyPut(comment);
         return responseCreated(comment.getId());
@@ -46,7 +45,7 @@ public class CommentResource extends AbstractResource{
     public Response getAllPending(){
         DataAccess da = new DataAccess();
         DataAccess.Filter[] filters = new DataAccess.Filter[] {
-        		new Filter("status ==", Comment.Status.PENDING.toString())	
+        		new Filter("approved ==", true)	
         };
         List<Comment> list = da.getAllByFilters(Comment.class, filters);
         return responseOkWithBody(list);

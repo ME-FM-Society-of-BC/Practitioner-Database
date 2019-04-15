@@ -48,7 +48,7 @@ public class UserResource extends AbstractResource{
      * Creates a new User
      * @param User
      * @return
-     */
+     */ 	
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(User newUser) {
@@ -56,11 +56,11 @@ public class UserResource extends AbstractResource{
         // Check if username already taken
     	User existingUser = da.ofyFindByQuery(User.class, "username", newUser.getUsername());
     	if (existingUser != null) {
-//    		return responseOkWithBody(new AuthResultNameAlreadyTaken());
+    		return responseOkWithBody(new AuthResultNameAlreadyTaken());
     	}
 
         if (newUser.getRoleId() == null) {
-        	newUser.setRoleId(new Integer(UserRole.TYPE_ACTIVE));
+        	newUser.setRoleId(new Integer(1));
         }
         newUser.setCreated(new Date());
         da.ofyPut(newUser);

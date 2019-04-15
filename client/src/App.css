@@ -85,10 +85,7 @@
 	margin-top: 1em;
 	padding: 5px;
 }
-.button-small {
-	width: 5em;
-	margin: 10px;
-}
+
 .button-large {
 	margin: 10px;
 }
@@ -109,17 +106,61 @@
 	margin-top: 3px;
 }
 
-.comment{  
+.comments {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+.comment-header {
+	display: flex;
+	align-items: flex-end;
+	border-bottom: 1px solid #dce4ec;
+	padding-bottom: 3px;
+	margin-bottom: 5px;
+}
+
+.comment-name {
+	font-weight: bold;
+	display: inline;
+}
+
+.comment-date {
+	margin-left: 1em;
+	display: inline;
+	font-size: .8em;
+	padding-bottom: 2px;
+}
+
+.button-reply {
+	font-size: .7em;
+	margin-left: 1em;
+	margin-bottom: 1px;
+	height: 20px;
+	padding: 0px 6px;
+}
+
+.new-comment {
   overflow:hidden;
   padding:10px;
-  width:90%;  
-  display:inline-block;
+	width:100%;
+}
+
+.comment{  
+  overflow:hidden;
+  padding:2px 10px 5px 10px;
+  width:auto;  
+/*  display:inline-block;*/
   border-radius:4px;
 	border:2px solid #dce4ec;
+	text-align: left;
+	grid-column: 1 / 13;
+	margin: 5px;
 }
 
 .level2 {
-	margin-left: 5em;
+	grid-column: 2 / 13;
 }
 
 .instructions {

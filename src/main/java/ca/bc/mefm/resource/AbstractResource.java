@@ -2,10 +2,6 @@ package ca.bc.mefm.resource;
 
 import java.util.List;
 
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -20,22 +16,6 @@ public abstract class AbstractResource {
 	protected static final void setCreatePath(String path) {
 		contentLocation = "/" + path + "/";
 	};
-    
-	/**
-     * Responds to an OPTIONS request. This supports execution of the client during development
-     * in its own environment, rather than being deployed with the web application 
-     * @return  the Response
-     */
-//    @OPTIONS
-//    @Path("(.*?)")
-//    @Produces(MediaType.TEXT_PLAIN)
-//    public Response options(){
-//    	ResponseBuilder builder = Response.status(Response.Status.OK);
-//    	builder.header("Access-Control-Allow-Origin", "*");
-//    	builder.header("Access-Control-Allow-Headers", "content-type");
-//    	builder.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-//    	return builder.build();
-//    }
     
     /**
      * Generates a normal return (200 Ok) with a body

@@ -36,7 +36,10 @@ const userReducer = (state = initialState, action) => {
             }
 
         case actions.STORE_ALL_USERS :
-            const allUsers = action.users;
+            const allUsers = action.users.reduce((map, user) => {
+                map[user.id] = user;
+                return map
+            }, {});
             return {
                 ...state,
                 allUsers: allUsers

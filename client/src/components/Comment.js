@@ -8,33 +8,34 @@
  *  
  */
 import React from 'react';
+import ExpandingText from './ExpandingText';
 
 const comment = (props) => {
-
+    const classes = props.level === 1 ? 'comment' : 'comment level2';
+    const dateOptions = {year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'numeric' };
     if (props.mode === 'edit'){
         return (
             <>
-            <textarea className='comment level2' onKeyDown = {(event) => autosize(event)} defaultValue={props.value}/>
+            <ExpandingText class={classes} value={props.value}/>
             </>
         )
     }
-    else {
+    else { // 'create'
         return (
-            <>
-            <div className='comment level2' >{props.value}</div>
-            </>
+            <div className={classes}>
+                <div className='comment-header'>
+                    <div className='comment-name'>{props.username}</div>
+                    <div className='comment-date'>{props.date.toLocaleDateString("en-US", dateOptions)}</div>
+                    { props.level === 1 ?
+                        <input type='button' className='button-reply' value='Reply' onClick={props.onClickReply}></input>
+                        : ''
+                    }
+                </div>
+                <div>
+                    {props.text}
+                </div>
+            </div>
         )
     }
 }
-
-function autosize(event){
-    var el = event.target;
-    setTimeout(function(){
-      el.style.cssText = 'height:auto; padding:0';
-      // for box-sizing other than "content-box" use:
-      // el.style.cssText = '-moz-box-sizing:content-box';
-      el.style.cssText = 'height:' + el.scrollHeight + 'px';
-    },0);
-}
-
 export default comment;

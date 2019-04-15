@@ -13,73 +13,51 @@ const commentReducer = (state = initialState, action) => {
 
         // Store all comments on a given practitioner
         case actions.STORE_COMMENTS:
-            const practitionerId = action.practitionerId;
-            const allComments = {...state.allComments};
-            allComments[practitionerId] = orderComments(action.comments);
             return {
-                ...state,
-                allComments: allComments
+                allComments: orderComments({...state.allComments}, action)
             }
         
         case actions.SAVE_COMMENT:
-            // const practitionerId = action.comment.practitionerId;
-            // axios.post('/comments/' + practitionerId)
-            // .then(response => {
-            //     this.props.storeAllRecommendationActions(response.data, practitionerId, userId);
-            // })
-    
-            // const userId = action.comment.userId;
-            // let allRecommendations = {...state.allRecommendations};
-            
-            // const forThisPractitioner = [...allRecommendations[practitionerId]];
-            // let isReplacement = false;
-            // let newForThisPractitioner = forThisPractitioner.map(recommendation => {
-            //     // Ignore if not a rating or action was by another user
-            //     if (recommendation.actionType !== 'RATE'){
-            //         return recommendation
-            //     };
-            //     if (recommendation.userId !== userId){
-            //         return recommendation
-            //     };
-            //     // Look for a matching questionId
-            //     if (action.recommendation.questionId == recommendation.questionId){
-            //         // Replace the previous rating value
-            //         isReplacement = true;
-            //         return {...recommendation, value: action.recommendation.value}
-            //     }
-            //     return recommendation;
-            // })
-            // // If not replacement of an old value, add it
-            // if (!isReplacement){
-            //     newForThisPractitioner.push(action.recommendation)
-            // }
-            // allRecommendations[practitionerId] = newForThisPractitioner;
-            
-            // // Now re-calculate all user actions
-            // allActionsAndAnswers = findUserActionsAndAnswers(userId, newForThisPractitioner);
-            
-            // return {
-            //     ...state,
-            //     allRecommendations,
-            //     userActions: allActionsAndAnswers.userActions,
-            //     userAnswers: allActionsAndAnswers.userAnswers,
-            //     allAnswers: allActionsAndAnswers.allAnswers
-            // };
+            const newComment = action.comment;
+            const allComments = {...state.allComments};
+            let comments = allComments[newComment.practitionerId];
+            if (!comments){
+                // First comment for this practitioner
+                comments = {};
+                allComments[newComment.practitionerId] = comments;
+            }
 
+            if (newComment.parentId){
+                // Comment is a response. 
+                const parent = comments[newComment.parentId];
+                const responses = [...parent.responses];
+                responses.push(newComment);
+                parent.responses = responses;
+            }
+            else {
+                // Insert as a new parent comment
+                comments[newComment.id] = {comment: newComment, responses: []}
+            }
+            return {
+                allComments: allComments
+            }
+        
         default: 
             return state;
     }
 }
 
 /** Orders and nests a practitioner's comments earliest to latest, with responses nested */
-const orderComments = comments => {
+const orderComments = (allComments, action) => {
+    const practitionerId = action.practitionerId;
+
     // Convert received date strings to Date objects
-    // new Date("2015-03-25T12:00:00Z");
-    comments.forEach( comment => {
-        comment.date = new Date(comment.date);
+    // Incoming format is YYYY-MM-DDThh:mm:ss.mmmZ[UTC], must change to YYYY-MM-DDThh:mm:ssZ 
+    action.comments.forEach( comment => {
+        comment.date = new Date(comment.date.split(".")[0] + 'Z');
     });
     // Extract all level 1 comments
-    const level1 = comments.filter( comment => {
+    const level1 = action.comments.filter( comment => {
         return !comment.parentId
     });
     // Sort by ascending date
@@ -93,17 +71,18 @@ const orderComments = comments => {
     }, {});
 
     for (let id in map){
-        const commentBlock = map[id];
         // Find all responses, and sort by date
-        const responses = comments.filter( comment => {
-            return comment.parentId === id;
+        const responses = action.comments.filter( comment => {
+            // eslint-disable-next-line
+            return comment.parentId == id;
         });
         responses.sort( (a, b) => {
             return a.date.getTime() - b.date.getTime();
         });
-        map[i].responses = responses;
+        map[id].responses = responses;
     }
-    return map;
+    allComments[practitionerId] = map;
+    return allComments;
 }
 
 export default commentReducer;

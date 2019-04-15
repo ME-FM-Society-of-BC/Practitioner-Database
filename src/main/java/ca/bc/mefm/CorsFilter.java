@@ -44,7 +44,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 	protected static Set<String> allowedOrigins;
 	static {
 		allowedOrigins = new HashSet<String>();
-		allowedOrigins.add("http://localhost:3000");		
+		allowedOrigins.add("*");		
 	}
 	/**
 	 * Put "*" if you want to accept all origins.

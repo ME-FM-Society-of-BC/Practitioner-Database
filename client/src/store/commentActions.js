@@ -19,7 +19,8 @@ import axios from 'axios';
 export const saveComment = (comment => {
     return dispatch => {
         axios.post('/comments', comment)
-            .then(() => {
+            .then((response) => {
+                comment.id = response.data;
                 dispatch({ type: SAVE_COMMENT, comment: comment })
             })
             .catch(error => {

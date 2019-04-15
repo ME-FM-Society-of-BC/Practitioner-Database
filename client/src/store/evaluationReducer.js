@@ -64,6 +64,9 @@ const evaluationReducer = (state = initialState, action) => {
             // not yet selected any evaluation answers will not
             let isReplacement = false;
             let forThisPractitioner = allRecommendations[practitionerId];
+            if (!forThisPractitioner){
+                forThisPractitioner = [];
+            }
             // Look for a rating action by the current user with matching questionId
             for (let i = 0; i < forThisPractitioner.length; i++){
                 const recommendation = forThisPractitioner[i];

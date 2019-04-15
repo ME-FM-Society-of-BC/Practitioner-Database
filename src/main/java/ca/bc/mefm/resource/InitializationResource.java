@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.City;
+import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.Province;
@@ -62,6 +63,10 @@ public class InitializationResource extends AbstractResource {
         	questionGroups.forEach((QuestionGroup o) -> da.ofyPut(o));
         	questions.forEach((Question o) -> da.ofyPut(o));
         	provinces.forEach((Province o) -> da.ofyPut(o));
+        	
+        	// TODO REmove kludge
+//        	practitioners.forEach((Practitioner o) -> da.ofyPut(o));
+//        	comments.forEach((Comment o) -> da.ofyPut(o));
             
         	addCities(1L, namesBC, da);
             addCities(2L, namesAB, da);
@@ -80,6 +85,25 @@ public class InitializationResource extends AbstractResource {
         }
         return responseNoContent();
     }
+    
+    // TODO Kludge
+    List<Practitioner> practitioners = Arrays.asList(new Practitioner[]{
+        new Practitioner(1L, "Doe",   "Jane", "", "","","","","","", 5L, new Date(), new Date()),
+        new Practitioner(2L, "Smith", "John", "", "","","","","","", 6L, new Date(), new Date())
+    });
+    List<Comment> comments = Arrays.asList(new Comment[]{
+    	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", true),
+    	new Comment(2L, 1L,   2L, 1L, new Date(), "Yes he is", true),
+    	new Comment(3L, 1L,   1L, 1L, new Date(), "No he isn't", true),
+    	new Comment(4L, null, 2L, 1L, new Date(), "I like him a lot", true),
+    	new Comment(5L, 4L,   1L, 1L, new Date(), "So do I", true),
+    	new Comment(6L, 4L,   2L, 1L, new Date(), "Me too!", true),
+    	new Comment(7L, 4L,   1L, 1L, new Date(), "Me me me!", true),
+    	
+    	new Comment(8L, null, 2L, 2L, new Date(), "She's great", true),    	
+    	new Comment(9L, 8L,   1L, 2L, new Date(), "She's great!", true)    	
+    });
+    
     
     /** Builds a city list for a specified province */
     private void addCities(Long provinceId, String[] cityNames, DataAccess da){
@@ -100,7 +124,7 @@ public class InitializationResource extends AbstractResource {
     // modifications to the question definitions
     
     List<User> users = Arrays.asList(new User[]{
-            new User(1L, "admin", "password", "your-email-here", 2, new Date(), User.Status.ENABLED),
+            new User(1L, "admin", "admin", "your-email-here", 2, new Date(), User.Status.ENABLED),
             new User(2L, "techadmin", "DumD0nald", "robert.t.toms@gmail.com", 3, new Date(), User.Status.ENABLED)
     });
     

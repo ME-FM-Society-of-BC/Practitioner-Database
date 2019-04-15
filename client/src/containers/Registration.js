@@ -11,11 +11,9 @@ import axios from 'axios';
 
 class Registration extends Component {
     state = {
-        firstName: '',
-        lastName: '',
         email: '',
         username: '',
-        password: '',
+        password: ''
     };
 
     onChange = (event) => {
@@ -32,7 +30,15 @@ class Registration extends Component {
                 alert("That username is already taken. Please enter a new value");
             }
             else {
-                this.props.storeLoggedInUser(response.data);
+                const newUser = {...this.state};
+                this.setState({
+                    email: '',
+                    username: '',
+                    password: ''
+                })
+                newUser.id = response.data;
+                newUser.roleId = 1;
+                this.props.storeLoggedInUser(newUser);
                 // TODO replace() ?
                 this.props.history.push('/home');
             }            

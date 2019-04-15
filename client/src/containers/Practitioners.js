@@ -96,11 +96,10 @@ class Practitioners extends Component {
         .then(() => {
             // Fetch all the comments on this practitioner
             // TODO Figure out how to perform either or both fetches concurrently
-            axios.get('/comments/' + practitionerId)
+            return axios.get('/comments/' + practitionerId)
         })
         .then(response => {
-            if (response){
-                // Why is reponse null if list is empty? Should be identical behaviour to comments request
+            if (response.data){
                 this.props.storeComments(response.data, practitionerId);
             }
         })

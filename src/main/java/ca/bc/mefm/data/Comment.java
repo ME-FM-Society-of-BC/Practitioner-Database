@@ -6,13 +6,13 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
 @Data
+@AllArgsConstructor
 public class Comment {
-	
-	public enum Status {APPROVED, PENDING};
 	
 	@Id
 	private Long	id;
@@ -24,7 +24,7 @@ public class Comment {
 	private Long	practitionerId;
 	private Date	date;
 	private String	text;
-	private Status	status;
+	private Boolean approved;
 	
 	public Comment() {}
 }

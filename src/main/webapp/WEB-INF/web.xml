@@ -3,15 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
-  <servlet>
-    <servlet-name>HelloAppEngine</servlet-name>
-    <servlet-class>ca.bc.mefm.HelloAppEngine</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HelloAppEngine</servlet-name>
-    <url-pattern>/hello</url-pattern>
-  </servlet-mapping>
-
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -25,21 +16,23 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-<listener>  
-    <listener-class>
-        ca.bc.mefm.ObjectifyRegistrationContextListener
-    </listener-class>
-</listener>  
 
-  <filter>
-    <filter-name>ObjectifyFilter</filter-name>
-    <filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>ObjectifyFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+	<listener>  
+    	<listener-class>
+        	ca.bc.mefm.ObjectifyRegistrationContextListener
+    	</listener-class>
+	</listener>  
+
+  	<filter>
+    	<filter-name>ObjectifyFilter</filter-name>
+    	<filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
+  	</filter>
+  	<filter-mapping>
+    	<filter-name>ObjectifyFilter</filter-name>
+    	<url-pattern>/*</url-pattern>
+  	</filter-mapping>
+  
+  	<welcome-file-list>
+    	<welcome-file>index.html</welcome-file>
+  	</welcome-file-list>
 </web-app>
