@@ -40,6 +40,23 @@ public class PractitionerInformationResource extends AbstractResource{
     	return responseOkWithBody(list);
     }
     
+	/**
+	 * Fetches all Practitioner entities matching the given criteria
+	 * @return
+	 */
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getByQuery(
+//    		@PathParam("lastName") String lastName,
+//    		@PathParam("firstName") String firstName,
+//    		@PathParam("city") String city,
+//    		@PathParam("province") String province,
+//    		@PathParam("specialty") String specialty){
+//    	DataAccess da = new DataAccess();
+//    	List<Practitioner> list = da.getAll(Practitioner.class);
+//    	return responseOkWithBody(list);
+//    }
+    
     /**
      * Fetches a specific Practitioner
      * @param id

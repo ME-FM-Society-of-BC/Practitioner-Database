@@ -14,12 +14,18 @@ const initialState = {
 const practitionersReducer = (state = initialState, action) => {
     switch (action.type) {
         case actions.STORE_PRACTITIONERS:
-            // Create a map of practitioner ids to their index in the 
-            // practitioners array, and dispatch to store
+            // Add the specialty text to each practitioner
+            const practitioners = action.practitioners.map((practitioner) => {
+                return {
+                    ...practitioner,
+                    specialty: state.specialties.idToValue[practitioner.specialtyId]
+                }
+            });
+            // Create a map of practitioner ids to their index in the practitioners array
             const idsToIndices = mapIdsToIndices(action.practitioners);
             return {
                 ...state,
-                practitioners: state.practitioners.concat(action.practitioners),
+                practitioners: practitioners,
                 practitionerIdsToIndices: idsToIndices
             }
 
@@ -43,6 +49,12 @@ const practitionersReducer = (state = initialState, action) => {
             newState.practitionerIdsToIndices[newPractitioner.id] = newState.practitioners.length - 1;
             return newState;
 
+        case actions.SAVE_SEARCH_RESULTS:
+        return {
+            ...state,
+            matchingPractitioners: action.matchingPractitioners
+        }
+        
         default: 
             return state;
     }

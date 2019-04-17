@@ -152,14 +152,15 @@ class PractitionerInfo extends Component {
                 newPractitioner = true
             }
         }
-//  style={panelStyle}
+
         return (
             <Panel style={panelStyle}>
             <Panel.Body>
                 {this.state.mode === 'create' ?
-                    <div className='instructions'> 
+                    <div className='instructions'><p style={{maxWidth: '40em'}}>
                         Enter information for a new practitioner if you have checked that he or she is not already in the list.
                         You must provide at least first and last names, address and telephone number
+                        </p>
                     </div>
                     : ''
                 }
@@ -229,9 +230,11 @@ class PractitionerInfo extends Component {
                     : ''
                 }
                 {newPractitioner === true ? 
-                    <div>
-                        You can now provide an evaluation for this Practitioner<br/>
+                    <div className='instructions'>
+                    <p style={{maxWidth: '40em'}}>
+                        You can now provide an evaluation for this Practitioner
                         Remember you can always return latyer and create or modify you evaluation
+                    </p>
                     </div>
                 : ''}
             </Panel.Body>           
@@ -255,6 +258,6 @@ const mapDispatchToProps = dispatch => {
         updatePractitioner: (practitioner) => dispatch(actions.updatePractitioner(practitioner)),
         saveNewPractitioner: (practitioner) => dispatch({ type: CREATE_PRACTITIONER, practitioner: practitioner })
     };
-};
+}
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PractitionerInfo));

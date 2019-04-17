@@ -25,18 +25,18 @@ const rootReducer = combineReducers(
         locationReducer: locationReducer,
         commentReducer: commentReducer
     }
-);
+    );
     
-// Enable Redux devtools Chrome extension, and add thunk middleware (support for asynchronous 
-// actions,) per https://github.com/zalmoxisus/redux-devtools-extension#usage
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
-
-//axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
-axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
-
-console.log(document.baseURI);
-if (document.baseURI === "http://localhost:3000/"){
+    // Enable Redux devtools Chrome extension, and add thunk middleware (support for asynchronous 
+    // actions,) per https://github.com/zalmoxisus/redux-devtools-extension#usage
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+    
+    //axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
+    axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
+    
+    console.log(document.baseURI);
+    if (document.baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
     axios.defaults.baseURL ="http://localhost:8080/rest/"; 
 }
@@ -115,11 +115,36 @@ axios.get('/initialize')
     console.log(error);
 });
 
+// Below was for accessing maps from the client.
+// console.log('Initializing GAPI...');
+// console.log('Creating the google script tag...');
+
+// const script = document.createElement("script");
+// script.src = "https://apis.google.com/js/client.js";
+// script.onload = () => {
+//     console.log('Loaded script, now loading our api...')
+//     // Gapi isn't available immediately so we have to wait until it is to use gapi.
+//     loadClientWhenGapiReady(script);
+// };
+// document.body.appendChild(script);
+
+// const loadClientWhenGapiReady = (script) => {
+//     console.log('Trying To Load Client!');
+//     console.log(script)
+//     if(script.getAttribute('gapi_processed')){
+//         console.log('Client is ready! Now you can access gapi. :)');
+//     }
+//     else{
+//         console.log('Client wasn\'t ready, trying again in 100ms');
+//         setTimeout(() => {loadClientWhenGapiReady(script)}, 100);
+//     }
+// }
+
 const app = (
     <Provider store={store}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+    <BrowserRouter>
+    <App />
+    </BrowserRouter>
     </Provider>
     );
     

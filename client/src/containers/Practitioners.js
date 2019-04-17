@@ -22,17 +22,7 @@ class Practitioners extends Component {
             // Perform an initial fetch of all practitioners
             axios.get('/practitioners')
                 .then(response => {
-                    // Augment each practitioner object with specialty text,
-                    // and its array index 
-                    const practitioners = response.data.map((practitioner, index) => {
-                        return {
-                            ...practitioner,
-                            specialty: this.props.specialties.idToValue[practitioner.specialtyId],
-                            arrayIndex: index
-                        }
-                    });
-                    // Dispatch practitioners to the store
-                    this.props.storePractitioners(practitioners);
+                    this.props.storePractitioners(response.data);
                  })
                 .catch (error => {
                     console.log(error);

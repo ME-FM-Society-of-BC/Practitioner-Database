@@ -42,7 +42,7 @@ class SignIn extends Component {
 
     render() {
         const panelStyle = {
-            width:'80%',
+            width:'90%',
             margin: 'auto',
             marginBottom: '2em'
         };
@@ -51,10 +51,10 @@ class SignIn extends Component {
             <>
             <Panel style={panelStyle}>
             <Panel.Body>
-            <div className='instructions'>
+            <div className='instructions'><p style={{maxWidth: '40em'}}>
                 Welcome to the MEFM Database. If you are a registered user, sign in below.
                 If you are not registered, you are free to search for practitioners near you,
-                or view our complete list of practitioners
+                or view our complete list of practitioners</p>
             </div>
                 <div className='horizontal-group'>
                 <div className ='vertical-group'>
@@ -87,9 +87,10 @@ class SignIn extends Component {
             <Panel style={panelStyle}>
             <Panel.Body>
                 <div className='instructions'>
+                <p style={{maxWidth: '40em'}}>
                 Not registered? Sign up here if you want to recommend a practitioner, or 
                 provide feedback on your experience with a practitioner
-                <p/>
+                </p>
                 </div>
                 <Registration/>
             </Panel.Body>           

@@ -1,6 +1,5 @@
 package ca.bc.mefm.resource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -65,7 +64,7 @@ public class InitializationResource extends AbstractResource {
         	provinces.forEach((Province o) -> da.ofyPut(o));
         	
         	// TODO REmove kludge
-//        	practitioners.forEach((Practitioner o) -> da.ofyPut(o));
+        	practitioners.forEach((Practitioner o) -> da.ofyPut(o));
 //        	comments.forEach((Comment o) -> da.ofyPut(o));
             
         	addCities(1L, namesBC, da);
@@ -88,8 +87,16 @@ public class InitializationResource extends AbstractResource {
     
     // TODO Kludge
     List<Practitioner> practitioners = Arrays.asList(new Practitioner[]{
-        new Practitioner(1L, "Doe",   "Jane", "", "","","","","","", 5L, new Date(), new Date()),
-        new Practitioner(2L, "Smith", "John", "", "","","","","","", 6L, new Date(), new Date())
+        new Practitioner(1L, "Doe",   	"Jane", "", "","",	"Canada","v6g1w8","","", 5L, new Date(), new Date()),
+        new Practitioner(2L, "Smith", 	"John", "", "","",	"Canada","v8v4y9","","", 6L, new Date(), new Date()),
+        new Practitioner(3L, "Brown",   "", 	"", "","",	"Canada","v9b3r3","","", 5L, new Date(), new Date()),
+        new Practitioner(4L, "Blue", 	"", 	"", "","",	"Canada","v9b1h8","","", 6L, new Date(), new Date()),
+        new Practitioner(5L, "Green",   "", 	"", "","",	"Canada","v9c2w8","","", 5L, new Date(), new Date()),
+        new Practitioner(6L, "Black",	"", 	"", "","",	"Canada","v8z1m8","","", 6L, new Date(), new Date()),
+        new Practitioner(7L, "Red",   	"", 	"", "","",	"Canada","v8y2l3","","", 5L, new Date(), new Date()),
+        new Practitioner(8L, "Purple", 	"", 	"", "","",	"Canada","v8p5c2","","", 6L, new Date(), new Date()),
+        new Practitioner(9L, "Bad",   	"", 	"", "","",	"Canada","badbad","","", 5L, new Date(), new Date()),
+        new Practitioner(10L, "Thomas", "", 	"", "","",	"Canada","v7b0v7","","", 6L, new Date(), new Date())
     });
     List<Comment> comments = Arrays.asList(new Comment[]{
     	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", true),
