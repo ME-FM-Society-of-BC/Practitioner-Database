@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 /**
  * Actions associated with users and user roles
  */

@@ -36,7 +36,10 @@ class PractitionerComments extends Component {
 
         return (
             <>
-            <Button type="button" className='button-large' onClick={this.openComment}>Add a New Comment</Button>
+            {this.props.loggedInUser ? 
+                <Button type="button" className='button-large' onClick={this.openComment}>Add a New Comment</Button>
+                : ''
+            }
             
             <NewComment show={this.state.showModal} 
                 onSave={this.saveComment} 
@@ -44,6 +47,13 @@ class PractitionerComments extends Component {
                 onChange={this.onChange} 
                 value={this.state.commentText}/>
             
+            {
+            comments.length === 0 ?
+            <div className='instructions'><p style={{maxWidth: '40em'}}>
+                There are no comments on this practitioner
+                </p>
+            </div>
+            :
             <div className='comments'>
                 {
                 comments.map((comment, index) => {
@@ -59,6 +69,7 @@ class PractitionerComments extends Component {
                 })
                 }
             </div>
+            }
             </>
         )
     }

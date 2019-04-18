@@ -18,18 +18,15 @@ class Practitioners extends Component {
     }
 
     componentDidMount() {
-        if (this.props.practitioners.length === 0){
-            // Perform an initial fetch of all practitioners
-            axios.get('/practitioners')
-                .then(response => {
-                    this.props.storePractitioners(response.data);
-                 })
-                .catch (error => {
-                    console.log(error);
-                    alert(error)
-                }
-                );
-        } 
+        // Fetch of all practitioners
+        axios.get('/practitioners')
+        .then(response => {
+            this.props.storePractitioners(response.data);
+            })
+        .catch (error => {
+            console.log(error);
+            alert(error)
+        });
     }
 
     render() {

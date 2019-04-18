@@ -13,7 +13,6 @@ import Search from './containers/Search';
 import SearchResults from './containers/SearchResults';
 import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
-import * as actions from './store/userActions';
 import './App.css';
 
 /**
@@ -90,6 +89,6 @@ const mapStateToProps = state => {
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps)(App));
 
     

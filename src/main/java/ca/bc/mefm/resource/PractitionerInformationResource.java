@@ -1,5 +1,6 @@
 package ca.bc.mefm.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -9,11 +10,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
+import ca.bc.mefm.data.DataAccess.Filter;
 
 import com.googlecode.objectify.Key;
 
@@ -44,18 +47,27 @@ public class PractitionerInformationResource extends AbstractResource{
 	 * Fetches all Practitioner entities matching the given criteria
 	 * @return
 	 */
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getByQuery(
-//    		@PathParam("lastName") String lastName,
-//    		@PathParam("firstName") String firstName,
-//    		@PathParam("city") String city,
-//    		@PathParam("province") String province,
-//    		@PathParam("specialty") String specialty){
-//    	DataAccess da = new DataAccess();
-//    	List<Practitioner> list = da.getAll(Practitioner.class);
-//    	return responseOkWithBody(list);
-//    }
+    @Path("search")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getByQuery(
+    		@QueryParam("lastName") String lastName,
+    		@QueryParam("firstName") String firstName,
+    		@QueryParam("city") String city,
+    		@QueryParam("province") String province,
+    		@QueryParam("specialtyId") String specialty){
+
+        List<DataAccess.Filter> filters = new ArrayList<DataAccess.Filter>();
+        if (lastName != null)filters.add(new Filter("lastName ==", lastName));
+        if (firstName != null)filters.add(new Filter("firstName ==", firstName));
+        if (city != null)filters.add(new Filter("city ==", city));
+        if (province != null)filters.add(new Filter("province ==", province));
+        if (specialty != null)filters.add(new Filter("specialtyId ==", specialty));
+        
+    	DataAccess da = new DataAccess();
+        List<Practitioner> list = da.getAllByFilters(Practitioner.class, filters.toArray(new DataAccess.Filter[] {}));
+    	return responseOkWithBody(list);
+    }
     
     /**
      * Fetches a specific Practitioner
