@@ -42,7 +42,7 @@ const editableText = (props) => {
             name={props.name}
             disabled={props.mode === 'view'}
             className={valueClasses}
-            onChange={(event) => props.changeHandler(event)}
+            onChange={props.changeHandler}
         />
     )
     return (

@@ -7,10 +7,10 @@ import { connect } from 'react-redux';
 import Home from './containers/Home';
 import MyActivity from './containers/MyActivity';
 import PendingComments from './containers/PendingComments';
-import Practitioners from './containers/Practitioners';
+import PractitionerList from './containers/PractitionerList';
 import Practitioner from './containers/Practitioner';
 import Search from './containers/Search';
-import SearchResults from './containers/SearchResults';
+//import SearchResults from './containers/SearchResults';
 import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
 import './App.css';
@@ -36,11 +36,6 @@ class App extends Component {
                     <Navbar.Collapse>
                         <Nav pullRight>
                             {/* LinkContainer accepts the same parameters as react-router NavLink and Link */}
-                            {/* 
-                            <LinkContainer to="/home">
-                                <NavItem>Home</NavItem>
-                            </LinkContainer>
-                            */}
                             <LinkContainer to="/practitioners">
                                 <NavItem>View All</NavItem>
                             </LinkContainer>
@@ -68,10 +63,13 @@ class App extends Component {
                     </Navbar.Collapse>
                 </Navbar>
     
+                {/* 
                 <Route path="/practitioners" exact component={Practitioners} />
+                */}
+                <Route path="/practitioners" exact component={PractitionerList} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
                 <Route path="/search" component={Search} />
-                <Route path="/search-results" component={SearchResults} />
+                <Route path="/search-results" component={PractitionerList} />
                 <Route path="/pending-comments" component={PendingComments} />
                 <Route path="/my-activity" component={MyActivity} />
                 <Route path="/registration" component={Registration} />

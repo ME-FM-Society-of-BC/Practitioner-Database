@@ -16,7 +16,8 @@ class SignIn extends Component {
         password: ''
     };
 
-    onChange = (event) => {     
+    onChange = (event) => { 
+        this.setState({errorMessage: null});    
         const {name, value} = event.target;
         this.setState({
             [name]: value
@@ -24,10 +25,11 @@ class SignIn extends Component {
     }
 
     signIn = () => {
+
         axios.post('/users/auth', this.state)
         .then((response) => {
             if (response.data.userNotFound || response.data.invalidPassword){
-                alert("Invalid username or password");
+                this.setState({errorMessage: 'Invalid username or password'});
             }
             else {
                 this.props.storeLoggedInUser(response.data);
@@ -80,6 +82,9 @@ class SignIn extends Component {
                     <br/>
 
                     <Button type='button' onClick={this.signIn}>Sign In</Button>
+                    {
+                        this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
+                    }
                 </div>
                 </div>
             </Panel.Body>           

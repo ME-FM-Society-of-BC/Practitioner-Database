@@ -85,9 +85,21 @@ class PractitionerInfo extends Component {
         })
     }
 
-    changeTextValue(event, attribute) {
+    changeTextValue(event, name) {
+        let value = event.target.value;
+        if (name === 'postalCode'){
+            value = value.toUpperCase();
+            if (value.length === 4){
+                if (value.charAt(3) !== '-'){
+                    value = value.substring(0, 3) + '-' + value.charAt(3);
+                }
+            }
+        }
+        else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
+            value = value.toUpperCase();
+        }
         const alteredPractitioner = {...this.state.practitioner};
-        alteredPractitioner[attribute] = event.target.value;
+        alteredPractitioner[name] = value;
         this.setState({
             ...this.state,
             practitioner: alteredPractitioner,

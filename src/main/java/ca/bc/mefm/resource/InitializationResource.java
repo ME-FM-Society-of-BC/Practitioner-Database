@@ -87,16 +87,16 @@ public class InitializationResource extends AbstractResource {
     
     // TODO Kludge
     List<Practitioner> practitioners = Arrays.asList(new Practitioner[]{
-        new Practitioner(1L, "Doe",   	"Jane", "", "","",	"Canada","v6g1w8","","", 5L, new Date(), new Date()),
-        new Practitioner(2L, "Smith", 	"John", "", "","",	"Canada","v8v4y9","","", 6L, new Date(), new Date()),
-        new Practitioner(3L, "Brown",   "", 	"", "","",	"Canada","v9b3r3","","", 5L, new Date(), new Date()),
-        new Practitioner(4L, "Blue", 	"", 	"", "","",	"Canada","v9b1h8","","", 6L, new Date(), new Date()),
-        new Practitioner(5L, "Green",   "", 	"", "","",	"Canada","v9c2w8","","", 5L, new Date(), new Date()),
-        new Practitioner(6L, "Black",	"", 	"", "","",	"Canada","v8z1m8","","", 6L, new Date(), new Date()),
-        new Practitioner(7L, "Red",   	"", 	"", "","",	"Canada","v8y2l3","","", 5L, new Date(), new Date()),
-        new Practitioner(8L, "Purple", 	"", 	"", "","",	"Canada","v8p5c2","","", 6L, new Date(), new Date()),
-        new Practitioner(9L, "Bad",   	"", 	"", "","",	"Canada","badbad","","", 5L, new Date(), new Date()),
-        new Practitioner(10L, "Thomas", "", 	"", "","",	"Canada","v7b0v7","","", 6L, new Date(), new Date())
+        new Practitioner(1L, "Doe",   	"Jane", "", "","",	"Canada","V6G-1W8","","", 5L, new Date(), new Date()),
+        new Practitioner(2L, "Smith", 	"John", "", "","",	"Canada","V8V-4V9","","", 6L, new Date(), new Date()),
+        new Practitioner(3L, "Brown",   "", 	"", "","",	"Canada","V9B-3R3","","", 5L, new Date(), new Date()),
+        new Practitioner(4L, "Blue", 	"", 	"", "","",	"Canada","V9B-1H8","","", 6L, new Date(), new Date()),
+        new Practitioner(5L, "Green",   "", 	"", "","",	"Canada","V9C-2W8","","", 5L, new Date(), new Date()),
+        new Practitioner(6L, "Black",	"", 	"", "","",	"Canada","V8Z-1M8","","", 6L, new Date(), new Date()),
+        new Practitioner(7L, "Red",   	"", 	"", "","",	"Canada","V8Y-2L3","","", 5L, new Date(), new Date()),
+        new Practitioner(8L, "Purple", 	"", 	"", "","",	"Canada","V8P-5C2","","", 6L, new Date(), new Date()),
+        new Practitioner(9L, "Bad",   	"", 	"", "","",	"Canada","bad-bad","","", 5L, new Date(), new Date()),
+        new Practitioner(10L, "Thomas", "", 	"", "","",	"Canada","V7B-0V7","","", 6L, new Date(), new Date())
     });
     List<Comment> comments = Arrays.asList(new Comment[]{
     	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", true),
@@ -144,7 +144,7 @@ public class InitializationResource extends AbstractResource {
         new Specialty(6L, "Dietician"),
         new Specialty(7L, "Emergency Medicine"),
         new Specialty(8L, "Endocrinology"),
-        new Specialty(9L, "Family and General Pracice"),
+        new Specialty(9L, "Family and General Practice"),
         new Specialty(10L, "Gastroenterology"),
         new Specialty(11L, "Genetics"),
         new Specialty(12L, "Geriatrics"),
@@ -174,8 +174,7 @@ public class InitializationResource extends AbstractResource {
         new Specialty(36L, "Integrative Medicine"),
         new Specialty(37L, "Chiropractor"),
         new Specialty(38L, "Massage Therapy"),
-        new Specialty(39L, "Traditional Chines Medicine"),
-        new Specialty(40L, "Chiropractor"),
+        new Specialty(39L, "Traditional Chinese Medicine"),
         new Specialty(41L, "Osteopath"),
         new Specialty(42L, "Acupuncture"),
         new Specialty(43L, "Homeopath"),
@@ -256,7 +255,7 @@ public class InitializationResource extends AbstractResource {
         new Question( 12L, 12, null,  5L,     Question.Type.YES_NO,         "FM?"),
         new Question( 13L, 13, null,  6L,     Question.Type.YES_NO,         "ME?"),
         new Question( 14L, 14, null,  6L,     Question.Type.YES_NO,         "FM?"),
-        new Question( 15L, 15, 2L,    null,   Question.Type.SINGLE_CHOICE,  "7 How is the parctitioner's bedside manner at your visit?"),
+        new Question( 15L, 15, 2L,    null,   Question.Type.SINGLE_CHOICE,  "7 How is the practitioner's bedside manner at your visit?"),
         new Question( 16L, 16, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Developing a treatment plan? "),
         new Question( 17L, 17, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Overseeing a treatment plan?"),
         new Question( 18L, 18, 3L,    null,   Question.Type.SINGLE_CHOICE,  "9 How willing is the practitioner to read information you bring to the consult?"),
@@ -264,15 +263,15 @@ public class InitializationResource extends AbstractResource {
         new Question( 20L, 20, 5L,    null,   Question.Type.SINGLE_CHOICE,  "11 How effective was is practitioner at helping to manage pain issues?"),
         new Question( 21L, 21, 3L,    null,   Question.Type.SINGLE_CHOICE,  "12 How helpful was the practitioner with completing insurance/disability forms?"),
         new Question( 22L, 22, null,  null,   Question.Type.YES_NO,         "13 Did the practitioner offer referrals to other practitioner or clinics?"),
-        new Question( 23L, 23, 6L,    null,   Question.Type.SINGLE_CHOICE,  "14 How helpful is the parctitioner's staff"),
+        new Question( 23L, 23, 6L,    null,   Question.Type.SINGLE_CHOICE,  "14 How helpful is the practitioner's staff"),
         new Question( 24L, 24, null,  8L,     Question.Type.YES_NO,         "Wheelchair accessible"),
         new Question( 25L, 25, null,  8L,     Question.Type.YES_NO,         "Handicap parking available"),
         new Question( 26L, 26, null,  8L,     Question.Type.YES_NO,         "Public transport close by"),
         new Question( 27L, 27, null,  8L,     Question.Type.YES_NO,         "Elevator near office"),
         new Question( 28L, 28, 7L,    null,   Question.Type.SINGLE_CHOICE,  "16 How punctual was the practitioner?"),
         new Question( 29L, 29, null,  null,   Question.Type.YES_NO,         "17 Did the practitioner offer you follow ups and/or continuous support?"),
-        new Question( 30L, 30, null,  null,   Question.Type.YES_NO,         "18 Was your visit with the parctitioner's service covered by MSP?"),
-        new Question( 31L, 31, 8L,    null,   Question.Type.SINGLE_CHOICE,  "19 If answer to Q.18 is NO, what is the parctitioner's consult fee?"),
+        new Question( 30L, 30, null,  null,   Question.Type.YES_NO,         "18 Was your visit with the practitioner's service covered by MSP?"),
+        new Question( 31L, 31, 8L,    null,   Question.Type.SINGLE_CHOICE,  "19 If answer to Q.18 is NO, what is the practitioner's consult fee?"),
         new Question( 32L, 32, 9L,    null,   Question.Type.SINGLE_CHOICE,  "20 How likely are you to recommend this practitioner?")
         });
 

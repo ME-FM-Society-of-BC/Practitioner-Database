@@ -31,7 +31,18 @@ class Search extends Component {
     }
 
     onChange = (event) => {     
-        const {name, value} = event.target;
+        let {name, value} = event.target;
+        if (name === 'postalCode'){
+            value = value.toUpperCase();
+            if (value.length === 4){
+                if (value.charAt(3) !== '-'){
+                    value = value.substring(0, 3) + '-' + value.charAt(3);
+                }
+            }
+        }
+        else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
+            value = value.toUpperCase();
+        }
         this.setState({
             [name]: value
         });
@@ -51,7 +62,7 @@ class Search extends Component {
 
     // Search by criteria
     searchFull(){
-        if (this.state.postalCode.length  > 0 && this.state.postalCode.length < 6){ // TODO localization
+        if (this.state.postalCode.length  > 0 && this.state.postalCode.length < 7){ // TODO localization
             this.setState({errorMessage: 'That is not valid postal code'});
             return;
         }
@@ -70,27 +81,13 @@ class Search extends Component {
         }
         else {
             // Remove trailing '|';
-            searchParams = searchParams.substring(0, searchParams.length - 1);
-            // First search for practitioners matching the criteria
-            axios.get('/practitioners/search?' + searchParams)
-            .then(response => {
-                if (response.data.length === 0){
-                    this.setState({errorMessage: 'No practioners were found matching those criteria'});
-                    return;
-                }
-                 if (this.state.postalCode){
-                    this.getDistancesAndShow(this.state.postalCode, response.data);
-                }
-                else {
-                    this.storeAndProceed(response.data);
-                }
-            })
+            searchParams = encodeURI(searchParams.substring(0, searchParams.length - 1));
+            this.performSearch(searchParams);
         }
     }
 
     assembleSearchString(fieldsToCheck){
         return fieldsToCheck.reduce((string, fieldName) => {
-            let value;
             if (fieldName === 'specialty'){
                 if (this.state.specialty){
                     return string.concat('specialtyId=')
@@ -102,33 +99,59 @@ class Search extends Component {
                 }
             }
             else {
-                return string.concat(this.state[fieldName] ? fieldName + '=' + value +  '|' : '');
+                return string.concat(this.state[fieldName] ? fieldName + '=' + this.state[fieldName] +  '|' : '');
             }
         }, '');
     }
 
-    // Search by postal code only
+    /**  Search by postal code only. This must be across all practitioners, so they must be fetched.
+     * TODO: Consider recording previous recent view all request and just use those.
+     */
     searchQuick(){
-        if (this.state.postalCode.length < 6){ // TODO localization
+        if (this.state.postalCode.length < 7){ // TODO localization
             this.setState({errorMessage: 'You must enter a valid postal code'});
             return;
         }
         this.setState({errorMessage: null});
-
-        if (!this.props.practitioners || this.props.practitioners.length === 0){
-            axios.get('/practitioners')
-            .then(response => {
-                this.getDistancesAndShow(this.state.postalCode, response.data);
+        // Fetch all practitioners
+        axios.get('/practitioners')
+        .then(response => {
+            this.props.storePractitioners(response.data);
             })
-        }
-        else {
-            // TODO Decide when stale
-            this.getDistancesAndShow(this.state.postalCode, this.props.practitioners);
-        }
+        .then(() => {
+            const practitioners = this.props.practitioners; // !!!!!!! WIll they be here?
+            this.getDistancesAndShow(this.state.postalCode, practitioners);
+        })
+        .catch (error => {
+            console.log(error);
+            alert(error)
+        });
+    }
+
+    performSearch(searchParams){
+        axios.get('/practitioners/search?' + searchParams)
+        .then(response => {
+            if (response.data.length === 0){
+                this.setState({errorMessage: 'No practioners were found matching those criteria'});
+                return;
+            }
+            if (this.state.postalCode){
+                // SInce postal code also entered, we want to now do a distance search
+                this.props.storePractitioners(response.data);
+                this.getDistancesAndShow(this.state.postalCode, response.data);
+            }
+            else {
+                this.storeAndProceed(response.data, false);
+            }
+        })
+        .catch (error => {
+            // TODO
+        });
+
     }
 
     getDistancesAndShow(origin, practitioners){
-        this.practitioners = practitioners; // TDO Must have here for call to insertDistances
+        this.practitioners = practitioners; // TODO Must have here for call to insertDistances
         const practitionerIds = practitioners.map( practitioner => {
             return practitioner.id;
         })
@@ -155,10 +178,10 @@ class Search extends Component {
             }
         })
         .catch (error => {
-            console.log(error);
-            alert(error)
-        }
-        );
+            const distances = practitionerIds.map( id => 'Unavailable');
+            const practitioners = this.insertDistances(this.practitioners, distances);
+            this.storeAndProceed(practitioners, true);
+        });
     }
 
     storeAndProceed(practitioners, withDistance){
@@ -169,8 +192,7 @@ class Search extends Component {
                 resolve()
             }, 100)
         })).then(() => {
-            const target = '/search-results' + (withDistance ? '?withDistance=true' : '');
-            this.props.history.push('/search-results?withDistance=' + (withDistance ? 'true' : 'false')); 
+            this.props.history.push('/search-results?withDistance=' + withDistance); 
         });
 
     }

@@ -55,14 +55,14 @@ public class PractitionerInformationResource extends AbstractResource{
     		@QueryParam("firstName") String firstName,
     		@QueryParam("city") String city,
     		@QueryParam("province") String province,
-    		@QueryParam("specialtyId") String specialty){
-
+    		@QueryParam("specialtyId") Long specialtyId){
+    	
         List<DataAccess.Filter> filters = new ArrayList<DataAccess.Filter>();
-        if (lastName != null)filters.add(new Filter("lastName ==", lastName));
-        if (firstName != null)filters.add(new Filter("firstName ==", firstName));
-        if (city != null)filters.add(new Filter("city ==", city));
-        if (province != null)filters.add(new Filter("province ==", province));
-        if (specialty != null)filters.add(new Filter("specialtyId ==", specialty));
+        if (lastName != null)filters.add(new Filter("lastName", lastName));
+        if (firstName != null)filters.add(new Filter("firstName", firstName));
+        if (city != null)filters.add(new Filter("city", city));
+        if (province != null)filters.add(new Filter("province", province));
+        if (specialtyId != null)filters.add(new Filter("specialtyId", specialtyId));
         
     	DataAccess da = new DataAccess();
         List<Practitioner> list = da.getAllByFilters(Practitioner.class, filters.toArray(new DataAccess.Filter[] {}));

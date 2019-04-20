@@ -45,14 +45,21 @@ else {
     axios.defaults.baseURL =  document.baseURI + "rest/";
 }
 
-// Log all responses
-// axios.interceptors.request.use(request => {
-//     console.log(request);
-//     return request;
-// }, error => {
-//     console.log(error);
-//     return Promise.reject(error);
-// });
+// Log all errors
+axios.interceptors.request.use(request => {
+    console.log(request);
+    return request;
+}, error => {
+    console.log(error);
+    return Promise.reject(error);
+});
+axios.interceptors.response.use(response => {
+    console.log(response);
+    return response;
+}, error => {
+    console.log(error);
+    return Promise.reject(error);
+});
 /*******************************************/
 
 // Fetch the "static" data from the server

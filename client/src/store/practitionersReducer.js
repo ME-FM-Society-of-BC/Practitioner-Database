@@ -60,8 +60,6 @@ const practitionersReducer = (state = initialState, action) => {
     }
 };
 
-
-
 const convertSpecialties = (specialtiesIn => {
     // Specialties need to be accessed in three forms - as an array of the
     // specialty text value for use in drop down selectors, as a map 
