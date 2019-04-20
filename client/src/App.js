@@ -10,7 +10,6 @@ import PendingComments from './containers/PendingComments';
 import PractitionerList from './containers/PractitionerList';
 import Practitioner from './containers/Practitioner';
 import Search from './containers/Search';
-//import SearchResults from './containers/SearchResults';
 import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
 import './App.css';
@@ -58,14 +57,17 @@ class App extends Component {
                                     <NavItem>Pending Comments</NavItem>
                                 </LinkContainer>
                                 : <></>
-                        }
-                        </Nav>
+                            }
+                            {this.props.loggedInUser ?
+                                <LinkContainer to="/home">
+                                    <NavItem>Home</NavItem>
+                                </LinkContainer>
+                                : <></>
+                            }
+                    </Nav>
                     </Navbar.Collapse>
                 </Navbar>
     
-                {/* 
-                <Route path="/practitioners" exact component={Practitioners} />
-                */}
                 <Route path="/practitioners" exact component={PractitionerList} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
                 <Route path="/search" component={Search} />
