@@ -11,6 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 public class RecommendationAction {
+	
 	public enum 	ActionType {CREATE, EDIT, RATE}
 
 	@Id

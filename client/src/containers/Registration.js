@@ -37,7 +37,7 @@ class Registration extends Component {
                     password: ''
                 })
                 newUser.id = response.data;
-                newUser.roleId = 1;
+                newUser.role = 'ACTIVE';
                 this.props.storeLoggedInUser(newUser);
                 // TODO replace() ?
                 this.props.history.push('/home');

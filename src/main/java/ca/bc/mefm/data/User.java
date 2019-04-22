@@ -16,14 +16,14 @@ public class User {
 	public enum Status {ENABLED, SUSPENDED};
 	
 	@Id
-	private Long	id;
+	private Long			id;
 	@Index
-	private String 	username;
-	private String 	password;
-	private String 	email;
-	private Integer	roleId;
-	private Date	created;
-	private Status	status;
+	private String 			username;
+	private String 			password;
+	private String 			email;
+	private UserRole.Type	role;
+	private Date			created;
+	private Status			status;
 	
 	public User() {}
 	

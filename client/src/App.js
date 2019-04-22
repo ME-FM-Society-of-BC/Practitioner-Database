@@ -52,7 +52,7 @@ class App extends Component {
                                 </>
                                 : <></>
                             }
-                            {this.props.loggedInUser && this.props.loggedInUser.isAdministrator ?
+                            {this.props.loggedInUser && this.props.loggedInUser.isModerator ?
                                 <LinkContainer to="/pending-comments">
                                     <NavItem>Pending Comments</NavItem>
                                 </LinkContainer>

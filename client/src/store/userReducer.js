@@ -25,10 +25,10 @@ const userReducer = (state = initialState, action) => {
             }
             
         case actions.STORE_LOGGED_IN_USER :
-            // If the user is an Administrator, add an "isAdministrator" property]
+            // If the user is a Moderator, add an "isModerator" property]
             const user = action.user;
-            if (state.roles[user.roleId].type === 'Administrator'){
-                user.isAdministrator = true;
+            if (user.role === 'MODERATOR'){
+                user.isModerator = true;
             } 
             return {
                 ...state,

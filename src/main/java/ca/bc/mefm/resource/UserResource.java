@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
-import ca.bc.mefm.data.UserRole;
 
 import com.googlecode.objectify.Key;
 
@@ -59,9 +58,6 @@ public class UserResource extends AbstractResource{
     		return responseOkWithBody(new AuthResultNameAlreadyTaken());
     	}
 
-        if (newUser.getRoleId() == null) {
-        	newUser.setRoleId(new Integer(1));
-        }
         newUser.setCreated(new Date());
         da.ofyPut(newUser);
         return responseCreated(newUser.getId());

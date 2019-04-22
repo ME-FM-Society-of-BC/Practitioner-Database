@@ -92,7 +92,7 @@ class PractitionerComments extends Component {
     onChange(event) {
         console.log(event.target.value);
         this.setState({ 
-            ...this.state,
+//            ...this.state,
             commentText: event.target.value
         }) 
     } 

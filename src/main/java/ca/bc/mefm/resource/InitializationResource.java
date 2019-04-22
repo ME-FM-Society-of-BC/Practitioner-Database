@@ -99,16 +99,16 @@ public class InitializationResource extends AbstractResource {
         new Practitioner(10L, "Thomas", "", 	"", "","",	"Canada","V7B-0V7","","", 6L, new Date(), new Date())
     });
     List<Comment> comments = Arrays.asList(new Comment[]{
-    	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", true),
-    	new Comment(2L, 1L,   2L, 1L, new Date(), "Yes he is", true),
-    	new Comment(3L, 1L,   1L, 1L, new Date(), "No he isn't", true),
-    	new Comment(4L, null, 2L, 1L, new Date(), "I like him a lot", true),
-    	new Comment(5L, 4L,   1L, 1L, new Date(), "So do I", true),
-    	new Comment(6L, 4L,   2L, 1L, new Date(), "Me too!", true),
-    	new Comment(7L, 4L,   1L, 1L, new Date(), "Me me me!", true),
+    	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", Comment.Status.VISIBLE),
+    	new Comment(2L, 1L,   2L, 1L, new Date(), "Yes he is", Comment.Status.VISIBLE),
+    	new Comment(3L, 1L,   1L, 1L, new Date(), "No he isn't", Comment.Status.VISIBLE),
+    	new Comment(4L, null, 2L, 1L, new Date(), "I like him a lot", Comment.Status.VISIBLE),
+    	new Comment(5L, 4L,   1L, 1L, new Date(), "So do I", Comment.Status.VISIBLE),
+    	new Comment(6L, 4L,   2L, 1L, new Date(), "Me too!", Comment.Status.VISIBLE),
+    	new Comment(7L, 4L,   1L, 1L, new Date(), "Me me me!", Comment.Status.VISIBLE),
     	
-    	new Comment(8L, null, 2L, 2L, new Date(), "She's great", true),    	
-    	new Comment(9L, 8L,   1L, 2L, new Date(), "She's great!", true)    	
+    	new Comment(8L, null, 2L, 2L, new Date(), "She's great", Comment.Status.VISIBLE),    	
+    	new Comment(9L, 8L,   1L, 2L, new Date(), "She's great!", Comment.Status.VISIBLE)    	
     });
     
     
@@ -120,19 +120,22 @@ public class InitializationResource extends AbstractResource {
 
     
     List<UserRole> roles = Arrays.asList(new UserRole[]{
-        new UserRole(1L, UserRole.TYPE_ACTIVE),
-        new UserRole(2L, UserRole.TYPE_ADMINISTRATOR)
+        new UserRole(1L, UserRole.Type.ACTIVE),
+        new UserRole(2L, UserRole.Type.MODERATOR)
     });
 
-    // Two built in accounts are created. The first is for the MEFM administrative user
-    // responsible for "vetting" user comments.
-    // The second is for a technical administrator. This is intended to support possible
+    // Three built in accounts are created. The first is for the MEFM ADMINISTRATOR 
+    // responsible for approving moderators for each region. For Canada, this corresponds
+    // to provinces. Each region will have one or more MODERATORs, who are responsible
+    // for vetting user comments. The "vetting" user comments.
+    // The third is for a technical administrator. This is intended to support possible
     // future capabilities related to modification or updates to the database schema and/or 
     // modifications to the question definitions
     
     List<User> users = Arrays.asList(new User[]{
-            new User(1L, "admin", "admin", "your-email-here", 2, new Date(), User.Status.ENABLED),
-            new User(2L, "techadmin", "DumD0nald", "robert.t.toms@gmail.com", 3, new Date(), User.Status.ENABLED)
+            new User(1L, "admin", "password", "your-email-here", UserRole.Type.ADMINISTRATOR, new Date(), User.Status.ENABLED),
+            new User(1L, "moderator", "password", "your-email-here", UserRole.Type.MODERATOR, new Date(), User.Status.ENABLED),
+            new User(2L, "support", "password", "robert.t.toms@gmail.com", UserRole.Type.SUPPORT, new Date(), User.Status.ENABLED)
     });
     
     List<Specialty> specialties = Arrays.asList(new Specialty[]{

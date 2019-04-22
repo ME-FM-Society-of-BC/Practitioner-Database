@@ -13,7 +13,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Comment {
-	
+
+	public enum 	Status {VISIBLE, MODERATED, FLAGGED, BLOCKED}
+
 	@Id
 	private Long	id;
 	@Index 
@@ -24,7 +26,7 @@ public class Comment {
 	private Long	practitionerId;
 	private Date	date;
 	private String	text;
-	private Boolean approved;
+	private Status approved;
 	
 	public Comment() {}
 }
