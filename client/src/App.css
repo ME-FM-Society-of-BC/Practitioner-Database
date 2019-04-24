@@ -96,9 +96,9 @@
 	display: -ms-flexbox;
 	-webkit-box-orient: horizontal;
 	-webkit-flex-direction: row;
-			-ms-flex-direction: row;
-					flex-direction: row;
-					align-items: center;					
+	-ms-flex-direction: row;
+	flex-direction: row;
+	align-items: center;					
 }
 .radio-group {
     height: 30px;
@@ -115,7 +115,9 @@
 
 .comment-header {
 	display: flex;
-	align-items: flex-end;
+	display: -webkit-flex;
+/*	align-items: flex-start; */
+	flex-direction: row;
 	border-bottom: 1px solid #dce4ec;
 	padding-bottom: 3px;
 	margin-bottom: 5px;
@@ -130,15 +132,24 @@
 	margin-left: 1em;
 	display: inline;
 	font-size: .8em;
-	padding-bottom: 2px;
+	padding-top: 2px;
 }
 
-.button-reply {
+.comment-button {
 	font-size: .7em;
-	margin-left: 1em;
-	margin-bottom: 1px;
-	height: 20px;
+	height: 18px;
+	margin-top: 1px;
 	padding: 0px 6px;
+}
+.comment-reply {
+	margin-left: 1em;
+}
+.comment-flag{
+	margin-left: auto;
+}
+
+.comment-blocked {
+	font: italic;
 }
 
 .new-comment {
@@ -165,21 +176,50 @@
 
 .instructions {
 	display: flex;
+	display: -webkit-flex;
 	justify-content: center;
 	text-align: left;	
 }
 
 .error-message {
 	display: flex;
+	display: -webkit-flex;
 	justify-content: center;
 	text-align: left;	
-  border-radius:4px;
+ 	border-radius:4px;
 	border:2px solid red;
 	padding: 4px;
 	color: red;
 	margin-top: 2em;
 }
 
+.pending-comment {
+	display: flex;
+	display: -webkit-flex;
+	border-top: 2px solid #dce4ec;
+	border-left: 2px solid #dce4ec;
+	border-right: 2px solid #dce4ec;
+	text-align: left;
+}
+
+.pending-comment > .username {
+	margin-right: auto;
+	flex-basis: 10%;
+	border-right: 1px solid #dce4ec;
+}
+.pending-comment > .text {
+	display: inline;
+	margin-right: 1em;
+	text-align: left;
+	flex-basis: 85%;
+	border-right: 1px solid #dce4ec;
+}
+.pending-comment > .action {
+	display: inline;
+	margin-left: auto;
+	flex-basis: 5%;
+}
+  
 /*****************************************************************************/
 /* Responsive table styles */
 table {
@@ -249,7 +289,68 @@ only screen and (max-width: 768px)  {
 	#practitioner-list td:nth-of-type(3):before { content: "Phone"; }
 	#practitioner-list td:nth-of-type(4):before { content: "Specialty"; }
 
+	.pending-comment {
+		flex-direction: column;
+		-webkit-flex-direction: column;		
+	}
+
+	.pending-comment > .username {
+		flex-basis: auto;
+	}
+	  
+	.pending-comment > .text {
+	  display: block;
+	  flex-basis: auto;
+	}
+
+	.pending-comment > .action {
+	  display: block;
+	  margin-left: 0;
+	  flex-basis: auto;
+	}
+	
+}
+/*
+}
+.user {
+  margin-right: auto;
+  background-color: red;
+  flex-basis: 10%;
+}
+.text {
+  display: inline;
+  margin-right: 1em;
+  text-align: left;
+  background-color: yellow;
+  flex-basis: 85%;
+}
+.action {
+  display: inline;
+  margin-left: auto;
+  background-color: red;
+  flex-basis: 5%;
 }
 
+@media 
+only screen and (max-width: 768px) {
+.pending-comment {
+  flex-direction: column;
+}
+.pending-comment > .username {
+    flex-basis: auto;
+}
+  
+.pending-comment > .text {
+  display: block;
+  flex-basis: auto;
+}
+.pending-comment > .action {
+  display: block;
+  margin-left: 0;
+  flex-basis: auto;
+}
+
+
+*/
 
 

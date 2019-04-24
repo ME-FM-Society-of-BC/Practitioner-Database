@@ -5,8 +5,10 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -36,16 +38,29 @@ public class CommentResource extends AbstractResource{
     }
 
     /**
-     * Fetches all Comments with PENDING status
-     * @param id
+     * Updates a new Comment
+     * @param Comment
+     * @return
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response update(Comment comment) {    	
+        DataAccess da = new DataAccess();
+        da.ofyPut(comment);
+        return responseNoContent();
+    }
+
+    /**
+     * Fetches all Comments with a specified status
+     * @param status
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllPending(){
+    public Response getByStatus(@QueryParam("status") Comment.Status status){
         DataAccess da = new DataAccess();
         DataAccess.Filter[] filters = new DataAccess.Filter[] {
-        		new Filter("approved ==", true)	
+        		new Filter("status", status)	
         };
         List<Comment> list = da.getAllByFilters(Comment.class, filters);
         return responseOkWithBody(list);

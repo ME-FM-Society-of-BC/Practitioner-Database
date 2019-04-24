@@ -58,7 +58,6 @@ class PractitionerInfo extends Component {
             specialtyId: this.props.specialties.valueToId[event.target.value]
         }
         this.setState({
-//            ...this.state,
             practitioner: alteredPractitioner,
             infoChanged: true
         })
@@ -68,7 +67,6 @@ class PractitionerInfo extends Component {
         const practitioner = {...this.state.practitioner};
         practitioner.province = event.target.value;
         this.setState({
-//            ...this.state,
             practitioner: practitioner,
             cityOptions: this.props.citiesMap[event.target.value],
             infoChanged: true
@@ -79,7 +77,6 @@ class PractitionerInfo extends Component {
         const practitioner = {...this.state.practitioner};
         practitioner.city = event.target.value;
         this.setState({
-//            ...this.state,
             practitioner: practitioner,
             infoChanged: true
         })
@@ -101,7 +98,6 @@ class PractitionerInfo extends Component {
         const alteredPractitioner = {...this.state.practitioner};
         alteredPractitioner[name] = value;
         this.setState({
-//            ...this.state,
             practitioner: alteredPractitioner,
             infoChanged: true
         })
@@ -109,7 +105,6 @@ class PractitionerInfo extends Component {
  
     enableEdit(){
         this.setState({
-//            ...this.state,
             mode:'edit'
         });
     }
@@ -118,7 +113,6 @@ class PractitionerInfo extends Component {
             this.props.updatePractitioner(this.state.practitioner);
         }
         this.setState({
-//            ...this.state,
             mode:'view'
         });
     }
@@ -131,7 +125,6 @@ class PractitionerInfo extends Component {
                 const practitioner = {...this.state.practitioner};
                 practitioner.id = response.data;
                 this.setState({
-//                    ...this.state,
                     practitioner: practitioner
                 });
                 this.props.saveNewPractitioner(this.state.practitioner);
@@ -144,8 +137,7 @@ class PractitionerInfo extends Component {
         );        
 
         this.setState({
-//            ...this.state,
-            mode:'view',
+           mode:'view',
             canEdit: true,
             infoChanged: false
         });

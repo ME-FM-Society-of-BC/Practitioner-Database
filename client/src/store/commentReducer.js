@@ -5,7 +5,9 @@ import * as actions from './commentActions';
 
 const initialState = {
     // All comments, keyed on practitionerId
-    allComments: {} 
+    allComments: {},
+    pendingComments: {},
+    flaggedComments: {} 
 }
 
 const commentReducer = (state = initialState, action) => {
@@ -14,38 +16,64 @@ const commentReducer = (state = initialState, action) => {
         // Store all comments on a given practitioner
         case actions.STORE_COMMENTS:
             return {
+                ...state,
                 allComments: orderComments({...state.allComments}, action)
             }
-        
-        case actions.SAVE_COMMENT:
-            const newComment = action.comment;
-            const allComments = {...state.allComments};
-            let comments = allComments[newComment.practitionerId];
-            if (!comments){
-                // First comment for this practitioner
-                comments = {};
-                allComments[newComment.practitionerId] = comments;
+
+        // Store all flagged comments
+        case actions.STORE_ALL_PENDING_COMMENTS:
+            return {
+                ...state,
+                pendingComments: action.comments
+            }
+    
+        // Store all pending comments
+        case actions.STORE_ALL_FLAGGED_COMMENTS:
+            return {
+                ...state,
+                flaggedComments: action.comments
             }
 
-            if (newComment.parentId){
-                // Comment is a response. 
-                const parent = comments[newComment.parentId];
-                const responses = [...parent.responses];
-                responses.push(newComment);
-                parent.responses = responses;
-            }
-            else {
-                // Insert as a new parent comment
-                comments[newComment.id] = {comment: newComment, responses: []}
-            }
+        case actions.SAVE_COMMENT:
+            return saveComment(action.comment, {...state.allComments});
+
+        case actions.UPDATE_COMMENT:
+            const updatedComment = {...action.comment};
+            const allComments = {...state.allComments};
+            // let comments = {
+            //     ...allComments[newComment.practitionerId];
             return {
                 allComments: allComments
             }
-        
+
         default: 
             return state;
     }
 }
+
+const saveComment = ( (newComment, allComments) => {
+    let comments = allComments[newComment.practitionerId];
+    if (!comments){
+        // First comment for this practitioner
+        comments = {};
+        allComments[newComment.practitionerId] = comments;
+    }
+
+    if (newComment.parentId){
+        // Comment is a response. 
+        const parent = comments[newComment.parentId];
+        const responses = [...parent.responses];
+        responses.push(newComment);
+        parent.responses = responses;
+    }
+    else {
+        // Insert as a new parent comment
+        comments[newComment.id] = {comment: newComment, responses: []}
+    }
+    return {
+        allComments: allComments
+    }
+})
 
 /** Orders and nests a practitioner's comments earliest to latest, with responses nested */
 const orderComments = (allComments, action) => {

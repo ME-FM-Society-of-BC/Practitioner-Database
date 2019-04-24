@@ -29,7 +29,6 @@ class PractitionerEval extends Component {
 
     constructor(props){
         super(props);
-        console.log('constructor----------------------\n' + props);
 
         this.createQuestionItems();        
 
@@ -91,7 +90,6 @@ class PractitionerEval extends Component {
     }
 
     render() {
-        console.log('render-------------------------\n');
         const userHasEvaluated = this.props.userAnswers != null 
             && Object.keys(this.props.userAnswers).length > 0;
         return (
@@ -241,7 +239,6 @@ class PractitionerEval extends Component {
 }
 
 const mapStateToProps = state => {
-    console.log('mapStateToProps--------------');
     return {
         questions: state.evaluationReducer.questions,
         questionGroups: state.evaluationReducer.questionGroups,

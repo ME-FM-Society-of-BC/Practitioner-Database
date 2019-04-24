@@ -22,6 +22,7 @@ class PractitionerComments extends Component {
         this.saveComment = this.saveComment.bind(this);
         this.closeComment = this.closeComment.bind(this);
         this.reply = this.reply.bind(this);
+        this.flag = this.flag.bind(this);
         this.onChange = this.onChange.bind(this);
     }
  
@@ -61,10 +62,13 @@ class PractitionerComments extends Component {
                     return (
                         <Comment mode='view' 
                             level={comment.parentId ? 2 : 1} 
-                            text={comment.text} key={index}
+                            text={comment.text} 
+                            key={index}
                             username={username}
                             date={comment.date}
-                            onClickReply={() => this.reply(comment.id)}/>
+                            status={comment.status}
+                            onClickReply={() => this.reply(comment.id)}
+                            onClickFlag={() => this.flag(comment)}/>
                     )
                 })
                 }
@@ -90,9 +94,7 @@ class PractitionerComments extends Component {
     }
 
     onChange(event) {
-        console.log(event.target.value);
         this.setState({ 
-//            ...this.state,
             commentText: event.target.value
         }) 
     } 
@@ -104,7 +106,7 @@ class PractitionerComments extends Component {
             userId: this.props.loggedInUser.id,
             date: new Date(),
             text: this.state.commentText,
-            approved: false
+            status: 'VISIBLE'
         })
         this.closeComment();
     }
@@ -116,6 +118,11 @@ class PractitionerComments extends Component {
             commentText: '',
             parentId: parentId
         }) 
+    }
+    /** User has clicked the "Flag" button on a specific comment */
+    flag(comment) {
+        comment.status = 'FLAGGED';
+        this.props.updateComment(comment);
     }
 }
 
@@ -129,7 +136,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveComment: (comment) => dispatch(actions.saveComment(comment))
+        saveComment: (comment) => dispatch(actions.saveComment(comment)),
+        updateComment: (comment) => dispatch(actions.updateComment(comment))
     }
 }
 
