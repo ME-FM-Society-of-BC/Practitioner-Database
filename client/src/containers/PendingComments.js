@@ -15,16 +15,11 @@ import * as actions from '../store/commentActions'
 
 class PendingComments extends Component {
 
-    state = {}
+    state = {ready: false}
 
     constructor(props){
         super(props);
-        this.resolveFlaggedComments = this.resolveFlaggedComments.bind(this);
-        this.resolvePendingComments = this.resolvePendingComments.bind(this);
-    }
-
-    componentDidMount(){
-        axios.get('/comments?status=FLAGGED')
+            axios.get('/comments?status=FLAGGED')
         .then(response => {
             this.props.storeFlaggedComments(response.data);
             })
@@ -34,21 +29,19 @@ class PendingComments extends Component {
         .then(response => {
             this.props.storePendingComments(response.data);
             })
+        .then(() => {
+            this.setState({ready: true})
+        })
         .catch (error => {
             console.log(error);
             alert(error)
         });
     }
 
-    resolveFlaggedComments(comments){
-
-    }
-    
-    resolvePendingComments(comments){
-        
-    }
-
     render() {
+        if (!this.state.ready){
+            return <div/>
+        }
         return (
         <PanelGroup accordion id="comment-panels">
             <Panel eventKey="1">
@@ -59,7 +52,6 @@ class PendingComments extends Component {
                     <PendingCommentBlock type='FLAGGED' 
                         comments = {this.props.flaggedComments} 
                         allUsers={this.props.allUsers}
-                        whenFinished={this.resolveFlaggedComments}
                         />
                 </Panel.Body>
             </Panel>
@@ -71,7 +63,6 @@ class PendingComments extends Component {
                     <PendingCommentBlock  type='PENDING' 
                         comments={this.props.pendingComments} 
                         allUsers={this.props.allUsers}
-                        whenFinished={this.resolvePendingComments}
                         />
                 </Panel.Body>
             </Panel>

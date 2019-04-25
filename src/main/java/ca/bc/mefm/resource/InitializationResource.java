@@ -65,7 +65,7 @@ public class InitializationResource extends AbstractResource {
         	
         	// TODO REmove kludge
         	practitioners.forEach((Practitioner o) -> da.ofyPut(o));
-//        	comments.forEach((Comment o) -> da.ofyPut(o));
+        	comments.forEach((Comment o) -> da.ofyPut(o));
             
         	addCities(1L, namesBC, da);
             addCities(2L, namesAB, da);
@@ -99,16 +99,16 @@ public class InitializationResource extends AbstractResource {
         new Practitioner(10L, "Thomas", "", 	"", "","",	"Canada","V7B-0V7","","", 6L, new Date(), new Date())
     });
     List<Comment> comments = Arrays.asList(new Comment[]{
-    	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", Comment.Status.VISIBLE),
-    	new Comment(2L, 1L,   2L, 1L, new Date(), "Yes he is", Comment.Status.VISIBLE),
-    	new Comment(3L, 1L,   1L, 1L, new Date(), "No he isn't", Comment.Status.VISIBLE),
-    	new Comment(4L, null, 2L, 1L, new Date(), "I like him a lot", Comment.Status.VISIBLE),
-    	new Comment(5L, 4L,   1L, 1L, new Date(), "So do I", Comment.Status.VISIBLE),
-    	new Comment(6L, 4L,   2L, 1L, new Date(), "Me too!", Comment.Status.VISIBLE),
-    	new Comment(7L, 4L,   1L, 1L, new Date(), "Me me me!", Comment.Status.VISIBLE),
+    	new Comment(1L, null, 1L, 1L, new Date(), "He's an idiot", Comment.Status.PENDING),
+    	new Comment(2L, 1L,   2L, 1L, new Date(), "Yes he is", Comment.Status.PENDING),
+    	new Comment(3L, 1L,   1L, 1L, new Date(), "No he isn't", Comment.Status.PENDING),
+    	new Comment(4L, null, 2L, 1L, new Date(), "I like him a lot", Comment.Status.PENDING),
+    	new Comment(5L, 4L,   1L, 1L, new Date(), "So do I", Comment.Status.PENDING),
+    	new Comment(6L, 4L,   2L, 1L, new Date(), "Me too!", Comment.Status.PENDING),
+    	new Comment(7L, 4L,   1L, 1L, new Date(), "Me me me!", Comment.Status.PENDING),
     	
-    	new Comment(8L, null, 2L, 2L, new Date(), "She's great", Comment.Status.VISIBLE),    	
-    	new Comment(9L, 8L,   1L, 2L, new Date(), "She's great!", Comment.Status.VISIBLE)    	
+    	new Comment(8L, null, 2L, 2L, new Date(), "She's great", Comment.Status.PENDING),    	
+    	new Comment(9L, 8L,   1L, 2L, new Date(), "She's great!", Comment.Status.PENDING)    	
     });
     
     

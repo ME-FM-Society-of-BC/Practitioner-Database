@@ -38,7 +38,7 @@ public class CommentResource extends AbstractResource{
     }
 
     /**
-     * Updates a new Comment
+     * Updates a Comment
      * @param Comment
      * @return
      */
@@ -49,7 +49,18 @@ public class CommentResource extends AbstractResource{
         da.ofyPut(comment);
         return responseNoContent();
     }
-
+    
+    @Path("resolve")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response resolve(List<Comment> comments) {
+    	DataAccess da = new DataAccess();
+    	comments.stream().forEach( comment -> {
+    		da.ofyPut(comment);
+    	});
+        return responseNoContent();
+    }
+    
     /**
      * Fetches all Comments with a specified status
      * @param status

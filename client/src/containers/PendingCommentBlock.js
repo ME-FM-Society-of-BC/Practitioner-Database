@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Panel, Button } from 'react-bootstrap';
 import Instructions from '../components/Instructions';
 import PendingComment from '../components/PendingComment';
+import axios from 'axios';
 
 class PendingCommentBlock extends Component {
     
@@ -20,37 +21,74 @@ class PendingCommentBlock extends Component {
         super(props);
         this.state.actionLabel = this.props.type === 'FLAGGED' ? 'Accept' : 'Block';
         this.state.startIndex = 0;
+        this.state.endIndex = this.props.comments.length > this.BLOCK_SIZE ? this.BLOCK_SIZE -1 : this.props.comments.length - 1;
+        this.state.commentsMap = {};
+        this.props.comments.forEach(comment => {
+            this.state.commentsMap[comment.id] = comment;
+        })
         this.state.commentsToResolve = [];
 
         this.onAction = this.onAction.bind(this);
         this.resolveAndNext = this.resolveAndNext.bind(this);
     }
 
-    nextBlock(startIndex){
-        const remaining = this.props.comments.length - startIndex;
+    nextBlock(){
+        const remaining = this.props.comments.length - this.state.startIndex;
+        if (remaining <= 0){
+            return [];
+        }
         const size = remaining > this.BLOCK_SIZE ? this.BLOCK_SIZE : remaining;
         const comments = Array.prototype.slice.call(this.props.comments);
-        const block =  comments.splice(startIndex, size);
+        const block =  comments.splice(this.state.startIndex, size);
         return block;
     }
 
-    /** The moderator has ..... */
-    onAction(commentId){
-        this.state.commentsToResolve.push(commentId);
-    }
-
-    resolveAndNext(){
-        this.setState({
-            startIndex: this.state.startIndex + this.BLOCK_SIZE
-        })
-        if (this.nextBlock(this.state.startIndex).length === 0){
-            // All comments have been resolved
-            this.props.whenFinished(this.state.commentsToResolve)
+    /** The moderator has clicked the checkbox to toggle the status of the comment */
+    onAction(event){
+        const commentId = event.target.id;
+        const comment = this.state.commentsMap[commentId];
+        if (this.props.type === 'FLAGGED'){
+            comment.status = comment.status === 'FLAGGED' ? 'MODERATED' : 'FLAGGED';
+        }
+        else { // PENDING
+            comment.status = comment.status === 'PENDING' ? 'BLOCKED' : 'PENDING';
         }
     }
 
+    resolveAndNext(){
+        if (this.props.type === 'FLAGGED'){
+            // All comments in the displayed block which the moderator has not switched 
+            // to MODERATED will be blocked.
+            for (let i = this.state.startIndex; i <= this.state.endIndex; i++){
+                if (this.props.comments[i].status === 'FLAGGED'){
+                    this.props.comments[i].status = 'BLOCKED';
+                }
+            }
+        }
+        else { // PENDING
+            // All comments in the displayed block which the moderator has not switched 
+            // to BLOCKED will be accepted.
+            for (let i = this.state.startIndex; i <= this.state.endIndex; i++){
+                if (this.props.comments[i].status !== 'BLOCKED'){
+                    this.props.comments[i].status = 'MODERATED';
+                }
+            }
+        }
+        // Send the updates to the server 
+        // TODO: Confirm no need to send to reducer
+        axios.post('/comments/resolve', this.props.comments.slice(this.state.startIndex, this.state.endIndex + 1))
+        .catch (error => {
+            console.log(error);
+            alert(error)
+        });
+        
+        this.setState({
+            startIndex: this.state.startIndex + this.BLOCK_SIZE
+        })
+    }
+
     render(){
-        const commentsToDisplay = this.nextBlock(this.state.startIndex);
+        const commentsToDisplay = this.nextBlock();
         const allResolved = commentsToDisplay.length === 0;
 
         const panelStyle = {
@@ -77,7 +115,8 @@ class PendingCommentBlock extends Component {
                 {
                     commentsToDisplay.map((comment) => {
                         return <PendingComment
-                            key = {comment.id} 
+                            key = {comment.id}
+                            id = {comment.id} 
                             username={this.props.allUsers[comment.userId].username} 
                             text={comment.text} 
                             actionLabel={this.state.actionLabel}

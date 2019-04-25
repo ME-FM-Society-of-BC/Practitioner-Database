@@ -200,24 +200,31 @@
 	border-left: 2px solid #dce4ec;
 	border-right: 2px solid #dce4ec;
 	text-align: left;
+	padding: 2px;
+}
+
+.pending-comment:last-child {
+	border-bottom: 2px solid #dce4ec;
 }
 
 .pending-comment > .username {
 	margin-right: auto;
-	flex-basis: 10%;
+	flex-basis: 12%;
 	border-right: 1px solid #dce4ec;
 }
 .pending-comment > .text {
 	display: inline;
-	margin-right: 1em;
+	margin-right: auto;
 	text-align: left;
-	flex-basis: 85%;
+	flex-basis: 75%;
 	border-right: 1px solid #dce4ec;
+	padding: 0 5px;
 }
 .pending-comment > .action {
 	display: inline;
-	margin-left: auto;
-	flex-basis: 5%;
+	margin-left: 0.5em;
+	flex-basis: 13%;
+	font-weight: normal;
 }
   
 /*****************************************************************************/
