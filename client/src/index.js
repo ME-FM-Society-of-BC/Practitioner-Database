@@ -1,3 +1,5 @@
+import 'react-app-polyfill/ie11';
+import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,6 +18,8 @@ import App from './App';
 import axios from 'axios';
 import thunk from 'redux-thunk';
 
+// Regarding react-app-polyfill/ie11 refer to
+// https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md
 // Create the store
 const rootReducer = combineReducers(
     {

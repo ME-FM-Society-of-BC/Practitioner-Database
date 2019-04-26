@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Registration from './Registration';
 import axios from 'axios';
+import Instructions from '../components/Instructions';
 
 class SignIn extends Component {
     state = {
@@ -53,11 +54,11 @@ class SignIn extends Component {
             <>
             <Panel style={panelStyle}>
             <Panel.Body>
-            <div className='instructions'><p style={{maxWidth: '40em'}}>
+                <Instructions width='40em'>
                 Welcome to the MEFM Database. If you are a registered user, sign in below.
                 If you are not registered, you are free to search for practitioners near you,
-                or view our complete list of practitioners</p>
-            </div>
+                or view our complete list of practitioners
+                </Instructions>
                 <div className='horizontal-group'>
                 <div className ='vertical-group'>
                     <EditableText   mode='edit'
@@ -91,12 +92,10 @@ class SignIn extends Component {
             </Panel>
             <Panel style={panelStyle}>
             <Panel.Body>
-                <div className='instructions'>
-                <p style={{maxWidth: '40em'}}>
-                Not registered? Sign up here if you want to recommend a practitioner, or 
-                provide feedback on your experience with a practitioner
-                </p>
-                </div>
+                <Instructions width='40em'>
+                    Not registered? Sign up here if you want to recommend a practitioner, or 
+                    provide feedback on your experience with a practitioner
+                </Instructions>
                 <Registration/>
             </Panel.Body>           
             </Panel>

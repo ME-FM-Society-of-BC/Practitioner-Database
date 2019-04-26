@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import * as actions from '../store/practitionerActions';
 import { STORE_PRACTITIONERS } from '../store/practitionerActions';
+import Instructions from '../components/Instructions';
 
 class Search extends Component {
 
@@ -219,24 +220,20 @@ class Search extends Component {
             <div className='horizontal-group'>
             <div className='vertical-group'>
                 <h4>Search for Practitioners</h4>
-                <div className='instructions'>
-                    <p style={{maxWidth: '20em'}}>
+                <Instructions width='40em'>
                     To quickly search for any practitioners near you, just enter your postal code and click the Quick Search button
-                    </p>
-                </div>
+                </Instructions>
                 <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Postal Code' value={this.state.postalCode} 
                         name='postalCode' changeHandler={this.onChange}/>
                 <br/>
                 <Button onClick={this.searchQuick}>Quick Search</Button>
                 <br/>
-                <div className='instructions'>
-                    <p style={{maxWidth: '20em'}}>
+                <Instructions width='40em'>
                     You can also enter values for any of the following criteria, and click the Full Search button. 
                     If you also enter a postal code above, any practitioners matching the criteria
                     will be listed along with the distance 
-                    </p>
-                </div>
+                </Instructions>
                 <EditableText name='lastName' 
                     valueClass='info-field' labelClass='info-label' 
                     label='Last Name' value={this.state.lastName} 

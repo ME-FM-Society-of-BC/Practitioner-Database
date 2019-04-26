@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import Comment from '../components/Comment';
 import NewComment from '../components/NewComment';
 import * as actions from '../store/commentActions';
+import Instructions from '../components/Instructions';
 
 class PractitionerComments extends Component {
 
@@ -50,10 +51,9 @@ class PractitionerComments extends Component {
             
             {
             comments.length === 0 ?
-            <div className='instructions'><p style={{maxWidth: '40em'}}>
+            <Instructions width='40em'>
                 There are no comments on this practitioner
-                </p>
-            </div>
+            </Instructions>
             :
             <div className='comments'>
                 {

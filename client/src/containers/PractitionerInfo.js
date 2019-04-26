@@ -11,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
+import Instructions from '../components/Instructions';
 
 class PractitionerInfo extends Component {
 
@@ -161,11 +162,10 @@ class PractitionerInfo extends Component {
             <Panel style={panelStyle}>
             <Panel.Body>
                 {this.state.mode === 'create' ?
-                    <div className='instructions'><p style={{maxWidth: '40em'}}>
+                    <Instructions width='40em'>
                         Enter information for a new practitioner if you have checked that he or she is not already in the list.
                         You must provide at least first and last names, address and telephone number
-                        </p>
-                    </div>
+                    </Instructions>
                     : ''
                 }
                 <div className='horizontal-group'>
@@ -233,13 +233,11 @@ class PractitionerInfo extends Component {
                     <Button type="button" className='button-large' onClick={this.saveNew}>Save Practitioner Information</Button>
                     : ''
                 }
-                {newPractitioner === true ? 
-                    <div className='instructions'>
-                    <p style={{maxWidth: '40em'}}>
+                {newPractitioner === true ?
+                    <Instructions width='40em'>
                         You can now provide an evaluation for this Practitioner
                         Remember you can always return latyer and create or modify you evaluation
-                    </p>
-                    </div>
+                    </Instructions> 
                 : ''}
             </Panel.Body>           
             </Panel>
