@@ -82,7 +82,11 @@ const orderComments = (allComments, action) => {
     // Convert received date strings to Date objects
     // Incoming format is YYYY-MM-DDThh:mm:ss.mmmZ[UTC], must change to YYYY-MM-DDThh:mm:ssZ 
     action.comments.forEach( comment => {
-        comment.date = new Date(comment.date.split(".")[0] + 'Z');
+        const date = comment.date.indexOf('.') > 0 ?
+            comment.date.split(".")[0] + 'Z'
+            :
+            comment.date.split('[')[0];
+        comment.date = new Date(date);
     });
     // Extract all level 1 comments
     const level1 = action.comments.filter( comment => {

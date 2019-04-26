@@ -112,6 +112,7 @@ class PendingCommentBlock extends Component {
                     }
                     </Instructions>
                 }
+
                 {
                     commentsToDisplay.map((comment) => {
                         return <PendingComment
@@ -133,10 +134,12 @@ class PendingCommentBlock extends Component {
                     }
                     </Instructions>
                     :
+                    <div style={{borderTop: '2px solid #dce4ec'}}>
                     <Button type="button" className='button-large' 
                         onClick={this.resolveAndNext}>
                         Resolve
                     </Button>
+                    </div>
                 }            
             </Panel.Body>
             </Panel>

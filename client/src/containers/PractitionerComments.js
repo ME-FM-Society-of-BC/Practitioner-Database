@@ -106,7 +106,7 @@ class PractitionerComments extends Component {
             userId: this.props.loggedInUser.id,
             date: new Date(),
             text: this.state.commentText,
-            status: 'VISIBLE'
+            status: 'PENDING'
         })
         this.closeComment();
     }

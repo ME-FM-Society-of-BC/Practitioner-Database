@@ -13,6 +13,7 @@ import Search from './containers/Search';
 import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
 import './App.css';
+import Radium, {StyleRoot} from 'radium';
 
 /**
  * The root component of the application
@@ -24,6 +25,7 @@ class App extends Component {
     }
     render() {
         return (
+            <StyleRoot>
             <div className="App">
                 <Navbar collapseOnSelect>
                     <Navbar.Header>
@@ -54,7 +56,7 @@ class App extends Component {
                             }
                             {this.props.loggedInUser && this.props.loggedInUser.isModerator ?
                                 <LinkContainer to="/pending-comments">
-                                    <NavItem>Pending Comments</NavItem>
+                                    <NavItem>Comments</NavItem>
                                 </LinkContainer>
                                 : <></>
                             }
@@ -78,6 +80,7 @@ class App extends Component {
                 <Route path="/sign-in" component={SignIn} />
                 <Route path="/home" component={Home} />
             </div>
+            </StyleRoot>
         );
     }
 }
@@ -89,6 +92,6 @@ const mapStateToProps = state => {
     }
 }
 
-export default withRouter(connect(mapStateToProps)(App));
+export default Radium(withRouter(connect(mapStateToProps)(App)));
 
     

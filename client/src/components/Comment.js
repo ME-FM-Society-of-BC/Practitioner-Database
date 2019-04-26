@@ -6,8 +6,8 @@
  * A user can replay to a level 2 comment, but the new comment will be at the same level,
  * after all other level 2 comments at that level within the level 1 comment
  * 
- * A comment has a status, one of VISIBLE, MODERATED, FLAGGED or BLOCKED.
- * VISIBLE: Commment includes a 'Flag' button
+ * A comment has a status, one of PENDING, MODERATED, FLAGGED or BLOCKED.
+ * PENDING: Commment includes a 'Flag' button
  * MODERATED: Comment does not include the Flab button
  * FLAGGED: Comment displays a flag icon where the Flag button would otherwise be
  * BLOCKED: Coment text replaced with explanatory text 
