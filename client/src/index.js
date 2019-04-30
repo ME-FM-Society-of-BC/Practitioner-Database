@@ -10,10 +10,6 @@ import userReducer from './store/userReducer';
 import evaluationReducer from './store/evaluationReducer';
 import locationReducer from './store/locationReducer';
 import commentReducer from './store/commentReducer';
-import * as practitionerActions from './store/practitionerActions';
-import * as userActions from './store/userActions';
-import * as evaluationActions from './store/evaluationActions';
-import * as locationActions from './store/locationActions';
 import App from './App';
 import axios from 'axios';
 import thunk from 'redux-thunk';
@@ -64,66 +60,12 @@ axios.interceptors.response.use(response => {
     console.log(error);
     return Promise.reject(error);
 });
-/*******************************************/
 
-// Fetch the "static" data from the server
+// For some reason things don't kick off unless I have some async code here.
+// Initialize call will seed the database if it is empty
 axios.get('/initialize')
 .then(() => {
-    return axios.get('/roles')
-})
-.then(response => {
-    store.dispatch({ type: userActions.STORE_USER_ROLES, roles: response.data });
-})
-.then(() => {
-    return axios.get('/specialties')
-})
-.then(response => {
-    store.dispatch({ type: practitionerActions.STORE_SPECIALTIES, specialties: response.data });
-})
-.then(() => {
-    return axios.get('/provinces')
-})
-.then(response => {
-    store.dispatch({ type: locationActions.STORE_PROVINCES, provinces: response.data });
-})
-.then(() => {
-    return axios.get('/cities')
-})
-.then(response => {
-    store.dispatch({ type: locationActions.STORE_CITIES, cities: response.data });
-})
-.then(() => {
-    return axios.get('/questions')
-})
-.then(response => {
-    // Sort the questions by display order
-    const questions = response.data.sort(function(a, b){return a.displayIndex - b.displayIndex});
-    store.dispatch({ type: evaluationActions.STORE_QUESTIONS, questions: questions });
-})
-.then(() => {
-    return axios.get('/questionchoices')
-})
-.then(response => {
-    store.dispatch({ type: evaluationActions.STORE_QUESTION_CHOICES, questionChoices: response.data });
-})
-.then(() => {
-    return axios.get('/questiongroups')
-})
-.then(response => {
-    store.dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups: response.data });
-    console.log("Completed loading");
     ReactDOM.render(app, document.getElementById('root'));
-})
-.then(() => {
-    // Must also retrieve all users to be able to identify them in the comments
-    return axios.get('/users?basic=true')
-})
-.then(response => {
-    store.dispatch({ type: userActions.STORE_ALL_USERS, users: response.data });
-})
-// TODO: Replace with user friendly response
-.catch(error => {
-    console.log(error);
 });
 
 // Below was for accessing maps from the client.

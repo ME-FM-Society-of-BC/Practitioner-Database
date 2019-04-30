@@ -14,17 +14,94 @@ import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
 import './App.css';
 import Radium, {StyleRoot} from 'radium';
+import { CircleSpinner } from "react-spinners-kit";
+import * as practitionerActions from './store/practitionerActions';
+import * as userActions from './store/userActions';
+import * as evaluationActions from './store/evaluationActions';
+import * as locationActions from './store/locationActions';
+import axios from 'axios';
 
 /**
  * The root component of the application
  */
 class App extends Component {
     
-    componentDidMount() {
-        this.props.history.replace('/sign-in');
+    constructor(props){
+        super(props);
+        this.state = {
+            loading: true
+        }
     }
+
+    componentDidMount() {
+        axios.get('/roles')
+        .then(response => {
+            this.props.storeUserRoles(response.data);
+        })
+        .then(() => {
+            return axios.get('/specialties')
+        })
+        .then(response => {
+            this.props.storeSpecialties(response.data);
+        })
+        .then(() => {
+            return axios.get('/provinces')
+        })
+        .then(response => {
+            this.props.storeProvinces(response.data);
+        })
+        .then(() => {
+            return axios.get('/cities')
+        })
+        .then(response => {
+            this.props.storeCities(response.data);
+        })
+        .then(() => {
+            return axios.get('/questions')
+        })
+        .then(response => {
+            // Sort the questions by display order
+            const questions = response.data.sort(function(a, b){return a.displayIndex - b.displayIndex});
+            this.props.storeQuestions(questions);
+        })
+        .then(() => {
+            return axios.get('/questionchoices')
+        })
+        .then(response => {
+            this.props.storeQuestionChoices(response.data);
+        })
+        .then(() => {
+            return axios.get('/questiongroups')
+        })
+        .then(response => {
+            this.props.storeQuestionGroups(response.data);
+        })
+        .then(() => {
+            // Must also retrieve all users to be able to identify them in the comments
+            return axios.get('/users?basic=true')
+        })
+        .then(response => {
+            this.props.storeUsers(response.data);
+        })
+        .then(() => {
+            this.setState({loading: false});
+            this.props.history.replace('/sign-in');
+        })
+        // TODO: Replace with user friendly response
+        .catch(error => {
+            console.log(error);
+        });        
+    }
+
     render() {
-        return (
+        if (this.state.loading){
+            return (
+                <div className='spinner-container'>
+                    <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
+                </div>
+            )
+        }
+        else return (
             <StyleRoot>
             <div className="App">
                 <Navbar collapseOnSelect>
@@ -92,6 +169,19 @@ const mapStateToProps = state => {
     }
 }
 
-export default Radium(withRouter(connect(mapStateToProps)(App)));
+const mapDispatchToProps = dispatch => {
+    return {
+        storeUsers: (users) => dispatch({ type: userActions.STORE_ALL_USERS, users: users }),
+        storeUserRoles: (roles) => dispatch({ type: userActions.STORE_USER_ROLES, roles: roles }),
+        storeSpecialties: (specialties) => dispatch({ type: practitionerActions.STORE_SPECIALTIES, specialties: specialties }),
+        storeProvinces: (provinces) => dispatch({ type: locationActions.STORE_PROVINCES, provinces: provinces }),
+        storeCities: (cities) => dispatch({ type: locationActions.STORE_CITIES, cities: cities }),
+        storeQuestions: (questions) => dispatch({ type: evaluationActions.STORE_QUESTIONS, questions: questions }),
+        storeQuestionChoices: (questionChoices) => dispatch({ type: evaluationActions.STORE_QUESTION_CHOICES, questionChoices: questionChoices }),
+        storeQuestionGroups: (questionGroups) => dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups: questionGroups })
+    }
+}
+
+export default Radium(withRouter(connect(mapStateToProps, mapDispatchToProps)(App)));
 
     
