@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
+import { handlePostalCode } from '../common/utilities';
 
 class PractitionerInfo extends Component {
 
@@ -86,12 +87,13 @@ class PractitionerInfo extends Component {
     changeTextValue(event, name) {
         let value = event.target.value;
         if (name === 'postalCode'){
-            value = value.toUpperCase();
-            if (value.length === 4){
-                if (value.charAt(3) !== '-'){
-                    value = value.substring(0, 3) + '-' + value.charAt(3);
-                }
-            }
+            value = handlePostalCode(value);
+            // value = value.toUpperCase();
+            // if (value.length === 4){
+            //     if (value.charAt(3) !== '-'){
+            //         value = value.substring(0, 3) + '-' + value.charAt(3);
+            //     }
+            // }
         }
         else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
             value = value.toUpperCase();
@@ -206,7 +208,8 @@ class PractitionerInfo extends Component {
                         attribute='phone' changeHandler =  {(event) => this.changeTextValue(event, 'phone')}/>
                     <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Website'  mode={this.state.mode} value={this.state.practitioner.website} placeholder='Website'
-                        attribute='website' changeHandler =  {(event) => this.changeTextValue(event, 'website')}/>
+                        attribute='website' changeHandler =  {(event) => this.changeTextValue(event, 'website')}
+                        type={this.state.mode === 'view' ? 'url' : 'text'}/>
  
                     <Selector label='Specialty'
                         valueClass='info-field' labelClass='info-label'  

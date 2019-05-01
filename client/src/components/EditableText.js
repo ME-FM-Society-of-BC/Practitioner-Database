@@ -6,7 +6,7 @@
  * 'edit':   renders as an enabled text input, with the current value instead of a placeholder
  * 
  * Additional props:
- * type:            the html input type, defaults to 'text'
+ * type:            the html input type, either 'text' or 'url'
  * label:           the control label
  * labelClass:      label style class
  * valueClass:      value style class
@@ -29,22 +29,35 @@ const editableText = (props) => {
     const type = props.type ? props.type : 'text' 
     let labelClasses = props.labelClass;
     let valueClasses = props.valueClass;
+
+    const openUrl = () => {
+        window.open(props.value);
+    }    
     
     if (props.dimensions){
         let d = parseDimensions(props.dimensions);
         labelClasses += ' ' + d.labelWidth + ' ' + d.labelOffset;
         valueClasses += ' ' + d.valueWidth;
     }
-        
-    const component = (
-        <input type={type} 
-            value={props.value || ''}
-            name={props.name}
-            disabled={props.mode === 'view'}
-            className={valueClasses}
-            onChange={props.changeHandler}
-        />
-    )
+    
+    let component;
+    if (type === 'url' && props.mode === 'view'){
+        const url = props.value.startsWith('http') ? props.value : 'http://' + props.value;
+        component = (
+            <a href={url} className={valueClasses} target='_blank' style={{textAlign: 'left'}}>{props.value}</a>
+        )
+    }
+    else {
+        component = (
+            <input type={type} 
+                value={props.value || ''}
+                name={props.name}
+                disabled={props.mode === 'view'}
+                className={valueClasses}
+                onChange={props.changeHandler}/>
+        )
+    }
+
     return (
         <div className='input-wrapper'>
             <span className={labelClasses}>{props.label}</span>

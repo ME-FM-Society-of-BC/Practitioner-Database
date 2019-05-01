@@ -10,6 +10,7 @@ import axios from 'axios';
 import * as actions from '../store/practitionerActions';
 import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
+import { handlePostalCode } from '../common/utilities';
 
 class Search extends Component {
 
@@ -34,12 +35,19 @@ class Search extends Component {
     onChange = (event) => {     
         let {name, value} = event.target;
         if (name === 'postalCode'){
-            value = value.toUpperCase();
-            if (value.length === 4){
-                if (value.charAt(3) !== '-'){
-                    value = value.substring(0, 3) + '-' + value.charAt(3);
-                }
-            }
+            value = handlePostalCode(value);
+            // value = value.toUpperCase();
+            // if (value.endsWith(' ')){
+            //     value = value.replace(' ','-');
+            // }
+            // if (value.length === 4){
+            //     if (value.charAt(3) !== '-'){
+            //         value = value.substring(0, 3) + '-' + value.charAt(3);
+            //     }
+            // }
+            // else if (value.length === 8){
+            //     value = value.substring(0, 7);
+            // }
         }
         else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
             value = value.toUpperCase();

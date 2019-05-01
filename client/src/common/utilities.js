@@ -2,7 +2,23 @@
  * Common utility functions
  */
 
-/**
+ export const handlePostalCode = value =>{
+    value = value.toUpperCase();
+    if (value.endsWith(' ')){
+        value = value.replace(' ','-');
+    }
+    if (value.length === 4){
+        if (value.charAt(3) !== '-'){
+            value = value.substring(0, 3) + '-' + value.charAt(3);
+        }
+    }
+    else if (value.length === 8){
+        value = value.substring(0, 7);
+    }
+    return value
+ }
+
+ /**
  * Given an array of entities, creates a map of the entity id to the the entity's
  * index in the array
  * @param {*} entityArray
