@@ -30,10 +30,6 @@ const editableText = (props) => {
     let labelClasses = props.labelClass;
     let valueClasses = props.valueClass;
 
-    const openUrl = () => {
-        window.open(props.value);
-    }    
-    
     if (props.dimensions){
         let d = parseDimensions(props.dimensions);
         labelClasses += ' ' + d.labelWidth + ' ' + d.labelOffset;
@@ -42,9 +38,10 @@ const editableText = (props) => {
     
     let component;
     if (type === 'url' && props.mode === 'view'){
-        const url = props.value.startsWith('http') ? props.value : 'http://' + props.value;
+        const url = props.value;
+        const value = props.value.length > 30 ? props.value.substring(0, 30) : props.value;
         component = (
-            <a href={url} className={valueClasses} target='_blank' style={{textAlign: 'left'}}>{props.value}</a>
+            <a href={url} className={valueClasses} target='_blank' style={{textAlign: 'left'}} title={value}>{value}</a>
         )
     }
     else {
