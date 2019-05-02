@@ -18,10 +18,14 @@ import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
 
+/**
+ * Registers all entity classes with the Objectify service
+ * @author Robert
+ */
 public class ObjectifyRegistrationContextListener implements ServletContextListener{
 
     @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
+    public void contextInitialized(ServletContextEvent servletContextEvent) {    	
     	ObjectifyService.register(Comment.class);
     	ObjectifyService.register(Practitioner.class);
     	ObjectifyService.register(QuestionChoice.class);

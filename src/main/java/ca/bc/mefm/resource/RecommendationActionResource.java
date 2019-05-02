@@ -36,7 +36,7 @@ public class RecommendationActionResource extends AbstractResource{
         List<Long> ids = new ArrayList<Long>();
         List<RecommendationAction> actions = Arrays.asList(recommendationActions);
         actions.forEach(action ->{
-            da.ofyPut(action);
+            da.put(action);
             ids.add(action.getId());
         });
         return responseCreated(ids);

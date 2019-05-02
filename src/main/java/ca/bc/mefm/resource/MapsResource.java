@@ -14,10 +14,8 @@ import javax.ws.rs.core.Response;
 import com.googlecode.objectify.Key;
 
 import ca.bc.mefm.GoogleMapsApi;
-import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
-import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
  * Services requests for distance calculations by the Google Maps API
@@ -43,7 +41,7 @@ public class MapsResource extends AbstractResource{
     	List<String> destinations = Arrays.asList(practitionerIds).stream()
     	.map( id -> {
     		Key<Practitioner> key = Key.create(Practitioner.class, Long.valueOf(id));
-    		Practitioner practitioner = da.ofyFind(key);
+    		Practitioner practitioner = da.find(key);
     		StringBuilder sb = new StringBuilder()
     				.append(practitioner.getPostalCode())
     				.append('+')

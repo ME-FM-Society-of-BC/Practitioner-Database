@@ -4,41 +4,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
+
 
 import lombok.Data;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+/**
+ * Implements all Datastore operations through the Objectify service
+ * @author Robert
+ */
 public class DataAccess {
 	private static final Logger log = Logger.getLogger(DataAccess.class.getName());
-	
-	static {
-		try {
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Choice"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Comment"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Practitioner"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Question"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.QuestionChoiceSet"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.QuestionGroup"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.QuestionSet"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.RecommendationAction"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Specialty"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.User"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.UserRole"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.Province"));
-			ObjectifyService.register(Class.forName("ca.bc.mefm.data.City"));
-		}
-		catch (ClassNotFoundException e){
-			log.warning(e.getMessage());
-		}		
-	}
 
 	public <T> List<T> getAll(Class<T> clazz){
 		List<T> list = ofy().load().type(clazz).list();
-		log.log(Level.INFO, "Found " + list.size() + " objects"); 
 		return list;
 	}
 	
@@ -48,28 +32,60 @@ public class DataAccess {
 			query = query.filter(filter.getExpression(), filter.getValue());
 		}
 		List<T> list = query.list();
-		log.log(Level.INFO, "Found " + list.size() + " objects"); 
 		return list;
+	}
+	
+	public <T> int deleteAll(Class<T> clazz) {
+		int count = 0;
+		Query<T> query = ofy().load().type(clazz).limit(100);
+		
+		while (true) {
+		    QueryResultIterator<T> iterator = query.iterator();
+		    if (!iterator.hasNext()) {
+		    	break;
+		    }
+		    while (iterator.hasNext()) {
+		        Object o = iterator.next();
+		        delete(o);
+		        count++;
+		    }
+		    Cursor cursor = iterator.getCursor();
+		    query = query.startAt(cursor);
+		}
+		return count;
 	}
 	
 	/**
 	 * Saves a list of City entities
 	 * @param list
 	 */
-	public void ofyPut(List<City> list){
+	public void put(List<City> list){
 		ofy().save().entities(list).now();
 	}
 	
-	public void ofyPut(Object o){
+	public void put(Object o){
 		ofy().save().entity(o).now();
 	}
 	
-	public <T> void ofyDelete(Class<T> clazz, long id){
+	/**
+	 * Deletes an entity identified by its key value
+	 * @param clazz the entity class
+	 * @param id the key value
+	 */
+	public <T> void delete(Class<T> clazz, long id){
 		Key<T> key = Key.create(clazz, id);
 		ofy().delete().key(key).now();
 	}
 	
-	public <T> T ofyFind(Key<T> key){
+	/**
+	 * Deletes an specified entity
+	 * @param entity
+	 */
+	public <T> void delete(Object entity) {
+		ofy().delete().entity(entity).now();
+	}
+	
+	public <T> T find(Key<T> key){
 		T o = ofy().load().key(key).now();
 		if (o == null){
 			log.log(Level.SEVERE, "+++ Find\n" + "--- Not found key = " + (key.getName() == null ? key.getId() : key.getName()));
@@ -77,7 +93,7 @@ public class DataAccess {
 		return o;
 	}
 	
-	public <T> T ofyFindByQuery(Class<T> clazz, String field, String value) {
+	public <T> T findByQuery(Class<T> clazz, String field, String value) {
 		T o = ofy().load().type(clazz).filter(field, value).first().now();
 		return o;
 	}

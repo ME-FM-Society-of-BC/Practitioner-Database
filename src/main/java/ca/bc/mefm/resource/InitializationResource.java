@@ -17,7 +17,9 @@ import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.Province;
 import ca.bc.mefm.data.Question;
 import ca.bc.mefm.data.QuestionChoice;
+import ca.bc.mefm.data.QuestionChoiceSet;
 import ca.bc.mefm.data.QuestionGroup;
+import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
@@ -48,41 +50,74 @@ public class InitializationResource extends AbstractResource {
     @GET
     public Response initialize(){
         DataAccess da = new DataAccess();
-        List<UserRole> list = da.getAll(UserRole.class);
-        if (list.isEmpty()) {
-        	// The database is empty, either because this is the first time the 
-        	// application has been invoked, or the database has been emptied 
-        	// using the Google App Engine admin console, with the intention of
-        	// adding new entities
+        List<UserRole> existingUserRoles = da.getAll(UserRole.class);
+        List<Province> existingProvinces = da.getAll(Province.class);
+        
+        // If the UsesRole table is empty, then empty and recreate the entire database
+        if (existingUserRoles.isEmpty()) {
         	
-        	roles.forEach((UserRole o) -> da.ofyPut(o));
-        	users.forEach((User o) -> da.ofyPut(o));
-        	specialties.forEach((Specialty o) -> da.ofyPut(o));
-        	questionChoices.forEach((QuestionChoice o) -> da.ofyPut(o));
-        	questionGroups.forEach((QuestionGroup o) -> da.ofyPut(o));
-        	questions.forEach((Question o) -> da.ofyPut(o));
-        	provinces.forEach((Province o) -> da.ofyPut(o));
+        	clearAll(da);
         	
+        	roles.forEach((UserRole o) -> da.put(o));
+        	users.forEach((User o) -> da.put(o));
+        	specialties.forEach((Specialty o) -> da.put(o));
+        	questionChoices.forEach((QuestionChoice o) -> da.put(o));
+        	questionGroups.forEach((QuestionGroup o) -> da.put(o));
+        	questions.forEach((Question o) -> da.put(o));
+        	provinces.forEach((Province o) -> da.put(o));
+        	
+        	addCities(da);
         	// TODO REmove kludge
-        	practitioners.forEach((Practitioner o) -> da.ofyPut(o));
-        	comments.forEach((Comment o) -> da.ofyPut(o));
-            
-        	addCities(1L, namesBC, da);
-            addCities(2L, namesAB, da);
-            addCities(3L, namesSK, da);
-            addCities(4L, namesMN, da);
-            addCities(5L, namesON, da);
-            addCities(6L, namesQU, da);
-            addCities(7L, namesNB, da);
-            addCities(8L, namesNS, da);
-            addCities(9L, namesNFLD, da);
-            addCities(10L, namesPEI, da);
-            addCities(11L, namesNWT, da);
-            addCities(12L, namesNU, da);
-            addCities(13L, namesYU, da);
-
+//        	practitioners.forEach((Practitioner o) -> da.put(o));
+//        	comments.forEach((Comment o) -> da.put(o));
+        }
+        else if (existingProvinces.isEmpty()) {
+        	// If only the provinces are gone, empty the cities and recreate both
+        	da.deleteAll(City.class);
+        	provinces.forEach((Province o) -> da.put(o));        	
+        	addCities(da);        	
         }
         return responseNoContent();
+    }
+    
+    private void clearAll(DataAccess da) {
+    	clearAllOfClass(da, Comment.class);
+    	clearAllOfClass(da, Practitioner.class);
+    	clearAllOfClass(da, QuestionChoice.class);
+    	clearAllOfClass(da, QuestionGroup.class);
+    	clearAllOfClass(da, Question.class);
+    	clearAllOfClass(da, QuestionChoiceSet.class);
+    	clearAllOfClass(da, RecommendationAction.class);
+    	clearAllOfClass(da, User.class);
+    	clearAllOfClass(da, Specialty.class);
+    	clearAllOfClass(da, Province.class);
+    	clearAllOfClass(da, City.class);
+    }
+    
+    private <T> int clearAllOfClass(DataAccess da, Class<T> clazz) {
+    	List<T> allEntities = da.getAll(clazz);
+    	allEntities.forEach(entity -> {
+    		da.delete(entity);
+    	});
+    		
+    	return allEntities.size();
+    }
+    
+    private void addCities(DataAccess da) {
+    	addCities(1L, namesBC, da);
+        addCities(2L, namesAB, da);
+        addCities(3L, namesSK, da);
+        addCities(4L, namesMN, da);
+        addCities(5L, namesON, da);
+        addCities(6L, namesQU, da);
+        addCities(7L, namesNB, da);
+        addCities(8L, namesNS, da);
+        addCities(9L, namesNFLD, da);
+        addCities(10L, namesPEI, da);
+        addCities(11L, namesNWT, da);
+        addCities(12L, namesNU, da);
+        addCities(13L, namesYU, da);
+    	
     }
     
     // TODO Kludge
@@ -115,7 +150,7 @@ public class InitializationResource extends AbstractResource {
     /** Builds a city list for a specified province */
     private void addCities(Long provinceId, String[] cityNames, DataAccess da){
     	List<City> cities =	Stream.of(cityNames).map(cityName -> new City(provinceId, cityName)).collect(Collectors.toList());
-    	da.ofyPut(cities);
+    	da.put(cities);
     }
 
     
@@ -133,7 +168,7 @@ public class InitializationResource extends AbstractResource {
     // modifications to the question definitions
     
     List<User> users = Arrays.asList(new User[]{
-            new User(1L, "admin", "password", "your-email-here", UserRole.Type.ADMINISTRATOR, new Date(), User.Status.ENABLED),
+    /*        new User(1L, "admin", "password", "your-email-here", UserRole.Type.ADMINISTRATOR, new Date(), User.Status.ENABLED),*/
             new User(1L, "moderator", "password", "your-email-here", UserRole.Type.MODERATOR, new Date(), User.Status.ENABLED),
             new User(2L, "support", "password", "robert.t.toms@gmail.com", UserRole.Type.SUPPORT, new Date(), User.Status.ENABLED)
     });

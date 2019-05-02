@@ -80,7 +80,7 @@ public class PractitionerInformationResource extends AbstractResource{
     public Response get(@PathParam("id") Long id){
     	DataAccess da = new DataAccess();
     	Key<Practitioner> key = Key.create(Practitioner.class, id);
-    	Practitioner practitioner = da.ofyFind(key);
+    	Practitioner practitioner = da.find(key);
     	return responseOkWithBody(practitioner);
     }
     
@@ -93,7 +93,7 @@ public class PractitionerInformationResource extends AbstractResource{
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Practitioner practitioner) {
     	DataAccess da = new DataAccess();
-    	da.ofyPut(practitioner);
+    	da.put(practitioner);
     	return responseCreated(practitioner.getId());
     }
 
@@ -107,7 +107,7 @@ public class PractitionerInformationResource extends AbstractResource{
     @Path("{id}")
     public Response update(@PathParam("id") Long id, Practitioner practitioner) {
     	DataAccess da = new DataAccess();
-    	da.ofyPut(practitioner);
+    	da.put(practitioner);
     	return responseNoContent();
     }
 }

@@ -53,13 +53,13 @@ public class UserResource extends AbstractResource{
     public Response create(User newUser) {
         DataAccess da = new DataAccess();
         // Check if username already taken
-    	User existingUser = da.ofyFindByQuery(User.class, "username", newUser.getUsername());
+    	User existingUser = da.findByQuery(User.class, "username", newUser.getUsername());
     	if (existingUser != null) {
     		return responseOkWithBody(new AuthResultNameAlreadyTaken());
     	}
 
         newUser.setCreated(new Date());
-        da.ofyPut(newUser);
+        da.put(newUser);
         return responseCreated(newUser.getId());
     }
     
@@ -74,7 +74,7 @@ public class UserResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response authenticate(User credentials) {
         DataAccess da = new DataAccess();
-    	User user = da.ofyFindByQuery(User.class, "username", credentials.getUsername());
+    	User user = da.findByQuery(User.class, "username", credentials.getUsername());
     	if (user == null) {
     		return responseOkWithBody(new AuthResultBadUser());
     	}
@@ -95,7 +95,7 @@ public class UserResource extends AbstractResource{
     public Response get(@PathParam("id") Long id){
         DataAccess da = new DataAccess();
         Key<User> key = Key.create(User.class, id);
-        User user = da.ofyFind(key);
+        User user = da.find(key);
         return responseOkWithBody(user);
     }
 	

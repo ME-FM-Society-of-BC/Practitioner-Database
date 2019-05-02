@@ -33,7 +33,7 @@ public class CommentResource extends AbstractResource{
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Comment comment) {    	
         DataAccess da = new DataAccess();
-        da.ofyPut(comment);
+        da.put(comment);
         return responseCreated(comment.getId());
     }
 
@@ -46,7 +46,7 @@ public class CommentResource extends AbstractResource{
     @Consumes(MediaType.APPLICATION_JSON)
     public Response update(Comment comment) {    	
         DataAccess da = new DataAccess();
-        da.ofyPut(comment);
+        da.put(comment);
         return responseNoContent();
     }
     
@@ -56,7 +56,7 @@ public class CommentResource extends AbstractResource{
     public Response resolve(List<Comment> comments) {
     	DataAccess da = new DataAccess();
     	comments.stream().forEach( comment -> {
-    		da.ofyPut(comment);
+    		da.put(comment);
     	});
         return responseNoContent();
     }
