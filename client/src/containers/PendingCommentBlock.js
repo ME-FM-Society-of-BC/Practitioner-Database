@@ -22,10 +22,11 @@ class PendingCommentBlock extends Component {
         this.state.actionLabel = this.props.type === 'FLAGGED' ? 'Accept' : 'Block';
         this.state.startIndex = 0;
         this.state.endIndex = this.props.comments.length > this.BLOCK_SIZE ? this.BLOCK_SIZE -1 : this.props.comments.length - 1;
-        this.state.commentsMap = {};
+        const commentsMap = {};
         this.props.comments.forEach(comment => {
-            this.state.commentsMap[comment.id] = comment;
+            commentsMap[comment.id] = comment;
         })
+        this.state.commentsMap = commentsMap;
         this.state.commentsToResolve = [];
 
         this.onAction = this.onAction.bind(this);

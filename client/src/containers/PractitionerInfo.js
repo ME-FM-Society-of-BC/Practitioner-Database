@@ -140,13 +140,21 @@ class PractitionerInfo extends Component {
         );        
 
         this.setState({
-           mode:'view',
+            mode:'view',
             canEdit: true,
             infoChanged: false
         });
     }
 
     render() {
+
+        if (this.props.match.params.id === '-1' && this.state.mode ==='view'){
+            this.setState({
+                mode: 'create',
+                practitioner: {}
+            })
+            return <div/>
+        }
         const panelStyle = {
             width:'90%',
             margin: 'auto'

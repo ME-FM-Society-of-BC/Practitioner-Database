@@ -38,7 +38,7 @@ const commentReducer = (state = initialState, action) => {
             return saveComment(action.comment, {...state.allComments});
 
         case actions.UPDATE_COMMENT:
-            const updatedComment = {...action.comment};
+//            const updatedComment = {...action.comment};
             const allComments = {...state.allComments};
             // let comments = {
             //     ...allComments[newComment.practitionerId];

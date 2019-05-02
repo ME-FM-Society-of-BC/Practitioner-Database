@@ -41,7 +41,8 @@ const editableText = (props) => {
         const url = props.value;
         const value = props.value.length > 30 ? props.value.substring(0, 30) : props.value;
         component = (
-            <a href={url} className={valueClasses} target='_blank' style={{textAlign: 'left'}} title={value}>{value}</a>
+            <a href={url} className={valueClasses} style={{textAlign: 'left'}} 
+                target='_blank' rel='noopener noreferrer' title={value}>{value}</a>
         )
     }
     else {
