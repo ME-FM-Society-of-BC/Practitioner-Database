@@ -8,7 +8,7 @@
  * 
  * A comment has a status, one of PENDING, MODERATED, FLAGGED or BLOCKED.
  * PENDING: Commment includes a 'Flag' button
- * MODERATED: Comment does not include the Flab button
+ * MODERATED: Comment does not include the Flag button
  * FLAGGED: Comment displays a flag icon where the Flag button would otherwise be
  * BLOCKED: Coment text replaced with explanatory text 
  *  
@@ -27,14 +27,14 @@ const comment = (props) => {
             </>
         )
     }
-    else { // 'create'
+    else { // 'view'
         const text = props.status === 'BLOCKED' ? 'Comment has been removed by moderator' : props.text
         return (
             <div className={classes}>
                 <div className='comment-header'>
                     <div className='comment-name'>{props.username}</div>
                     <div className='comment-date'>{props.date.toLocaleDateString("en-US", dateOptions)}</div>
-                    { props.level === 1 ?
+                    { props.level === 1 && props.enabled ?
                         <input type='button' className='comment-button comment-reply' 
                             value='Reply' onClick={props.onClickReply}></input>
                         : ''
@@ -43,7 +43,7 @@ const comment = (props) => {
                         <span className="comment-button comment-flag fas fa-flag"/>
                         : ''
                     }
-                    { props.status === 'PENDING' ?
+                    { props.status === 'PENDING' && props.enabled ?
                         <input type='button' className='comment-button comment-flag' 
                             value='Flag' onClick={props.onClickFlag}></input>
                         : ''

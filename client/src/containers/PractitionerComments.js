@@ -60,7 +60,8 @@ class PractitionerComments extends Component {
                 comments.map((comment, index) => {
                     const username = this.props.allUsers[comment.userId].username;
                     return (
-                        <Comment mode='view' 
+                        <Comment mode='view'
+                            enabled={this.props.loggedInUser != null} 
                             level={comment.parentId ? 2 : 1} 
                             text={comment.text} 
                             key={index}
