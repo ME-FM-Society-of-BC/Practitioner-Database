@@ -27,9 +27,8 @@ const userReducer = (state = initialState, action) => {
         case actions.STORE_LOGGED_IN_USER :
             // If the user is a Moderator, add an "isModerator" property]
             const user = action.user;
-            if (user.role === 'MODERATOR'){
-                user.isModerator = true;
-            } 
+            user.isModerator = user.role === 'MODERATOR';
+            user.isAdministrator = user.role === 'ADMINISTRATOR';
             return {
                 ...state,
                 loggedInUser: user
@@ -43,6 +42,12 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 allUsers: allUsers
+            }
+
+        case actions.LOGOUT :
+            return {
+                ...state,
+                loggedInUser: null
             }
 
         default: return state;
