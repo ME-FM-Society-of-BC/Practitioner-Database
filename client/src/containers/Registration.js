@@ -13,10 +13,13 @@ class Registration extends Component {
     state = {
         email: '',
         username: '',
-        password: ''
+        password: '',
+        confirmPassword: '',
+        role: 'ACTIVE'
     };
 
     onChange = (event) => {
+        this.setState({errorMessage: null});
         const {name, value} = event.target;
         this.setState({
             [name]: value
@@ -24,12 +27,18 @@ class Registration extends Component {
     }
 
     register = () => {
+        const message = this.validate();
+        this.setState({errorMessage: message});
+        if (message){
+            return;
+        } 
         axios.post('/users/', this.state)
         .then( response => {
             if (response.data.nameAlreadyTaken){
-                alert("That username is already taken. Please enter a new value");
+                this.setState({errorMessage: "That username is already taken. Please enter a new value"});
             }
             else {
+                this.setState({errorMessage: null});
                 const newUser = {...this.state};
                 this.setState({
                     email: '',
@@ -48,6 +57,25 @@ class Registration extends Component {
         });        
     }
 
+    validate = () => {
+        if (!this.state.email){
+            return "Please provide your email address";
+        }
+        if (!this.state.email.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")){
+            return "That's not a valid email";
+        }
+        if (!this.state.username){
+            return "Please enter a username";
+        }
+        if (!this.state.password){
+            return "Please provide a password";
+        }
+        if (!this.state.confirmPassword || this.state.password !== this.state.confirmPassword){
+            return "Passwords must match";
+        }
+        return null;
+     }
+
     render() {
         return <Form horizontal>
             <div className='horizontal-group'>
@@ -55,29 +83,40 @@ class Registration extends Component {
                 <EditableText   label='Email'
                                 type='email' 
                                 name='email'
-                                labelClass='info-label'
-                                valueClass='info-field'
+                                labelClass='info-label info-label-reg'
+                                valueClass='info-field info-field-reg'
                                 value={this.state.email}
                                 placeholder='Email'
                                 changeHandler={this.onChange} />
 
                 <EditableText   label='Username' 
                                 name='username'
-                                labelClass='info-label'
-                                valueClass='info-field'
+                                labelClass='info-label info-label-reg'
+                                valueClass='info-field info-field-reg'
                                 placeholder='Username'
                                 value={this.state.username}
                                 changeHandler={this.onChange} />
 
                 <EditableText   label='Password' 
                                 name='password'
-                                labelClass='info-label'
-                                valueClass='info-field'
+                                labelClass='info-label info-label-reg'
+                                valueClass='info-field info-field-reg'
                                 placeholder='Password'
                                 value={this.state.password}
                                 changeHandler={this.onChange} />
+
+                <EditableText   label='Confirm Password' 
+                                name='confirmPassword'
+                                labelClass='info-label info-label-reg'
+                                valueClass='info-field info-field-reg'
+                                placeholder='Password'
+                                value={this.state.confirmPassword}
+                                changeHandler={this.onChange} />
                 <br/>
                 <Button type='button' onClick={this.register}>Register</Button>
+                {
+                    this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
+                }
             </div>
             </div>
             </Form>
