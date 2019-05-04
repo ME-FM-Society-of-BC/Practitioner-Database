@@ -26,11 +26,39 @@ import axios from 'axios';
  */
 class App extends Component {
     
+    SESSION_MINUTES = 1;
+
     constructor(props){
         super(props);
         this.state = {
             loading: true
         }
+        // Add axios interceptors
+        axios.interceptors.request.use(request => {
+            return request;
+        }, error => {
+            console.log(error);
+            return Promise.reject(error);
+        });
+        axios.interceptors.response.use(response => {
+            this.restartSessionTimer(this.SESSION_MINUTES);
+            return response;
+        }, error => {
+            this.restartSessionTimer(this.SESSION_MINUTES);
+            console.log(error);
+            return Promise.reject(error);
+        });
+    }
+
+    restartSessionTimer(sessionLimit) {
+        if (this.timerId){
+            clearTimeout(this.timerId);
+        }
+        this.timerId = setTimeout(() => {
+            if (this.props.loggedInUser){
+                this.props.history.replace('/sign-out');
+            }
+        }, sessionLimit * 60000);        
     }
 
     componentDidMount() {

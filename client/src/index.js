@@ -14,6 +14,7 @@ import App from './App';
 import axios from 'axios';
 import thunk from 'redux-thunk';
 
+
 // Regarding react-app-polyfill/ie11 refer to
 // https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md
 // Create the store
@@ -45,21 +46,20 @@ else {
     axios.defaults.baseURL =  document.baseURI + "rest/";
 }
 
-// Log all errors
-axios.interceptors.request.use(request => {
-    console.log(request);
-    return request;
-}, error => {
-    console.log(error);
-    return Promise.reject(error);
-});
-axios.interceptors.response.use(response => {
-    console.log(response);
-    return response;
-}, error => {
-    console.log(error);
-    return Promise.reject(error);
-});
+// // Log all errors
+// axios.interceptors.request.use(request => {
+//     return request;
+// }, error => {
+//     console.log(error);
+//     return Promise.reject(error);
+// });
+// axios.interceptors.response.use(response => {
+//     dispatch(actions.checkAuthTimeout(1));
+//     return response;
+// }, error => {
+//     console.log(error);
+//     return Promise.reject(error);
+// });
 
 // For some reason things don't kick off unless I have some async code here.
 // Initialize call will seed the database if it is empty
