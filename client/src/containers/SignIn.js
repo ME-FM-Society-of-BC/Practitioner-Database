@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import Registration from './Registration';
 import axios from 'axios';
 import Instructions from '../components/Instructions';
+import decode  from 'jwt-decode';
 
 class SignIn extends Component {
     state = {
@@ -29,17 +30,21 @@ class SignIn extends Component {
 
         axios.post('/users/auth', this.state)
         .then((response) => {
-            if (response.data.userNotFound || response.data.invalidPassword){
+            // Extract the token. Its claims are the username, role and id,
+            const token = response.data;
+            this.props.storeLoggedInUser(decode(token));
+            // Set request defaults to include Authorization header with the token
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+            // TODO replace() ?
+            this.props.history.push('/home');
+        })
+        .catch(error => {
+            if (error.response.status === 401){
                 this.setState({errorMessage: 'Invalid username or password'});
             }
             else {
-                this.props.storeLoggedInUser(response.data);
-                // TODO replace() ?
-                this.props.history.push('/home');
+                console.log(error);
             }
-        })
-        .catch(error => {
-            console.log(error);
         });        
     }
 
@@ -64,8 +69,8 @@ class SignIn extends Component {
                     <EditableText   mode='edit'
                                     label='Username'
                                     name='username'
-                                    labelClass='info-label'
-                                    valueClass='info-field'
+                                    labelClass='info-label info-label-reg'
+                                    valueClass='info-field info-field-reg'
                                     value={this.state.username}
                                     placeholder='Username'
                                     changeHandler={this.onChange} />
@@ -74,8 +79,8 @@ class SignIn extends Component {
                                     type='password'
                                     label='Password'
                                     name='password'
-                                    labelClass='info-label'
-                                    valueClass='info-field'
+                                    labelClass='info-label info-label-reg'
+                                    valueClass='info-field info-field-reg'
                                     value={this.state.password}
                                     placeholder='Password'
                                     changeHandler={this.onChange} />

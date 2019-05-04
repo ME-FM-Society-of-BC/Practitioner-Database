@@ -10,8 +10,8 @@ import PendingComments from './containers/PendingComments';
 import PractitionerList from './containers/PractitionerList';
 import Practitioner from './containers/Practitioner';
 import Search from './containers/Search';
-import Registration from './containers/Registration';
 import SignIn from './containers/SignIn';
+import SignOut from './components/SignOut';
 import './App.css';
 import Radium, {StyleRoot} from 'radium';
 import { CircleSpinner } from "react-spinners-kit";
@@ -101,7 +101,67 @@ class App extends Component {
                 </div>
             )
         }
-        else return (
+        
+        // Establish routes according to whether the user is logged in, and if so,
+        // what the user's role is. 
+       
+        const active = this.props.loggedInUser && !this.props.loggedInUser.isModerator && !this.props.loggedInUser.isAdministrator;
+        const moderator = this.props.loggedInUser && this.props.loggedInUser.isModerator;
+        const administrator = this.props.loggedInUser && this.props.loggedInUser.isAdministrator;
+
+        let routes;
+        if (moderator){
+            routes = (
+                <>
+                <Route path="/search" component={Search} />
+                <Route path="/practitioners" exact component={PractitionerList} />
+                <Route path="/search-results" component={PractitionerList} />
+                <Route path="/practitioners/:id" exact component={Practitioner} />
+                <Route path="/pending-comments" component={PendingComments} />
+                <Route path="/home" component={Home} />
+                <Route path="/sign-in" component={SignIn} />
+                <Route path="/sign-out" component={SignOut} />
+                </>
+            );
+        }
+        else if (administrator){
+            // Add component for creating moderators
+            routes = (
+                <>
+                <Route path="/sign-in" component={SignIn} />
+                <Route path="/sign-out" component={SignOut} />
+                </>
+            );
+        }
+        else if (active) { 
+            routes = (
+                <>
+                <Route path="/search" component={Search} />
+                <Route path="/practitioners" exact component={PractitionerList} />
+                <Route path="/search-results" component={PractitionerList} />
+                <Route path="/practitioners/:id" exact component={Practitioner} />
+                <Route path="/my-activity" component={MyActivity} />
+                <Route path="/home" component={Home} />
+                <Route path="/sign-in" component={SignIn} />
+                <Route path="/sign-out" component={SignOut} />
+                </>
+            );
+        }
+        else {
+            routes = (
+                <>
+                <Route path="/search" component={Search} />
+                <Route path="/practitioners" exact component={PractitionerList} />
+                <Route path="/sign-in" component={SignIn} />
+                <Route path="/search-results" component={PractitionerList} />
+                <Route path="/practitioners/:id" exact component={Practitioner} />
+                </>
+            );
+        }
+        // Render the menu consistent with the routes established above.
+        // Technical note: The react-router-bootstrap LinkContainer accepts 
+        // the same parameters as react-router NavLink and Link
+        return (
             <StyleRoot>
             <div className="App">
                 <Navbar collapseOnSelect>
@@ -113,49 +173,54 @@ class App extends Component {
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav pullRight>
-                            {/* LinkContainer accepts the same parameters as react-router NavLink and Link */}
-                            <LinkContainer to="/practitioners">
-                                <NavItem>View All</NavItem>
-                            </LinkContainer>
-                            <LinkContainer to="/search">
-                                <NavItem>Search</NavItem>
-                            </LinkContainer>
-                            {this.props.loggedInUser ?
-                                <> 
+                            {administrator ?
+                                '':
+                                <>
+                                <LinkContainer to="/practitioners">
+                                    <NavItem>View All</NavItem>
+                                </LinkContainer>
+                                <LinkContainer to="/search">
+                                    <NavItem>Search</NavItem>
+                                </LinkContainer>
+                                </>
+                            }
+                            {active || moderator ?
                                 <LinkContainer to="/practitioners/-1">
                                     <NavItem>Recommend</NavItem>
                                 </LinkContainer>
+                                : ''
+                            }
+                            {active ?
                                 <LinkContainer to="/my-activity">
                                     <NavItem>My Activity</NavItem>
-                                </LinkContainer>
-                                </>
-                                : <></>
+                                </LinkContainer>                                
+                                : ''
                             }
-                            {this.props.loggedInUser && this.props.loggedInUser.isModerator ?
+                            {moderator ?
                                 <LinkContainer to="/pending-comments">
                                     <NavItem>Comments</NavItem>
                                 </LinkContainer>
-                                : <></>
+                                : ''
                             }
-                            {this.props.loggedInUser ?
+                            {active || moderator ?
                                 <LinkContainer to="/home">
                                     <NavItem>Home</NavItem>
                                 </LinkContainer>
-                                : <></>
+                                : ''
+                            }
+                            {active || moderator || administrator ?
+                                <LinkContainer to="/sign-out">
+                                    <NavItem>Logout</NavItem>
+                                </LinkContainer>
+                                : 
+                                <LinkContainer to="/sign-in">
+                                    <NavItem>Register</NavItem>
+                                </LinkContainer>
                             }
                     </Nav>
                     </Navbar.Collapse>
                 </Navbar>
-    
-                <Route path="/practitioners" exact component={PractitionerList} />
-                <Route path="/practitioners/:id" exact component={Practitioner} />
-                <Route path="/search" component={Search} />
-                <Route path="/search-results" component={PractitionerList} />
-                <Route path="/pending-comments" component={PendingComments} />
-                <Route path="/my-activity" component={MyActivity} />
-                <Route path="/registration" component={Registration} />
-                <Route path="/sign-in" component={SignIn} />
-                <Route path="/home" component={Home} />
+                {routes}
             </div>
             </StyleRoot>
         );
