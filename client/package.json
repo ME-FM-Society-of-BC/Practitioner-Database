@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "jwt-decode": "^2.2.0",
     "radium": "^0.25.1",
     "react": "^16.6.3",
     "react-app-polyfill": "^1.0.0",

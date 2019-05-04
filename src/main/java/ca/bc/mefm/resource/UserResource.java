@@ -12,9 +12,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.HttpHeaders;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
+import ca.bc.mefm.security.KeyGenerator;
+import ca.bc.mefm.security.TokenGenerator;
 
 import com.googlecode.objectify.Key;
 
@@ -57,16 +60,21 @@ public class UserResource extends AbstractResource{
     	if (existingUser != null) {
     		return responseOkWithBody(new AuthResultNameAlreadyTaken());
     	}
-
+    	newUser.setStatus(User.Status.ENABLED);
         newUser.setCreated(new Date());
         da.put(newUser);
-        return responseCreated(newUser.getId());
+
+		String token = TokenGenerator.generateToken(newUser.getUsername(), newUser.getRole().toString(), newUser.getId());
+	    return responseCreated(newUser.getId(), token);
+
+        
+//        return responseCreated(newUser.getId());
     }
     
     /**
-     * Authenticates a user
+     * Authenticates a user and generates a JSON Web Token
      * @param User
-     * TODO: Temporary for demo
+     * 
      */
     @POST
     @Path("auth")
@@ -75,14 +83,22 @@ public class UserResource extends AbstractResource{
     public Response authenticate(User credentials) {
         DataAccess da = new DataAccess();
     	User user = da.findByQuery(User.class, "username", credentials.getUsername());
-    	if (user == null) {
-    		return responseOkWithBody(new AuthResultBadUser());
+//    	if (user == null) {
+//    		return responseOkWithBody(new AuthResultBadUser());
+//    	}
+//    	if (!user.getPassword().equals(credentials.getPassword())) {
+//    		return responseOkWithBody(new AuthResultWrongPassword());
+//    	}
+//    	return responseOkWithBody(user);
+    	if (user == null || !user.getPassword().equals(credentials.getPassword())) {
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
-    	if (!user.getPassword().equals(credentials.getPassword())) {
-    		return responseOkWithBody(new AuthResultWrongPassword());
+    	else {
+    		String token = TokenGenerator.generateToken(user.getUsername(), user.getRole().toString(), user.getId());
+    	    return responseOkWithBody(token);
     	}
-    	return responseOkWithBody(user);
     }
+    
     
     /**
      * Fetches a specific User

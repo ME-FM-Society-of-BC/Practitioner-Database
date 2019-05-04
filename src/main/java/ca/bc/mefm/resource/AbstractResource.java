@@ -2,6 +2,7 @@ package ca.bc.mefm.resource;
 
 import java.util.List;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -29,6 +30,21 @@ public abstract class AbstractResource {
      }
 
     /**
+     * Creates a 201 Created response with the key as body content and an Authorization header
+     * @param key the key
+     * @param token the token to be returned in the Authorization header
+     * @return the Response
+     */
+    protected Response responseCreated(Long id, String token){
+    	ResponseBuilder builder = Response.status(Response.Status.CREATED);
+    	builder.header("Access-Control-Allow-Origin", "*");
+    	builder.header("Content-Location", contentLocation);
+    	builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+    	builder.entity(id);
+    	return builder.build();
+    }
+    
+    /**
      * Creates a 201 Created response with the key as body content
      * @param key the key
      * @return the Response
@@ -53,6 +69,7 @@ public abstract class AbstractResource {
     	builder.entity(ids);
     	return builder.build();
     }
+    
     /**
      * Creates a 201 Created response with no body 
      * @return the Response
