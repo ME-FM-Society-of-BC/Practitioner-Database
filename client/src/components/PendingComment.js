@@ -1,6 +1,6 @@
 /**
- * A PENDING or FLAGGED Comment 
-                <input type="checkbox" name={props.id} onClick={() => props.onAction(props.id)}/>
+ * Displays a comment for the moderator to review. The moderator 
+ * can perform a single action to resolve the comment 
  */
 import React from 'react';
 import Radium from 'radium';

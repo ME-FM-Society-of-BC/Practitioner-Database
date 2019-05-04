@@ -1,7 +1,6 @@
 /**
- * Creates a header or footer for the Practitioner Evaluation view
- * Both header and footer contain the same buttons. The header also
- * displays explanatory text.
+ * Creates a header or footer for the Practitioner Evaluation view. Both header and footer 
+ * contain the same buttons. The header also displays explanatory text.
  * 
  * Properties:
  * isHeader

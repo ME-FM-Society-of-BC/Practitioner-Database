@@ -16,10 +16,6 @@ import PractitionerInfo from './PractitionerInfo';
 import PractitionerEval from './PractitionerEval';
 import PractitionerComments from './PractitionerComments';
 
-/**
- * Input properties:
- * 
- */
 class Practitioner extends Component {
 
     state = {}

@@ -113,7 +113,6 @@ class PendingCommentBlock extends Component {
                     }
                     </Instructions>
                 }
-
                 {
                     commentsToDisplay.map((comment) => {
                         return <PendingComment
@@ -153,7 +152,6 @@ const mapStateToProps = state => {
         allUsers: state.userReducer.allUsers
     }
 }
-
 
 export default  connect(mapStateToProps)(PendingCommentBlock);
     

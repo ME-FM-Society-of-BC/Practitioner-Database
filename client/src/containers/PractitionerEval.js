@@ -20,7 +20,6 @@ import YesNo from '../components/YesNo';
 import Selector from '../components/Selector';
 import QuestionGroup from '../components/QuestionGroup';
 import EvalHeaderFooter from '../components/EvalHeaderFooter';
-import { createQuestionGroups, createQuestionChoiceSets  } from '../common/utilities';
 import axios from 'axios';
 
 class PractitionerEval extends Component {
@@ -87,6 +86,54 @@ class PractitionerEval extends Component {
             }
             this.components.push(component);
         }
+    }
+
+    /**
+     * Combines the Question and QuestionGroup entities. 
+     * @param {*} questions array of Question entities
+     * @param {*} groups array of QuestionGroup entities
+     * @returns an array {title, members} where 
+     *          title = the QuestionGroup title
+     *          members = array of Questions comprising the group
+     */
+    createQuestionGroups(questions, groups){
+        const groupTitles = {};
+        groups.forEach(group => {
+            groupTitles[group.id] = group.title;
+        });
+
+        const assembledGroups = {};
+        questions.forEach(question => {
+            if (question.questionGroupId){
+                let questionGroup = assembledGroups[question.questionGroupId];
+                if (!questionGroup){
+                    questionGroup = {
+                        title: groupTitles[question.questionGroupId],
+                        members: []
+                    }
+                    assembledGroups[question.questionGroupId] = questionGroup;
+                }
+                questionGroup.members.push({question})
+            } 
+        });
+        return assembledGroups;
+    }
+
+    /**
+     * Create the option lists used in the Selector components
+     * @param {*} questionChoices array of QuestionChoice entities
+     * @return map of questionChoiceSetId to the array of choice item strings  
+     */
+    createQuestionChoiceSets(questionChoices){
+        const choiceSets = {};
+        questionChoices.forEach(choice => {
+            const setId = choice.questionChoiceSetId;
+            if (!choiceSets[setId]){
+                choiceSets[setId] = [];
+            }
+            choiceSets[setId].push(choice.text);
+        });
+        return choiceSets;
     }
 
     render() {

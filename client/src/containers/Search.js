@@ -36,18 +36,6 @@ class Search extends Component {
         let {name, value} = event.target;
         if (name === 'postalCode'){
             value = handlePostalCode(value);
-            // value = value.toUpperCase();
-            // if (value.endsWith(' ')){
-            //     value = value.replace(' ','-');
-            // }
-            // if (value.length === 4){
-            //     if (value.charAt(3) !== '-'){
-            //         value = value.substring(0, 3) + '-' + value.charAt(3);
-            //     }
-            // }
-            // else if (value.length === 8){
-            //     value = value.substring(0, 7);
-            // }
         }
         else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
             value = value.toUpperCase();
@@ -113,7 +101,8 @@ class Search extends Component {
         }, '');
     }
 
-    /**  Search by postal code only. This must be across all practitioners, so they must be fetched.
+    /**  
+     * Search by postal code only. This must be across all practitioners, so they must be fetched.
      * TODO: Consider recording previous recent view all request and just use those.
      */
     searchQuick(){

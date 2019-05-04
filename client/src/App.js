@@ -22,7 +22,8 @@ import * as locationActions from './store/locationActions';
 import axios from 'axios';
 
 /**
- * The root component of the application
+ * The root component of the application. It displays the menu, whose
+ * item set is determined by whether a user is logged in, and the type of user 
  */
 class App extends Component {
     
@@ -40,6 +41,8 @@ class App extends Component {
             console.log(error);
             return Promise.reject(error);
         });
+        // Session timeout is based on the user not performing an
+        // action which requires a server request 
         axios.interceptors.response.use(response => {
             this.restartSessionTimer(this.SESSION_MINUTES);
             return response;
@@ -50,18 +53,25 @@ class App extends Component {
         });
     }
 
+    /**
+     * Restarts the session timer
+     * @param sessionLimit the session limit in minutes
+     */
     restartSessionTimer(sessionLimit) {
         if (this.timerId){
             clearTimeout(this.timerId);
         }
         this.timerId = setTimeout(() => {
             if (this.props.loggedInUser){
+                // Session timing applies only to logged in users
                 this.props.history.replace('/sign-out');
             }
         }, sessionLimit * 60000);        
     }
 
     componentDidMount() {
+        // Start a request chain to obtain all data required for a visitor 
+        // to start using the app without registering or signing in 
         axios.get('/roles')
         .then(response => {
             this.props.storeUserRoles(response.data);
@@ -122,6 +132,7 @@ class App extends Component {
     }
 
     render() {
+        // Display spinner until all required data are obtained from the server 
         if (this.state.loading){
             return (
                 <div className='spinner-container'>
@@ -153,11 +164,11 @@ class App extends Component {
             );
         }
         else if (administrator){
-            // Add component for creating moderators
             routes = (
                 <>
                 <Route path="/sign-in" component={SignIn} />
                 <Route path="/sign-out" component={SignOut} />
+                <Route path="/manage-moderators" component = {Moderators} />
                 </>
             );
         }
@@ -202,7 +213,10 @@ class App extends Component {
                     <Navbar.Collapse>
                         <Nav pullRight>
                             {administrator ?
-                                '':
+                                <LinkContainer to="/manage-moderators">
+                                    <NavItem>Moderators</NavItem>
+                                </LinkContainer>
+                                :
                                 <>
                                 <LinkContainer to="/practitioners">
                                     <NavItem>View All</NavItem>

@@ -38,6 +38,7 @@ const commentReducer = (state = initialState, action) => {
             return saveComment(action.comment, {...state.allComments});
 
         case actions.UPDATE_COMMENT:
+            // TODO: Comment updates are not yet supported
 //            const updatedComment = {...action.comment};
             const allComments = {...state.allComments};
             // let comments = {

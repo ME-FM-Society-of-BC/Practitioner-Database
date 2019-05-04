@@ -2,7 +2,13 @@
  * Common utility functions
  */
 
- export const handlePostalCode = value =>{
+ /**
+  * Manages keystrokes entered in a postal code field. The purpose is
+  * to coerce the value into the format 'V0V-0V0'
+  * @param value the value of the entry field after the keystroke
+  * @return the postal code field after the rules have been applied
+  */
+export const handlePostalCode = value =>{
     value = value.toUpperCase();
     if (value.endsWith(' ')){
         value = value.replace(' ','-');
@@ -16,12 +22,12 @@
         value = value.substring(0, 7);
     }
     return value
- }
+}
 
  /**
  * Given an array of entities, creates a map of the entity id to the the entity's
- * index in the array
- * @param {*} entityArray
+ * index in the array. 
+ * @param entityArray an array of entity objects
  * @return the map 
  */
 export const mapIdsToIndices = entityArray => {
@@ -52,50 +58,3 @@ export const parseDimensions = dimensions => {
     }
 }
 
-/**
- * Combines the Question and QuestionGroup entities. 
- * @param {*} questions array of Question entities
- * @param {*} groups array of QuestionGroup entities
- * @returns an array {title, members} where 
- *          title = the QuestionGroup title
- *          members = array of Questions comprising the group
- */
-export const createQuestionGroups = (questions, groups) =>{
-    const groupTitles = {};
-    groups.forEach(group => {
-        groupTitles[group.id] = group.title;
-    });
-
-    const assembledGroups = {};
-    questions.forEach(question => {
-        if (question.questionGroupId){
-            let questionGroup = assembledGroups[question.questionGroupId];
-            if (!questionGroup){
-                questionGroup = {
-                    title: groupTitles[question.questionGroupId],
-                    members: []
-                }
-                assembledGroups[question.questionGroupId] = questionGroup;
-            }
-            questionGroup.members.push({question})
-        } 
-    });
-    return assembledGroups;
-}
-
-/**
- * Create the option lists used in the Selector components
- * @param {*} questionChoices array of QuestionChoice entities
- * @return map of questionChoiceSetId to the array of choice item strings  
- */
-export const createQuestionChoiceSets = (questionChoices) => {
-    const choiceSets = {};
-    questionChoices.forEach(choice => {
-        const setId = choice.questionChoiceSetId;
-        if (!choiceSets[setId]){
-            choiceSets[setId] = [];
-        }
-        choiceSets[setId].push(choice.text);
-    });
-    return choiceSets;
-}

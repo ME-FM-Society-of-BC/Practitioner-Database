@@ -1,10 +1,7 @@
 /**
- * Implements the PendingComments View
- * Flagged: 
- *    User  Comment Text            Allow
- * Not Viewed
- *    User  Comment Text            Block
- * 
+ * Implements the PendingComments View. Pending comments are those with a status of either:
+ * <li>FLAGGED: a user has flagged the comment</li>
+ * <li>PENDING: any comment which has not been viewed by the moderator
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';

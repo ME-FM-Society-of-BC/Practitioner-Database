@@ -1,5 +1,9 @@
 import React from 'react';
 
+/**
+ * Implements an HTML textarea element which will expand as the number of lines of text
+ * increases. This overrides the default behaviour of adding a vertical scroll bar
+ */
 const expandingText = (props) => {
     return <textarea 
         className={props.className} 
@@ -18,6 +22,5 @@ const autosize = event => {
       el.style.cssText = 'height:' + el.scrollHeight + 'px';
     },0);
 }
-
 
 export default expandingText;

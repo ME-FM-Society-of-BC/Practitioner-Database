@@ -1,8 +1,10 @@
 /**
- * Implements the Comments View, displaying all approved comments for a practitioner.
+ * Implements the Comments View, displaying all comments for a practitioner.
  * Comments are arranged in a two level hierarchy. The second level contains any 
- * comments entered as responses to a given comment. The comment of a user who responds 
- * to a second level comment will appear on the second level. 
+ * comments entered as responses to a given comment. 
+ * <p>
+ * If the moderator has blocked a comment (either on their own initiative or
+ * in response to a user flagging it) the offending text is replaced eith an explanation
  */
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';

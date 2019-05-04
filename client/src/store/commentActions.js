@@ -4,14 +4,11 @@
 import axios from 'axios';
 
 /******* Synchronous actions *********/
-
-/** Store all comments for a practitioner retrieved from the server */
 export const STORE_COMMENTS = 'STORE_COMMENTS';
 export const  SAVE_COMMENT = 'SAVE_COMMENT';
 export const  UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const  STORE_ALL_PENDING_COMMENTS = 'STORE_ALL_PENDING_COMMENTS';
 export const  STORE_ALL_FLAGGED_COMMENTS = 'STORE_ALL_FLAGGED_COMMENTS';
-
 
 /******* Asynchronous actions ********/
 
