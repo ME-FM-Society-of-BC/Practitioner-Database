@@ -40,12 +40,12 @@ class PractitionerInfo extends Component {
         }
         else {
             // A new Practitioner is being created
+            console.log("New Practitioner");
             this.state = {
                 mode: 'create',
                 practitioner: {}
             }
         }
-
         this.enableEdit = this.enableEdit.bind(this);
         this.saveInfo = this.saveInfo.bind(this);
         this.saveNew = this.saveNew.bind(this);
@@ -88,12 +88,6 @@ class PractitionerInfo extends Component {
         let value = event.target.value;
         if (name === 'postalCode'){
             value = handlePostalCode(value);
-            // value = value.toUpperCase();
-            // if (value.length === 4){
-            //     if (value.charAt(3) !== '-'){
-            //         value = value.substring(0, 3) + '-' + value.charAt(3);
-            //     }
-            // }
         }
         else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
             value = value.toUpperCase();
@@ -128,7 +122,9 @@ class PractitionerInfo extends Component {
                 const practitioner = {...this.state.practitioner};
                 practitioner.id = response.data;
                 this.setState({
-                    practitioner: practitioner
+                    practitioner: practitioner,
+                    mode:'view',
+                    infoChanged: false
                 });
                 this.props.saveNewPractitioner(this.state.practitioner);
                 this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
@@ -138,23 +134,9 @@ class PractitionerInfo extends Component {
                 alert(error);
             }
         );        
-
-        this.setState({
-            mode:'view',
-            canEdit: true,
-            infoChanged: false
-        });
     }
 
     render() {
-
-        if (this.props.match.params.id === '-1' && this.state.mode ==='view'){
-            this.setState({
-                mode: 'create',
-                practitioner: {}
-            })
-            return <div/>
-        }
         const panelStyle = {
             width:'90%',
             margin: 'auto'
@@ -167,7 +149,6 @@ class PractitionerInfo extends Component {
                 newPractitioner = true
             }
         }
-
         return (
             <Panel style={panelStyle}>
             <Panel.Body>
@@ -245,9 +226,9 @@ class PractitionerInfo extends Component {
                     : ''
                 }
                 {newPractitioner === true ?
-                    <Instructions width='40em'>
+                    <Instructions width='30em'>
                         You can now provide an evaluation for this Practitioner
-                        Remember you can always return latyer and create or modify you evaluation
+                        Remember you can always return later and create or modify you evaluation
                     </Instructions> 
                 : ''}
             </Panel.Body>           

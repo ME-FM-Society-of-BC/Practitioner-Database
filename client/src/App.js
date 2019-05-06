@@ -9,9 +9,11 @@ import MyActivity from './containers/MyActivity';
 import PendingComments from './containers/PendingComments';
 import PractitionerList from './containers/PractitionerList';
 import Practitioner from './containers/Practitioner';
+import NewPractitioner from './components/NewPractitioner';
 import Search from './containers/Search';
 import SignIn from './containers/SignIn';
 import SignOut from './components/SignOut';
+import Moderators from './containers/Moderators';
 import './App.css';
 import Radium, {StyleRoot} from 'radium';
 import { CircleSpinner } from "react-spinners-kit";
@@ -27,7 +29,7 @@ import axios from 'axios';
  */
 class App extends Component {
     
-    SESSION_MINUTES = 1;
+    SESSION_MINUTES = 15;
 
     constructor(props){
         super(props);
@@ -156,6 +158,7 @@ class App extends Component {
                 <Route path="/practitioners" exact component={PractitionerList} />
                 <Route path="/search-results" component={PractitionerList} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
+                <Route path="/new-practitioner" exact component={NewPractitioner} />
                 <Route path="/pending-comments" component={PendingComments} />
                 <Route path="/home" component={Home} />
                 <Route path="/sign-in" component={SignIn} />
@@ -178,6 +181,7 @@ class App extends Component {
                 <Route path="/search" component={Search} />
                 <Route path="/practitioners" exact component={PractitionerList} />
                 <Route path="/search-results" component={PractitionerList} />
+                <Route path="/new-practitioner" exact component={NewPractitioner} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
                 <Route path="/my-activity" component={MyActivity} />
                 <Route path="/home" component={Home} />
@@ -227,7 +231,7 @@ class App extends Component {
                                 </>
                             }
                             {active || moderator ?
-                                <LinkContainer to="/practitioners/-1">
+                                <LinkContainer to="/new-practitioner">
                                     <NavItem>Recommend</NavItem>
                                 </LinkContainer>
                                 : ''
