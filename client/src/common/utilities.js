@@ -18,6 +18,14 @@ export const handlePostalCode = value =>{
             value = value.substring(0, 3) + '-' + value.charAt(3);
         }
     }
+    else if (value.length === 6 && value[3] !== '-'){
+        // User has pasted postal code with neither blank nor dash
+        value = value.substring(0, 3) + '-' + value.substring(3, 6)
+    }
+    else if (value.length === 7){
+        // User pasted postal code with blank
+        value = value.replace(' ','-');
+    }
     else if (value.length === 8){
         value = value.substring(0, 7);
     }
