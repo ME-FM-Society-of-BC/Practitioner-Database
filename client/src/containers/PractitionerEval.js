@@ -58,8 +58,8 @@ class PractitionerEval extends Component {
 
     createQuestionItems(){
         // TODO: These could be entirely created in the practitionerReducer
-        this.questionChoiceSets = createQuestionChoiceSets(this.props.questionChoices);
-        this.questionGroups = createQuestionGroups(this.props.questions, this.props.questionGroups);
+        this.questionChoiceSets = this.createQuestionChoiceSets(this.props.questionChoices);
+        this.questionGroups = this.createQuestionGroups(this.props.questions, this.props.questionGroups);
         
         this.components = [];
         
