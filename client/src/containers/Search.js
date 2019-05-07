@@ -162,7 +162,7 @@ class Search extends Component {
         .then(response => {
             const distances = response.data;
             const badOriginPostalCode = distances.reduce((allBad, distance) => {
-                return allBad && distance === 'Not found';
+                return allBad && distance.humanReadable === 'Not found';
             }, true);
 
             if (badOriginPostalCode){

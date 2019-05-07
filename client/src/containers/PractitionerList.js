@@ -1,5 +1,13 @@
 /**
- * Inplements the Practitioner List view. 
+ * Implements the Practitioner List view. 
+ * <p>
+ * The list may contain all the
+ * Practitioners in the system (by selecting the View All menu) or those matching
+ * search criteria. If the search included distance calculation, the path includes
+ * the parameter 'withDistance' In this case, the initial sort order will be
+ * on the distance field. 
+ * <p>
+ * The user can also sort on Name, Phone or Specialty 
  */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
@@ -24,6 +32,7 @@ class PractitionerList extends Component {
                 if (param[0] === 'withDistance'){
                     this.state.withDistance = param[1] === 'true';
                     this.state.sortColumn = 'Distance';
+                    this.doSort('Distance', this.props.practitioners)
                 }
             }
         }
@@ -59,7 +68,15 @@ class PractitionerList extends Component {
         field = field.charAt(0).toLowerCase().concat(field.substring(1));
         if (field === 'name') field = 'lastName';
         const sorted = [...practitioners].sort( (a, b) => {
-            return a[field] ? a[field].localeCompare(b[field]) : -1;
+            if (field === 'distance'){
+                if (a.distance.inMeters === -1){
+                    return -1;
+                }
+                return a.distance.inMeters - b.distance.inMeters;
+            }
+            else {
+                return a[field] ? a[field].localeCompare(b[field]) : -1;
+            }
         });
         this.props.storePractitioners(sorted);
     }
