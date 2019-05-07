@@ -25,7 +25,7 @@ import ca.bc.mefm.data.Practitioner;
 @Path("/maps")
 public class MapsResource extends AbstractResource{
     
-	/**
+	/**Google
      * @param from 
      * @return
      */
@@ -33,7 +33,6 @@ public class MapsResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response findDistance(@QueryParam("from") String from, @QueryParam("to") String to){
     	
-    	String[] origins = new String[] {from};
     	String[] practitionerIds = to.split("\\|");
         
     	DataAccess da = new DataAccess();
@@ -51,7 +50,7 @@ public class MapsResource extends AbstractResource{
     	.collect(Collectors.toList());
     	
     	
-        List<String> distances = GoogleMapsApi.getDistances(origins, destinations.toArray(new String[] {}));
+        List<GoogleMapsApi.Distance> distances = GoogleMapsApi.getDistances(from, destinations.toArray(new String[] {}));
         return responseOkWithBody(distances);
     }
 
