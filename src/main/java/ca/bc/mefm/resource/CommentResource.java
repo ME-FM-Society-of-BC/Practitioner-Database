@@ -1,5 +1,6 @@
 package ca.bc.mefm.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -16,6 +17,8 @@ import javax.ws.rs.core.Response;
 import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.DataAccess.Filter;
+import ca.bc.mefm.data.User;
+import ca.bc.mefm.mail.MailSender;
 
 /**
  * Service endpoint for Comment entity creation and retrieval
@@ -50,14 +53,32 @@ public class CommentResource extends AbstractResource{
         return responseNoContent();
     }
     
+    /**
+     * Updates the status of a set of comments, and sends emails to the
+     * authors of those which have been blocked.
+     * @param comments
+     * @return
+     */
     @Path("resolve")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response resolve(List<Comment> comments) {
     	DataAccess da = new DataAccess();
+    	
+    	// TODO Address of moderator
+    	String kludge = "robert.t.toms@gmail.com";
+    	
+    	List<User> blockedUsers = new ArrayList<User>();
     	comments.stream().forEach( comment -> {
     		da.put(comment);
+    		if (comment.getStatus().equals(Comment.Status.BLOCKED)) {
+    			User user = da.find(comment.getUserId(), User.class);
+    			blockedUsers.add(user);
+    		}
     	});
+    	if (!blockedUsers.isEmpty()) {
+    		MailSender.sendBlockedNotification(kludge, blockedUsers);
+    	}
         return responseNoContent();
     }
     
