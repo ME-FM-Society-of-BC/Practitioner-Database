@@ -93,6 +93,11 @@ public class DataAccess {
 		return o;
 	}
 	
+	public <T> T find(Long id, Class<T> clazz) {
+		Key<T> key = Key.create(clazz, id);
+		return find(key);
+	}
+	
 	public <T> T findByQuery(Class<T> clazz, String field, String value) {
 		T o = ofy().load().type(clazz).filter(field, value).first().now();
 		return o;
