@@ -51,6 +51,9 @@ class App extends Component {
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
             console.log(error);
+            if (error.response.status !== 401 && error.response.status !== 403){
+                alert(error);
+            }
             return Promise.reject(error);
         });
     }
@@ -90,8 +93,17 @@ class App extends Component {
         .then(response => {
             this.props.storeProvinces(response.data);
         })
+
         .then(() => {
-            return axios.get('/cities')
+            return axios.get('/moderators')
+        })
+        .then(response => {
+            this.props.storeModerators(response.data);
+        })
+        .then(() => {
+            const provinceIds = this.getAllProvinceIds(this.props.moderators);
+            // This is a "moot" request if no moderators
+            return axios.get('/cities?provinces=' + provinceIds)
         })
         .then(response => {
             this.props.storeCities(response.data);
@@ -131,6 +143,25 @@ class App extends Component {
         .catch(error => {
             console.log(error);
         });        
+    }
+
+    // Given the moderators array, create a string 
+    getAllProvinceIds(moderators){
+        // Determine to which provinces moderators are assigned
+        // (Multiple moderators can be assigned to a given province)
+        if (moderators.length === 0){
+            return '';
+        }
+        let provinceNames = this.props.moderators.reduce((names, moderator) => {
+            names[moderator.province] = '';
+            return names;
+        }, {});
+        // Create a string if ids delimited by "|"
+        provinceNames= Object.getOwnPropertyNames(provinceNames);
+        const provinceIds = provinceNames.reduce((ids, name) => {
+            return ids + this.props.provinceNameToIdMap[name] + '|';
+        }, '');
+        return provinceIds.substring(0, provinceIds.length - 1);
     }
 
     render() {
@@ -276,20 +307,23 @@ class App extends Component {
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
-        roles: state.userReducer.roles
+        roles: state.userReducer.roles,
+        moderators: state.userReducer.moderators,
+        provinceNameToIdMap: state.locationReducer.provinceNameToIdMap
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        storeUsers: (users) => dispatch({ type: userActions.STORE_ALL_USERS, users: users }),
-        storeUserRoles: (roles) => dispatch({ type: userActions.STORE_USER_ROLES, roles: roles }),
-        storeSpecialties: (specialties) => dispatch({ type: practitionerActions.STORE_SPECIALTIES, specialties: specialties }),
-        storeProvinces: (provinces) => dispatch({ type: locationActions.STORE_PROVINCES, provinces: provinces }),
-        storeCities: (cities) => dispatch({ type: locationActions.STORE_CITIES, cities: cities }),
-        storeQuestions: (questions) => dispatch({ type: evaluationActions.STORE_QUESTIONS, questions: questions }),
-        storeQuestionChoices: (questionChoices) => dispatch({ type: evaluationActions.STORE_QUESTION_CHOICES, questionChoices: questionChoices }),
-        storeQuestionGroups: (questionGroups) => dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups: questionGroups })
+        storeUsers: (users) => dispatch({ type: userActions.STORE_ALL_USERS, users }),
+        storeUserRoles: (roles) => dispatch({ type: userActions.STORE_USER_ROLES, roles }),
+        storeModerators: (moderators) => dispatch({ type: userActions.STORE_MODERATORS, moderators }),
+        storeSpecialties: (specialties) => dispatch({ type: practitionerActions.STORE_SPECIALTIES, specialties }),
+        storeProvinces: (provinces) => dispatch({ type: locationActions.STORE_PROVINCES, provinces }),
+        storeCities: (cities) => dispatch({ type: locationActions.STORE_CITIES, cities }),
+        storeQuestions: (questions) => dispatch({ type: evaluationActions.STORE_QUESTIONS, questions }),
+        storeQuestionChoices: (questionChoices) => dispatch({ type: evaluationActions.STORE_QUESTION_CHOICES, questionChoices }),
+        storeQuestionGroups: (questionGroups) => dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups })
     }
 }
 
