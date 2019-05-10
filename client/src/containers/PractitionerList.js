@@ -18,6 +18,7 @@ import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import { STORE_COMMENTS } from '../store/commentActions';
 import { STORE_ALL_RECOMMENDATION_ACTIONS} from '../store/evaluationActions';
 import { Button } from 'react-bootstrap';
+import { CircleSpinner } from "react-spinners-kit";
 
 class PractitionerList extends Component {
 
@@ -41,6 +42,7 @@ class PractitionerList extends Component {
             this.state.withDistance = false;
             this.state.sortColumn = 'Name';
             this.state.fetchAll = true;
+            this.state.loading = true;
             this.state.showRecommendButton = false | this.props.loggedInUser
         }
 
@@ -52,11 +54,14 @@ class PractitionerList extends Component {
             this.setState({fetchAll: false});
             // Coming from View All
             // Fetch of all practitioners from server
+
             axios.get('/practitioners')
             .then(response => {
                 this.doSort(this.state.sortColumn, response.data);
+                this.setState({loading: false});
             })
             .catch (error => {
+                this.setState({loading: false});
                 console.log(error);
                 alert(error)
             })
@@ -86,6 +91,14 @@ class PractitionerList extends Component {
     }
 
     render(){
+        // Display spinner during the search 
+        if (this.state.loading){
+            return (
+                <div className='spinner-container'>
+                    <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
+                </div>
+            )
+        }
         return (
         <>
             {this.props.loggedInUser ?

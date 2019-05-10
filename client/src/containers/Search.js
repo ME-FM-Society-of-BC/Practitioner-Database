@@ -11,6 +11,7 @@ import * as actions from '../store/practitionerActions';
 import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
 import { handlePostalCode } from '../common/utilities';
+import { CircleSpinner } from "react-spinners-kit";
 
 class Search extends Component {
 
@@ -127,8 +128,10 @@ class Search extends Component {
     }
 
     performSearch(searchParams){
+        this.setState({loading: true});
         axios.get('/practitioners/search?' + searchParams)
         .then(response => {
+
             if (response.data.length === 0){
                 this.setState({errorMessage: 'No practioners were found matching those criteria'});
                 return;
@@ -143,6 +146,7 @@ class Search extends Component {
             }
         })
         .catch (error => {
+            this.setState({loading: false});
             // TODO
         });
 
@@ -160,6 +164,8 @@ class Search extends Component {
 
         axios.get('/maps?from=' + origin + '&to=' + practitionerIds)
         .then(response => {
+            this.setState({loading: false});
+
             const distances = response.data;
             const badOriginPostalCode = distances.reduce((allBad, distance) => {
                 return allBad && distance.humanReadable === 'Not found';
@@ -176,6 +182,8 @@ class Search extends Component {
             }
         })
         .catch (error => {
+            this.setState({loading: false});
+
             const distances = practitionerIds.map( id => 'Unavailable');
             const practitioners = this.insertDistances(this.practitioners, distances);
             this.storeAndProceed(practitioners, true);
@@ -205,6 +213,15 @@ class Search extends Component {
     }
 
     render() {
+        // Display spinner during the search 
+        if (this.state.loading){
+            return (
+                <div className='spinner-container'>
+                    <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
+                </div>
+            )
+        }
+        
         const panelStyle = {
             width:'90%',
             margin: 'auto',
