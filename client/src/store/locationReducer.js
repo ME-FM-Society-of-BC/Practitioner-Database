@@ -6,7 +6,8 @@ import * as actions from './locationActions';
 const initialState = {
     provinces: [],
     citiesMap: {},
-    idToProvinceMap: {}
+    idToProvinceMap: {},
+    provinceNameToIdMap: {}
 }
 
 const locationReducer = (state = initialState, action) => {
@@ -19,13 +20,24 @@ const locationReducer = (state = initialState, action) => {
                 idToProvinceMap[province.id] =  province;
                 return idToProvinceMap;
             }, {})
+            const provinceNameToIdMap = action.provinces.reduce((provinceNameToIdMap, province) => {
+                provinceNameToIdMap[province.name] =  province.id;
+                return provinceNameToIdMap;
+            }, {})
             return {
                 ...state,
-                provinces: provinces,
-                idToProvinceMap: idToProvinceMap
+                provinces,
+                idToProvinceMap,
+                provinceNameToIdMap
             }
  
         case actions.STORE_CITIES:
+            if (action.cities.length === 0){
+                return {
+                    ...state,
+                    citiesMap: []
+                }
+            }
             // Convert the cities list into a map of selection arrays for the selector
             const citiesMap = action.cities.reduce ( (citiesMap, city) => {
                 const provinceName = state.idToProvinceMap[city.provinceId].name;
@@ -38,11 +50,13 @@ const locationReducer = (state = initialState, action) => {
             }, {});
             // Sort each city set
             state.provinces.forEach(province => {
-                citiesMap[province].sort();
+                if (citiesMap[province]){
+                    citiesMap[province].sort();
+                }
             });
             return {
                 ...state,
-                citiesMap: citiesMap
+                citiesMap
             }
 
         case actions.SELECT_PROVINCE:
