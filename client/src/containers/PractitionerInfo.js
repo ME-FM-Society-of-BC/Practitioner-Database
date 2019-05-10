@@ -29,8 +29,8 @@ class PractitionerInfo extends Component {
             const cityOptions = practitioner.province ? this.props.citiesMap[practitioner.province]: [];
         
             this.state = {
-                practitioner: practitioner,
-                cityOptions: cityOptions,                
+                practitioner,
+                cityOptions,                
                 // If the user is logged , the Edit/Save buttons not be displayed
                 canEdit: props.loggedInUser ? true : false,
                 // When user saves, update will be sent to server only if there are changes 
@@ -46,6 +46,14 @@ class PractitionerInfo extends Component {
                 practitioner: {}
             }
         }
+
+        // Province list must be restricted to those for which there is a moderator
+        const availableProvinces = Object.getOwnPropertyNames(this.props.moderators.reduce((names, moderator) => {
+            names[moderator.province] = '';
+            return names;
+        }, {}));
+        this.state.availableProvinces = availableProvinces;
+
         this.enableEdit = this.enableEdit.bind(this);
         this.saveInfo = this.saveInfo.bind(this);
         this.saveNew = this.saveNew.bind(this);
@@ -173,7 +181,7 @@ class PractitionerInfo extends Component {
                     <Selector label='Province'
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
-                        options={this.props.provinces}
+                        options={this.state.availableProvinces}
                         value={this.state.practitioner.province} 
                         placeholder='Select ...'
                         onChange =  {(event) => this.selectProvince(event)}/>
@@ -242,9 +250,11 @@ const mapStateToProps = state => {
         practitioners: state.practitionersReducer.practitioners,
         specialties: state.practitionersReducer.specialties,
         idToIndex: state.practitionersReducer.practitionerIdsToIndices,
+        moderators: state.userReducer.moderators,
         loggedInUser: state.userReducer.loggedInUser,
-        provinces: state.locationReducer.provinces,
-        citiesMap: state.locationReducer.citiesMap
+        allProvinces: state.locationReducer.provinces,
+        citiesMap: state.locationReducer.citiesMap,
+        provinceNamesToIdMap: state.locationReducer.provinceNamesToIdMap
     }
 }
 const mapDispatchToProps = dispatch => {
