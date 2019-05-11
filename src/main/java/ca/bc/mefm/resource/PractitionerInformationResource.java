@@ -77,8 +77,6 @@ public class PractitionerInformationResource extends AbstractResource{
     @Path("{id}")
     public Response get(@PathParam("id") Long id){
     	DataAccess da = new DataAccess();
-//    	Key<Practitioner> key = Key.create(Practitioner.class, id);
-//    	Practitioner practitioner = da.find(key);
 		Practitioner practitioner = da.find(Long.valueOf(id), Practitioner.class);
     	return responseOkWithBody(practitioner);
     }

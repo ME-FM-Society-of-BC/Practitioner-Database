@@ -16,7 +16,7 @@ class PendingComments extends Component {
 
     constructor(props){
         super(props);
-            axios.get('/comments?status=FLAGGED')
+        axios.get('/comments?status=FLAGGED')
         .then(response => {
             this.props.storeFlaggedComments(response.data);
             })

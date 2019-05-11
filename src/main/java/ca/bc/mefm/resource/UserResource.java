@@ -12,14 +12,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.HttpHeaders;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
-import ca.bc.mefm.security.KeyGenerator;
 import ca.bc.mefm.security.TokenGenerator;
-
-import com.googlecode.objectify.Key;
 
 /**
  * Service endpoint for retrieval and creation of User entities 
@@ -66,9 +62,6 @@ public class UserResource extends AbstractResource{
 
 		String token = TokenGenerator.generateToken(newUser.getUsername(), newUser.getRole().toString(), newUser.getId());
 	    return responseCreated(newUser.getId(), token);
-
-        
-//        return responseCreated(newUser.getId());
     }
     
     /**
@@ -83,14 +76,9 @@ public class UserResource extends AbstractResource{
     public Response authenticate(User credentials) {
         DataAccess da = new DataAccess();
     	User user = da.findByQuery(User.class, "username", credentials.getUsername());
-//    	if (user == null) {
-//    		return responseOkWithBody(new AuthResultBadUser());
-//    	}
-//    	if (!user.getPassword().equals(credentials.getPassword())) {
-//    		return responseOkWithBody(new AuthResultWrongPassword());
-//    	}
-//    	return responseOkWithBody(user);
-    	if (user == null || !user.getPassword().equals(credentials.getPassword())) {
+    	if (user == null 
+    			|| !user.getPassword().equals(credentials.getPassword())
+    			|| user.getStatus().equals(User.Status.SUSPENDED)) {
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
     	else {
@@ -110,8 +98,7 @@ public class UserResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") Long id){
         DataAccess da = new DataAccess();
-        Key<User> key = Key.create(User.class, id);
-        User user = da.find(key);
+        User user = da.find(id, User.class);
         return responseOkWithBody(user);
     }
 	
