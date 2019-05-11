@@ -18,8 +18,6 @@ import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.DataAccess.Filter;
 
-import com.googlecode.objectify.Key;
-
 /**
  * Service endpoint for Practitioner entity creation, modification and retrieval
  * @author Robert
@@ -79,8 +77,9 @@ public class PractitionerInformationResource extends AbstractResource{
     @Path("{id}")
     public Response get(@PathParam("id") Long id){
     	DataAccess da = new DataAccess();
-    	Key<Practitioner> key = Key.create(Practitioner.class, id);
-    	Practitioner practitioner = da.find(key);
+//    	Key<Practitioner> key = Key.create(Practitioner.class, id);
+//    	Practitioner practitioner = da.find(key);
+		Practitioner practitioner = da.find(Long.valueOf(id), Practitioner.class);
     	return responseOkWithBody(practitioner);
     }
     

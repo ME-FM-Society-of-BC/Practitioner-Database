@@ -11,8 +11,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.googlecode.objectify.Key;
-
 import ca.bc.mefm.GoogleMapsApi;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
@@ -39,8 +37,7 @@ public class MapsResource extends AbstractResource{
     	// TODO Country kludge
     	List<String> destinations = Arrays.asList(practitionerIds).stream()
     	.map( id -> {
-    		Key<Practitioner> key = Key.create(Practitioner.class, Long.valueOf(id));
-    		Practitioner practitioner = da.find(key);
+    		Practitioner practitioner = da.find(Long.valueOf(id), Practitioner.class);
     		StringBuilder sb = new StringBuilder()
     				.append(practitioner.getPostalCode())
     				.append('+')
