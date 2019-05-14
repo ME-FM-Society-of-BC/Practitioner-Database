@@ -8,7 +8,7 @@ import ExpandingText from './ExpandingText';
 const newComment = (props) => {
 
     return (
-        <Modal show={props.show} size="lg" aria-labelledby="contained-modal-title-vcenter" centered='true'>
+        <Modal show={props.show} size="lg" aria-labelledby="contained-modal-title-vcenter" centered='true' onHide={props.onCancel}>
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
                 Enter your comment

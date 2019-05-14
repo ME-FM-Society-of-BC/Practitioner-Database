@@ -14,9 +14,9 @@ import App from './App';
 import axios from 'axios';
 import thunk from 'redux-thunk';
 
-
 // Regarding react-app-polyfill/ie11 refer to
 // https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md
+
 // Create the store
 const rootReducer = combineReducers(
     {
@@ -26,18 +26,18 @@ const rootReducer = combineReducers(
         locationReducer: locationReducer,
         commentReducer: commentReducer
     }
-    );
+);
     
-    // Enable Redux devtools Chrome extension, and add thunk middleware (support for asynchronous 
-    // actions,) per https://github.com/zalmoxisus/redux-devtools-extension#usage
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-    const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
-    
-    //axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
-    axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
-    
-    console.log(document.baseURI);
-    if (document.baseURI === "http://localhost:3000/"){
+// Enable Redux devtools Chrome extension, and add thunk middleware (support for asynchronous 
+// actions,) per https://github.com/zalmoxisus/redux-devtools-extension#usage
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+
+//axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
+axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
+
+console.log(document.baseURI);
+if (document.baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
     axios.defaults.baseURL ="http://localhost:8080/rest/"; 
 }
@@ -45,21 +45,6 @@ else {
     // Client loaded from local or remote App Engine server
     axios.defaults.baseURL =  document.baseURI + "rest/";
 }
-
-// // Log all errors
-// axios.interceptors.request.use(request => {
-//     return request;
-// }, error => {
-//     console.log(error);
-//     return Promise.reject(error);
-// });
-// axios.interceptors.response.use(response => {
-//     dispatch(actions.checkAuthTimeout(1));
-//     return response;
-// }, error => {
-//     console.log(error);
-//     return Promise.reject(error);
-// });
 
 // For some reason things don't kick off unless I have some async code here.
 // Initialize call will seed the database if it is empty

@@ -10,6 +10,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import ca.bc.mefm.data.City;
 import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
@@ -52,6 +54,7 @@ public class InitializationResource extends AbstractResource {
         DataAccess da = new DataAccess();
         List<UserRole> existingUserRoles = da.getAll(UserRole.class);
         List<Province> existingProvinces = da.getAll(Province.class);
+        List<User> users = da.getAll(User.class);
         
         // If the UsesRole table is empty, then empty and recreate the entire database
         if (existingUserRoles.isEmpty()) {
@@ -76,6 +79,21 @@ public class InitializationResource extends AbstractResource {
         	da.deleteAll(City.class);
         	provinces.forEach((Province o) -> da.put(o));        	
         	addCities(da);        	
+        }
+        else {
+        	boolean adminExists = users.stream().reduce(false,
+        		(exists, user) -> exists || user.getRole().equals(UserRole.Type.ADMINISTRATOR), Boolean::logicalOr);
+        	if (!adminExists) {
+        		User admin = new User();
+        		admin.setCreated(new Date());
+        		admin.setEmail("elizabeth.sanchez@shaw.ca");
+        		admin.setRole(UserRole.Type.ADMINISTRATOR);
+        		admin.setUsername("admin");
+        		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        		admin.setPassword(encoder.encode("admin"));
+        		admin.setStatus(User.Status.ENABLED);
+        		da.put(admin);
+        	}
         }
         return responseNoContent();
     }

@@ -17,6 +17,12 @@
   color: #61dafb;
 }
 
+.execute {
+	font-weight: bold;
+	cursor: -webkit-grab; 
+	cursor: grab;
+}
+
 .vertical-group {
 	display: flex;
 	flex-direction: column;	
@@ -31,6 +37,7 @@
 	border: 2px solid #dce4ec;
 	border-radius: 4px;
 }
+
 /* These are for the Practitioner Information and Practitioner Evaluation fields */
 
 .info-field {
