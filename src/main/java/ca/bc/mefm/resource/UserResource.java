@@ -2,6 +2,7 @@ package ca.bc.mefm.resource;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.security.TokenGenerator;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Service endpoint for retrieval and creation of User entities 
@@ -25,21 +27,15 @@ import ca.bc.mefm.security.TokenGenerator;
 public class UserResource extends AbstractResource{
 
     /**
-     * Fetches all User entities
-     * @param basicOnly if in the request, and has value "true", only the id and username are returned
+     * Fetches all User entities, with password removed
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers(@QueryParam("basic") String basicOnly){
+    public Response getUsers(){
         DataAccess da = new DataAccess();
         List<User> list = da.getAll(User.class);
-        if (basicOnly != null) {
-         	return responseOkWithBody(list.stream().map(user -> user.withoutPassword()).toArray());
-        }
-        else {
-        	return responseOkWithBody(da.getAll(User.class));
-        }
+        return responseOkWithBody(list.stream().map(user -> user.withoutPassword()).toArray());
     }    
     
     /**
@@ -51,12 +47,24 @@ public class UserResource extends AbstractResource{
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(User newUser) {
         DataAccess da = new DataAccess();
-        // Check if username already taken
-    	User existingUser = da.findByQuery(User.class, "username", newUser.getUsername());
-    	if (existingUser != null) {
-    		return responseOkWithBody(new AuthResultNameAlreadyTaken());
-    	}
-    	newUser.setStatus(User.Status.ENABLED);
+        // Check if username or already taken. Objectify does nor support "OR"
+        // expressions for filters, so get all and filter here
+        List<User> users = da.getAll(User.class);
+        Iterator<User> i = users.iterator();
+        while (i.hasNext()) {
+        	User user = i.next();
+        	if (user.getUsername().equals(newUser.getUsername())) {
+        		return responseOkWithBody(new AuthResultNameAlreadyTaken());
+        	}
+        	if (user.getEmail().equals(newUser.getEmail())) {
+        		return responseOkWithBody(new AuthResultEmailAlreadyTaken());
+        	}
+        }
+        // Encrypt the password
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        newUser.setPassword(encoder.encode(newUser.getPassword()));
+    	
+        newUser.setStatus(User.Status.ENABLED);
         newUser.setCreated(new Date());
         da.put(newUser);
 
@@ -77,8 +85,12 @@ public class UserResource extends AbstractResource{
         DataAccess da = new DataAccess();
     	User user = da.findByQuery(User.class, "username", credentials.getUsername());
     	if (user == null 
-    			|| !user.getPassword().equals(credentials.getPassword())
     			|| user.getStatus().equals(User.Status.SUSPENDED)) {
+    		return Response.status(Response.Status.UNAUTHORIZED).build();
+    	}
+    	String encrypted = user.getPassword();
+    	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    	if (!encoder.matches(credentials.getPassword(), user.getPassword())) {
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
     	else {
@@ -118,6 +130,12 @@ public class UserResource extends AbstractResource{
 		private boolean nameAlreadyTaken = true;
 		public boolean getNameAlreadyTaken() {
 			return nameAlreadyTaken;
+		}
+	}
+	public class AuthResultEmailAlreadyTaken {
+		private boolean emailAlreadyTaken = true;
+		public boolean getEmaildAlreadyTaken() {
+			return emailAlreadyTaken;
 		}
 	}
 }
