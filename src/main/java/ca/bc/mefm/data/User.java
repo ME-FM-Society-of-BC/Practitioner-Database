@@ -20,6 +20,7 @@ public class User {
 	@Index
 	private String 			username;
 	private String 			password;
+	@Index
 	private String 			email;
 	private UserRole.Type	role;
 	private Date			created;
