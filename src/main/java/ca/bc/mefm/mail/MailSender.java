@@ -19,7 +19,7 @@ public class MailSender {
 
 	private static final Logger log = Logger.getLogger(MailSender.class.getName());
 
-	public static void sendBlockedNotification(String moderatorAddress, List<User> blockedUsers) {
+	public static void sendBlockedNotification(String senderAddress, List<User> blockedUsers) {
 		
 		// TODO: 
 		return;
@@ -31,7 +31,7 @@ public class MailSender {
 			
 			try {
 				Message msg = new MimeMessage(session);
-				msg.setFrom(new InternetAddress(moderatorAddress, "MEFM Society Moderator"));
+				msg.setFrom(new InternetAddress(senderAddress, "MEFM Society Moderator"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
 				msg.setSubject("Your comment has been blocked");
 				msg.setText("This is a test");
@@ -42,6 +42,25 @@ public class MailSender {
 			} 
 		});
 		*/
+	}
+	
+	public static void sendPasswordResetCode(User user, String senderAddress, String code) {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+
+		try {
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress(senderAddress, "MEFM Society"));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
+			msg.setSubject("MEFM Database Password Reset");
+			msg.setText("Your username is '" + user.getUsername() 
+				+ "'. On the Recover Password page, enter this code: "  + code);
+			Transport.send(msg);
+		} 
+		catch (MessagingException | UnsupportedEncodingException e) {
+			log.warning("Bad address for user " + user.getUsername());
+		} 
+		
 	}
 
 }

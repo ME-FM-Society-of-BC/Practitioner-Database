@@ -14,6 +14,7 @@ import Search from './containers/Search';
 import SignIn from './containers/SignIn';
 import SignOut from './components/SignOut';
 import Moderators from './containers/Moderators';
+import ResetRequest from './containers/ResetRequest';
 import './App.css';
 import Radium, {StyleRoot} from 'radium';
 import { CircleSpinner } from "react-spinners-kit";
@@ -47,11 +48,12 @@ class App extends Component {
         // action which requires a server request 
         axios.interceptors.response.use(response => {
             this.restartSessionTimer(this.SESSION_MINUTES);
+            console.log(response.data);
             return response;
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
             console.log(error);
-            if (error.response.status !== 401 && error.response.status !== 403){
+            if (error.status !== 401 && error.status !== 403){
                 alert(error);
             }
             return Promise.reject(error);
@@ -129,8 +131,7 @@ class App extends Component {
             this.props.storeQuestionGroups(response.data);
         })
         .then(() => {
-            // Must also retrieve all users to be able to identify them in the comments
-            return axios.get('/users?basic=true')
+            return axios.get('/users')
         })
         .then(response => {
             this.props.storeUsers(response.data);
@@ -229,6 +230,7 @@ class App extends Component {
                 <Route path="/sign-in" component={SignIn} />
                 <Route path="/search-results" component={PractitionerList} />
                 <Route path="/practitioners/:id" exact component={Practitioner} />
+                <Route path="/reset-request" component={ResetRequest} />
                 </>
             );
         }
