@@ -48,6 +48,10 @@ class SignIn extends Component {
         });        
     }
 
+    requestReset = () => {
+        this.props.history.push('/reset-request')
+    }
+
     render() {
         const panelStyle = {
             width:'90%',
@@ -65,33 +69,37 @@ class SignIn extends Component {
                 or view our complete list of practitioners
                 </Instructions>
                 <div className='horizontal-group'>
-                <div className ='vertical-group'>
-                    <EditableText   mode='edit'
-                                    label='Username'
-                                    name='username'
-                                    labelClass='info-label info-label-reg'
-                                    valueClass='info-field info-field-reg'
-                                    value={this.state.username}
-                                    placeholder='Username'
-                                    changeHandler={this.onChange} />
+                    <div className ='vertical-group'>
+                        <EditableText   mode='edit'
+                                        label='Username'
+                                        name='username'
+                                        labelClass='info-label info-label-reg'
+                                        valueClass='info-field info-field-reg'
+                                        value={this.state.username}
+                                        placeholder='Username'
+                                        changeHandler={this.onChange} />
 
-                    <EditableText   mode='edit'
-                                    type='password'
-                                    label='Password'
-                                    name='password'
-                                    labelClass='info-label info-label-reg'
-                                    valueClass='info-field info-field-reg'
-                                    value={this.state.password}
-                                    placeholder='Password'
-                                    changeHandler={this.onChange} />
+                        <EditableText   mode='edit'
+                                        type='password'
+                                        label='Password'
+                                        name='password'
+                                        labelClass='info-label info-label-reg'
+                                        valueClass='info-field info-field-reg'
+                                        value={this.state.password}
+                                        placeholder='Password'
+                                        changeHandler={this.onChange} />
 
-                    <br/>
+                        <br/>
 
-                    <Button type='button' onClick={this.signIn}>Sign In</Button>
-                    {
-                        this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
-                    }
-                </div>
+                        <Button type='button' onClick={this.signIn}>Sign In</Button>
+                        {
+                            this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
+                        }
+                        <Instructions width='30em' paddingTop='30px'>
+                        Forgot your username or password? <span className='execute' onClick={this.requestReset}>Click here</span>
+                        </Instructions>
+
+                    </div>
                 </div>
             </Panel.Body>           
             </Panel>
