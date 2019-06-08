@@ -2,6 +2,7 @@ package ca.bc.mefm.resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response;
 import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.DataAccess.Filter;
+import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.mail.MailSender;
 
@@ -83,18 +85,27 @@ public class CommentResource extends AbstractResource{
     }
     
     /**
-     * Fetches all Comments with a specified status
+     * Fetches all Comments with a specified status for practitioners in a specified province
      * @param status
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByStatus(@QueryParam("status") Comment.Status status){
+    public Response getByStatus(@QueryParam("status") Comment.Status status, @QueryParam("province") String province){
         DataAccess da = new DataAccess();
+        // Fetch all comments with the specifies status
         DataAccess.Filter[] filters = new DataAccess.Filter[] {
         		new Filter("status", status)	
         };
         List<Comment> list = da.getAllByFilters(Comment.class, filters);
+        // Filter out those for practitioners who are not in the specified province
+        // TODO: This is brute force. Put provinces and practitioners in maps
+        list = list.stream().filter(comment -> {
+        	Long practitionerId = comment.getPractitionerId();
+        	Practitioner practitioner = da.find(practitionerId, Practitioner.class);
+        	return province.equals(practitioner.getProvince());
+         }).collect(Collectors.toList());
+        
         return responseOkWithBody(list);
     }
 
