@@ -31,7 +31,7 @@ public class BounceHandlerServlet extends HttpServlet {
 			// ...
 		} 
 		catch (MessagingException e) {
-			// ...
+			log.severe("BounceHandlerServlet " + e);
 		}
 	}
 }
