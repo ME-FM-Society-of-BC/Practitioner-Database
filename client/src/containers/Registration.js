@@ -37,6 +37,9 @@ class Registration extends Component {
             if (response.data.nameAlreadyTaken){
                 this.setState({errorMessage: "That username is already taken. Please enter a new value"});
             }
+            if (response.data.emailAlreadyTaken){
+                this.setState({errorMessage: "That email address is already in use by another user. Please enter a new value"});
+            }
             else {
                 this.setState({errorMessage: null});
                 const newUser = {...this.state};
