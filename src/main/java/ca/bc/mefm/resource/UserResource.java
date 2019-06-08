@@ -1,6 +1,7 @@
 package ca.bc.mefm.resource;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.User;
+import ca.bc.mefm.mail.MailSender;
 import ca.bc.mefm.security.TokenGenerator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -25,6 +27,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @Path("/users")
 public class UserResource extends AbstractResource{
+
+	private static final Logger log = Logger.getLogger(MailSender.class.getName());
 
     /**
      * Fetches all User entities, with password removed
@@ -54,9 +58,11 @@ public class UserResource extends AbstractResource{
         while (i.hasNext()) {
         	User user = i.next();
         	if (user.getUsername().equals(newUser.getUsername())) {
+        		log.info("NameAlreadyTaken: " + user.getUsername());
         		return responseOkWithBody(new AuthResultNameAlreadyTaken());
         	}
         	if (user.getEmail().equals(newUser.getEmail())) {
+        		log.info("EmailAlreadyTaken: " + user.getEmail());
         		return responseOkWithBody(new AuthResultEmailAlreadyTaken());
         	}
         }
@@ -134,7 +140,7 @@ public class UserResource extends AbstractResource{
 	}
 	public class AuthResultEmailAlreadyTaken {
 		private boolean emailAlreadyTaken = true;
-		public boolean getEmaildAlreadyTaken() {
+		public boolean getEmailAlreadyTaken() {
 			return emailAlreadyTaken;
 		}
 	}

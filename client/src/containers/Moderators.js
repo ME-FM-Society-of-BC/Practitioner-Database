@@ -69,26 +69,34 @@ class Moderators extends Component {
         // First create the user account
         axios.post('/users', this.state.user)
         .then(response => {
-            // Store in Redux
-            const user = {...this.state.user, id: response.data}
-            this.props.saveNewModeratorUser(user)
-            
-            // Now create the moderator
-            const moderator = {...this.state.moderator, userId: response.data}
-            this.props.saveNewModerator(moderator);
-            
-            this.setState({
-                user: {
-                    username: '',
-                    password: '',
-                    confirmPassword: '',
-                    email: '',
-                    role: 'MODERATOR'
-                },
-                moderator: {
-                    province: ''
-                }
-            });
+            if (response.data.nameAlreadyTaken){
+                this.setState({errorMessage: "That username is already taken. Please enter a new value"});
+            }
+            if (response.data.emailAlreadyTaken){
+                this.setState({errorMessage: "That email address is already in use by another user. Please enter a new value"});
+            }
+            else {
+                // Store in Redux
+                const user = {...this.state.user, id: response.data}
+                this.props.saveNewModeratorUser(user)
+                
+                // Now create the moderator
+                const moderator = {...this.state.moderator, userId: response.data}
+                this.props.saveNewModerator(moderator);
+                
+                this.setState({
+                    user: {
+                        username: '',
+                        password: '',
+                        confirmPassword: '',
+                        email: '',
+                        role: 'MODERATOR'
+                    },
+                    moderator: {
+                        province: ''
+                    }
+                });
+            }
         })
     }
 
@@ -119,7 +127,8 @@ class Moderators extends Component {
                             provinces={this.props.provinces}
                             onCreate={this.createModerator}
                             onChange = {this.onChange}
-                            onSelect ={this.selectProvince} />
+                            onSelect ={this.selectProvince}
+                            errorMessage={this.state.errorMessage} />
                     </Panel.Body>
                 </Panel>
             </PanelGroup>
