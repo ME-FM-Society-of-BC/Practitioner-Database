@@ -65,9 +65,14 @@ const logout = (state) => {
 }
 
 const storeModerators = (moderators, state) => {
+    // Map by user id
+    const map = moderators.reduce((map, moderator) => {
+        map[moderator.userId] = moderator;
+        return map
+    }, {});
     return {
         ...state,
-        moderators
+        moderators: map
     }
 }
 
