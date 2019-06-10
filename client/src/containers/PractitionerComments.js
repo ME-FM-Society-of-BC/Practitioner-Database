@@ -32,7 +32,7 @@ class PractitionerComments extends Component {
     render() {
         // Comments for this practitioner
         const commentMap = this.props.allComments[this.props.match.params.id];
-        // Flaten out
+        // Flatten out
         let comments = [];
         for (let id in commentMap){
             comments = comments.concat([commentMap[id].comment], commentMap[id].responses)
@@ -40,11 +40,18 @@ class PractitionerComments extends Component {
 
         return (
             <>
+            <Instructions width='90%'>
+                Please respect that this is a public site providing useful information for ME and fibromyalgia patients, 
+                not a place to “let it all out”. While we want honest comments and information, the goal is to provide 
+                information about helpful health care providers, and not to provide a platform to excoriate doctors or other 
+                healthcare professionals. Moderators will remove any offending comments.                
+            </Instructions>
+
             {this.props.loggedInUser ? 
                 <Button type="button" className='button-large' onClick={this.openComment}>Add a New Comment</Button>
                 : ''
-            }
-            
+            }     
+
             <NewComment show={this.state.showModal} 
                 onSave={this.saveComment} 
                 onCancel={this.closeComment}

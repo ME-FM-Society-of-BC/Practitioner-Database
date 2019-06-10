@@ -2,6 +2,8 @@
  * Implements the PendingComments View. Pending comments are those with a status of either:
  * <li>FLAGGED: a user has flagged the comment</li>
  * <li>PENDING: any comment which has not been viewed by the moderator
+ * <p>
+ * Only comments on practitioners in the moderator's province are displayed
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -16,12 +18,16 @@ class PendingComments extends Component {
 
     constructor(props){
         super(props);
-        axios.get('/comments?status=FLAGGED')
+
+        // Determine which province the moderator is assigned t0
+        const province = this.props.moderators[this.props.loggedInUser.id].province;
+
+        axios.get('/comments?status=FLAGGED&province=' + province)
         .then(response => {
             this.props.storeFlaggedComments(response.data);
             })
         .then(() => {
-            return axios.get('/comments?status=PENDING')
+            return axios.get('/comments?status=PENDING&province=' + province)
         })
         .then(response => {
             this.props.storePendingComments(response.data);
@@ -72,7 +78,9 @@ const mapStateToProps = state => {
     return {
         pendingComments: state.commentReducer.pendingComments,
         flaggedComments: state.commentReducer.flaggedComments,
-        allUsers: state.userReducer.allUsers
+        allUsers: state.userReducer.allUsers,
+        moderators: state.userReducer.moderators,
+        loggedInUser: state.userReducer.loggedInUser
     }
 }
 

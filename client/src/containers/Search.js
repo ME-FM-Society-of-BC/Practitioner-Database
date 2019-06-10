@@ -244,9 +244,13 @@ class Search extends Component {
                 <Button onClick={this.searchQuick}>Quick Search</Button>
                 <br/>
                 <Instructions width='40em'>
-                    You can also enter values for any of the following criteria, and click the Full Search button. 
+                    <p>
+                    You can also search by entering information in any of the fields below, then click the Full Search button.
+                    </p>                   
+                    <p>
                     If you also enter a postal code above, any practitioners matching the criteria
-                    will be listed along with the distance 
+                    will be listed along with the distance from that postal code area.
+                    </p>
                 </Instructions>
                 <EditableText name='lastName' 
                     valueClass='info-field' labelClass='info-label' 
