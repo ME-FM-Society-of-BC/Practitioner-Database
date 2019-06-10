@@ -70,9 +70,6 @@ public class InitializationResource extends AbstractResource {
         	provinces.forEach((Province o) -> da.put(o));
         	
         	addCities(da);
-        	// TODO REmove kludge
-//        	practitioners.forEach((Practitioner o) -> da.put(o));
-//        	comments.forEach((Comment o) -> da.put(o));
         }
         else if (existingProvinces.isEmpty()) {
         	// If only the provinces are gone, empty the cities and recreate both
@@ -174,20 +171,20 @@ public class InitializationResource extends AbstractResource {
     
     List<UserRole> roles = Arrays.asList(new UserRole[]{
         new UserRole(1L, UserRole.Type.ACTIVE),
-        new UserRole(2L, UserRole.Type.MODERATOR)
+        new UserRole(2L, UserRole.Type.MODERATOR),
+        new UserRole(2L, UserRole.Type.ADMINISTRATOR),
+        new UserRole(2L, UserRole.Type.SUPPORT)
     });
 
-    // Three built in accounts are created. The first is for the MEFM ADMINISTRATOR 
+    // Two built in accounts are created. The first is for the MEFM ADMINISTRATOR 
     // responsible for approving moderators for each region. For Canada, this corresponds
-    // to provinces. Each region will have one or more MODERATORs, who are responsible
-    // for vetting user comments. The "vetting" user comments.
-    // The third is for a technical administrator. This is intended to support possible
+    // to provinces. 
+    // The secopnd is for a technical administrator. This is intended to support possible
     // future capabilities related to modification or updates to the database schema and/or 
     // modifications to the question definitions
     
     List<User> users = Arrays.asList(new User[]{
-    /*        new User(1L, "admin", "password", "your-email-here", UserRole.Type.ADMINISTRATOR, new Date(), User.Status.ENABLED),*/
-            new User(1L, "moderator", "password", "your-email-here", UserRole.Type.MODERATOR, new Date(), User.Status.ENABLED),
+            new User(1L, "admin", "admin", "your-email-here", UserRole.Type.ADMINISTRATOR, new Date(), User.Status.ENABLED),
             new User(2L, "support", "password", "robert.t.toms@gmail.com", UserRole.Type.SUPPORT, new Date(), User.Status.ENABLED)
     });
     
