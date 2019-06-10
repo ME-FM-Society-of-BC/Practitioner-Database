@@ -4109,9 +4109,10 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+/* RT: Change navbar height */
 .navbar {
   position: relative;
-  min-height: 60px;
+  min-height: 40px;
   margin-bottom: 21px;
   border: 1px solid transparent;
 }
@@ -4294,6 +4295,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     background-image: none;
   }
 }
+/* padding reduced from 19.5 to 9.5 */
 @media (min-width: 768px) {
   .navbar-nav {
     float: left;
@@ -4303,8 +4305,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     float: left;
   }
   .navbar-nav > li > a {
-    padding-top: 19.5px;
-    padding-bottom: 19.5px;
+    padding-top: 9.5px;
+    padding-bottom: 9.5px;
   }
 }
 .navbar-form {
