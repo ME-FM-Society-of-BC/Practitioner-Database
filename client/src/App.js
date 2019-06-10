@@ -4,6 +4,7 @@ import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Banner from './components/Banner';
 import Home from './containers/Home';
 import MyActivity from './containers/MyActivity';
 import PendingComments from './containers/PendingComments';
@@ -103,7 +104,7 @@ class App extends Component {
             this.props.storeModerators(response.data);
         })
         .then(() => {
-            const provinceIds = this.getAllProvinceIds(this.props.moderators);
+            const provinceIds = this.getAllProvinceIds(Object.values(this.props.moderators));
             // This is a "moot" request if no moderators
             return axios.get('/cities?provinces=' + provinceIds)
         })
@@ -138,7 +139,7 @@ class App extends Component {
         })
         .then(() => {
             this.setState({loading: false});
-            this.props.history.replace('/sign-in');
+            this.props.history.replace('/home');
         })
         // TODO: Replace with user friendly response
         .catch(error => {
@@ -153,7 +154,7 @@ class App extends Component {
         if (moderators.length === 0){
             return '';
         }
-        let provinceNames = this.props.moderators.reduce((names, moderator) => {
+        let provinceNames = moderators.reduce((names, moderator) => {
             names[moderator.province] = '';
             return names;
         }, {});
@@ -225,6 +226,7 @@ class App extends Component {
         else {
             routes = (
                 <>
+                <Route path="/home" component={Home} />
                 <Route path="/search" component={Search} />
                 <Route path="/practitioners" exact component={PractitionerList} />
                 <Route path="/sign-in" component={SignIn} />
@@ -234,21 +236,24 @@ class App extends Component {
                 </>
             );
         }
+
         // Render the menu consistent with the routes established above.
         // Technical note: The react-router-bootstrap LinkContainer accepts 
         // the same parameters as react-router NavLink and Link
         return (
             <StyleRoot>
             <div className="App">
-                <Navbar collapseOnSelect>
+                <Banner/>
+                <Navbar collapseOnSelect style={navbarHeight}>
                     <Navbar.Header>
-                        <Navbar.Brand>
-                            <a href="#brand">MEFM Database</a>
-                        </Navbar.Brand>
                         <Navbar.Toggle />
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav pullRight>
+                            <LinkContainer to="/home">
+                                <NavItem>Home</NavItem>
+                            </LinkContainer>
+
                             {administrator ?
                                 <LinkContainer to="/manage-moderators">
                                     <NavItem>Moderators</NavItem>
@@ -281,19 +286,14 @@ class App extends Component {
                                 </LinkContainer>
                                 : ''
                             }
-                            {active || moderator ?
-                                <LinkContainer to="/home">
-                                    <NavItem>Home</NavItem>
-                                </LinkContainer>
-                                : ''
-                            }
+
                             {active || moderator || administrator ?
                                 <LinkContainer to="/sign-out">
-                                    <NavItem>Logout</NavItem>
+                                    <NavItem>Signout</NavItem>
                                 </LinkContainer>
                                 : 
                                 <LinkContainer to="/sign-in">
-                                    <NavItem>Register</NavItem>
+                                    <NavItem>Signin/Register</NavItem>
                                 </LinkContainer>
                             }
                     </Nav>
@@ -305,7 +305,13 @@ class App extends Component {
         );
     }
 }
-   
+
+const navbarHeight = {
+    minHeight: '40px !important',
+    maxHeight: '40px !important'    
+}
+
+
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
