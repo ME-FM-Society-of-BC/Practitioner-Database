@@ -52,7 +52,7 @@ class Registration extends Component {
                 newUser.role = 'ACTIVE';
                 this.props.storeLoggedInUser(newUser);
                 // TODO replace() ?
-                this.props.history.push('/home');
+                this.props.history.push('/my-activity');
             }            
         })
         .catch(error => {
