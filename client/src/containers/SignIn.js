@@ -36,7 +36,7 @@ class SignIn extends Component {
             // Set request defaults to include Authorization header with the token
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
             // TODO replace() ?
-            this.props.history.push('/home');
+            this.props.history.push('/my-activity');
         })
         .catch(error => {
             if (error.response.status === 401){
