@@ -6,59 +6,69 @@ import * as actions from './practitionerActions';
 import { mapIdsToIndices } from '../common/utilities';
 
 const initialState = {
-    practitioners: [],
+    allPractitioners: [],
     specialties: null,
-    practitionerIdsToIndices: {}
+    matchingPractitioners: [],
+    idsToIndices: {},
 }
 
 const practitionersReducer = (state = initialState, action) => {
     switch (action.type) {
-        case actions.STORE_PRACTITIONERS:
-            // Add the specialty text to each practitioner
-            const practitioners = action.practitioners.map((practitioner) => {
-                return {
-                    ...practitioner,
-                    specialty: state.specialties.idToValue[practitioner.specialtyId]
-                }
-            });
-            // Create a map of practitioner ids to their index in the practitioners array
-            const idsToIndices = mapIdsToIndices(action.practitioners);
-            return {
-                ...state,
-                practitioners: practitioners,
-                practitionerIdsToIndices: idsToIndices
-            }
-
-        case actions.STORE_SPECIALTIES:
-            return {
-                ...state,
-                specialties: convertSpecialties(action.specialties)
-            }
-
-        case actions.UPDATE_PRACTITIONER:
-            let newState = { ...state };
-            const updatedPractitioner = action.practitioner;
-            const index = newState.practitionerIdsToIndices[updatedPractitioner.id];
-            newState.practitioners[index] = updatedPractitioner;
-            return newState;
-
-        case actions.CREATE_PRACTITIONER:
-            newState = { ...state };
-            const newPractitioner = action.practitioner;
-            newState.practitioners.push(newPractitioner);
-            newState.practitionerIdsToIndices[newPractitioner.id] = newState.practitioners.length - 1;
-            return newState;
-
-        case actions.SAVE_SEARCH_RESULTS:
-        return {
-            ...state,
-            matchingPractitioners: action.matchingPractitioners
-        }
+        case actions.STORE_PRACTITIONERS:   return storePractitioners(state, action.practitioners);
+        case actions.STORE_SPECIALTIES:     return storeSpecialties(state, action.specialties);
+        case actions.CREATE_PRACTITIONER:   return createPractitioner(state, action.practitioner);
+        case actions.UPDATE_PRACTITIONER:   return updatePractitioner(state, action.practitioner);
+        case actions.SAVE_SEARCH_RESULTS:   return saveSearchResults(state, action.matchingPractitioners)
         
-        default: 
-            return state;
+        default: return state;
     }
 };
+
+const storePractitioners = (state, practitioners) => {
+    // Add the specialty text to each practitioner
+    const allPractitioners = practitioners.map((practitioner) => {
+        return {
+            ...practitioner,
+            specialty: state.specialties.idToValue[practitioner.specialtyId]
+        }
+    });
+    // Create a map of practitioner ids to their index in the practitioners array
+    const idsToIndices = mapIdsToIndices(practitioners);
+
+    return {
+        ...state,
+        allPractitioners,
+        idsToIndices
+    }
+}
+
+const storeSpecialties = (state, specialties) => {
+    return {
+        ...state,
+        specialties: convertSpecialties(specialties)
+    }
+}
+
+const updatePractitioner = (state, practitioner) => {
+    let newState = { ...state };
+    const index = newState.idsToIndices[practitioner.id];
+    newState.allPractitioners[index] = practitioner;
+    return newState;
+}
+
+const createPractitioner = (state, practitioner) => {
+    let newState = { ...state };
+    newState.allPractitioners.push(practitioner);
+    newState.idsToIndices[practitioner.id] = newState.allPractitioners.length - 1;
+    return newState;
+}
+
+const saveSearchResults = (state, matchingPractitioners) => {
+    return {
+        ...state,
+        matchingPractitioners
+    }
+}
 
 const convertSpecialties = (specialtiesIn => {
     // Specialties need to be accessed in three forms - as an array of the
