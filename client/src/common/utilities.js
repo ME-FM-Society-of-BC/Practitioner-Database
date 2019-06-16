@@ -46,6 +46,21 @@ export const mapIdsToIndices = entityArray => {
     return map;
 }
 
+ /**
+ * Given an array of entities, creates a map of the entity id to the the entity 
+ * @param entityArray an array of entity objects
+ * @return the map 
+ */
+export const mapIdsToEntities = entityArray => {
+    if (!entityArray || entityArray.length === 0){
+        return {};
+    }
+    return entityArray.reduce((map, entity) => {
+        map[entity.id] = entity;
+        return map;
+    }, {});
+}
+
 /**
  * Translates the dimension string argument defined for form fields
  * @param dimensions the dimensions string
