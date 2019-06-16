@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Practitioner;
+import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
@@ -88,9 +89,19 @@ public class PractitionerInformationResource extends AbstractResource{
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Practitioner practitioner) {
+    public Response create(Practitioner practitioner, @QueryParam("userId") Long userId) {
     	DataAccess da = new DataAccess();
     	da.put(practitioner);
+    	
+    	// Record the action
+        RecommendationAction action = new RecommendationAction(
+        		userId,
+        		practitioner.getId(),
+        		practitioner.getCreationDate(),
+        		RecommendationAction.ActionType.CREATE
+        		);
+        da.put(action);
+    	
     	return responseCreated(practitioner.getId());
     }
 
@@ -102,9 +113,19 @@ public class PractitionerInformationResource extends AbstractResource{
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{id}")
-    public Response update(@PathParam("id") Long id, Practitioner practitioner) {
+    public Response update(@PathParam("id") Long id, Practitioner practitioner, @QueryParam("userId") Long userId) {
     	DataAccess da = new DataAccess();
     	da.put(practitioner);
-    	return responseNoContent();
+
+    	// Record the action
+        RecommendationAction action = new RecommendationAction(
+        		userId,
+        		practitioner.getId(),
+        		practitioner.getEditDate(),
+        		RecommendationAction.ActionType.EDIT
+        		);
+        da.put(action);
+
+        return responseNoContent();
     }
 }

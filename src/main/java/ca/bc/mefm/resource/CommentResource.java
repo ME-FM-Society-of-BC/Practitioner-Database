@@ -19,6 +19,7 @@ import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.DataAccess.Filter;
 import ca.bc.mefm.data.Practitioner;
+import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.mail.MailSender;
 
@@ -39,22 +40,19 @@ public class CommentResource extends AbstractResource{
     public Response create(Comment comment) {    	
         DataAccess da = new DataAccess();
         da.put(comment);
+        
+        // Record the action
+        RecommendationAction action = new RecommendationAction(
+        		comment.getUserId(),
+        		comment.getPractitionerId(),
+        		comment.getDate(),
+        		RecommendationAction.ActionType.COMMENT
+        		);
+        da.put(action);
+        
         return responseCreated(comment.getId());
     }
 
-    /**
-     * Updates a Comment
-     * @param Comment
-     * @return
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(Comment comment) {    	
-        DataAccess da = new DataAccess();
-        da.put(comment);
-        return responseNoContent();
-    }
-    
     /**
      * Updates the status of a set of comments, and sends emails to the
      * authors of those which have been blocked.

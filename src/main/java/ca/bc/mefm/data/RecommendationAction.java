@@ -12,10 +12,10 @@ import lombok.Data;
 @Data
 public class RecommendationAction {
 	
-	public enum 	ActionType {CREATE, EDIT, RATE}
+	public enum 	ActionType {CREATE, EDIT, RATE, COMMENT}
 
 	@Id
-	private Long	id;
+	private Long		id;
 	@Index 
 	private Long		practitionerId;
 	@Index 
@@ -23,7 +23,14 @@ public class RecommendationAction {
 	private Long		questionId;
 	private ActionType	actionType;
 	private Integer		value;
-	private Date		date;
+	private Long		date;
 
 	public RecommendationAction() {}
+	
+	public RecommendationAction(Long userId, Long practitionerId, Long date, ActionType type) {
+		this.userId = userId;
+		this.practitionerId = practitionerId;
+		this.date = date;
+		this.actionType = type;
+	}
 }
