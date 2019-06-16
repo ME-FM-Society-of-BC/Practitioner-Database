@@ -4,40 +4,96 @@
 import React, { Component } from 'react';
 import Instructions from '../components/Instructions';
 import { connect } from 'react-redux';
+import axios from 'axios';
+import { mapIdsToEntities } from '../common/utilities';
+import Activity from '../components/Activity';
+import { Panel } from 'react-bootstrap';
 
 class MyActivity extends Component {
 
+    state = {}
+
+    constructor(props){
+        super(props);
+        this.state.practitioners = mapIdsToEntities(this.props.allPractitioners);
+    }
+
+    componentDidMount(){
+        axios.get('/actions/?userId=' + this.props.loggedInUser.id)
+        .then(response => {
+            let actions = response.data;
+            if (actions.length > 0){
+                actions = actions.sort( (a, b) => {
+                    return a.date - b.date;
+                });
+            }
+            this.setState({actions});
+        })
+    }
+
     render() {
-        const active = this.props.loggedInUser && !this.props.loggedInUser.isModerator && !this.props.loggedInUser.isAdministrator;
-        if (active){
+        if (!this.state.actions){
+            return (<div>Actions!</div>)
+        }
+        if (this.state.actions.length === 0){
             return (
                 <>
                 <Instructions width='80%'>
-                    Welcome to My Activity page, your personal page where you can view and edit the submissions and comments you have made. 
-                    As a registered user you can add and rate a new practitioner, rate an already existing practitioner, or add comments.
+                <p>Welcome to the My Activity page. Here you will see a record of all the actions you can perform, such as</p>
+                <ul>
+                    <li>Add a practitioner to the site</li>
+                    <li>Edit practitioner information (address, phone, etc.) previously entered by you or another user</li>
+                    <li>Rate a practitioner</li>
+                    <li>Comment on a practitioner or respond to a comment by another user</li>
+                </ul>
+                As of now, you have not performed any actions
                 </Instructions>
-                <div>Activitiy List Under Construction</div>
                 </>
             )
         }
- 
         else {
+            const types = {
+                'CREATE'    : 'Added practitioner ',
+                'EDIT'      : 'Edited the information on ',
+                'RATE'      : 'Rated ',
+                'COMMENT'   : 'Commented about '
+            };
+            const panelStyle = {
+                width:'90%',
+                margin: 'auto',
+            };
+    
             return (
-                <div>
-                    Instructions for Moderator or Admnistrator
-                </div>
+
+            <Panel style={panelStyle}>
+                <Panel.Heading>
+                    <Panel.Title toggle>My Activity</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body>
+                    <div>
+                    {
+                    this.state.actions.map( action => {
+                        const date = (new Date(action.date)).toDateString().substring(4);
+                        const practitionerName = this.state.practitioners[action.practitionerId].firstName + ' ' 
+                            + this.state.practitioners[action.practitionerId].lastName + '. ';
+                        const type = action.actionType;
+                        const description = types[type].concat(practitionerName);
+                        return <Activity type={action.type} date={date} description={description}/>
+                    })
+                    }
+                    </div>
+                </Panel.Body>
+            </Panel>
             )
         }
     }
-
 }
 
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
-    }
+        allPractitioners: state.practitionersReducer.allPractitioners
+     }
 }
 
-
-// connect(mapStateToProps, mapDispatchToProps)(PractitionerEval)
 export default connect(mapStateToProps)(MyActivity);
