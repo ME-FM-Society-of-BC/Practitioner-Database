@@ -18,13 +18,13 @@ public class PasswordReset {
 	private Long			userId;
 	@Index
 	private String			code;
-	private Date			created;
+	private Long			created;
 	
 	public PasswordReset() {}
 	
 	public PasswordReset(Long userId, String code) {
 		this.userId = userId;
 		this.code = code;
-		created = new Date();
+		created = new Date().getTime();
 	}
 }

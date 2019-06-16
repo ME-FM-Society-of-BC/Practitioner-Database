@@ -71,7 +71,7 @@ public class UserResource extends AbstractResource{
         newUser.setPassword(encoder.encode(newUser.getPassword()));
     	
         newUser.setStatus(User.Status.ENABLED);
-        newUser.setCreated(new Date());
+        newUser.setCreated(new Date().getTime());
         da.put(newUser);
 
 		String token = TokenGenerator.generateToken(newUser.getUsername(), newUser.getRole().toString(), newUser.getId());

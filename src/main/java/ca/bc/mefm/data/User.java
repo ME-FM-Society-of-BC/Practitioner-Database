@@ -23,7 +23,7 @@ public class User {
 	@Index
 	private String 			email;
 	private UserRole.Type	role;
-	private Date			created;
+	private Long			created;
 	private Status			status;
 	
 	public User() {}

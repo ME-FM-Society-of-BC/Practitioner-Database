@@ -24,7 +24,7 @@ public class Comment {
 	private Long	userId;
 	@Index 
 	private Long	practitionerId;
-	private Date	date;
+	private Long	date;
 	private String	text;
 	@Index
 	private Status  status;
