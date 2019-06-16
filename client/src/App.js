@@ -54,7 +54,7 @@ class App extends Component {
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
             console.log(error);
-            if (error.status !== 401 && error.status !== 403){
+            if (error.response.status !== 401 && error.response.status !== 403){
                 alert(error);
             }
             return Promise.reject(error);
@@ -138,6 +138,12 @@ class App extends Component {
             this.props.storeUsers(response.data);
         })
         .then(() => {
+            return axios.get('/practitioners')
+        })
+        .then(response => {
+            this.props.storePractitioners(response.data);
+        })
+        .then(() => {
             this.setState({loading: false});
             this.props.history.replace('/home');
         })
@@ -205,6 +211,7 @@ class App extends Component {
                 <Route path="/sign-in" component={SignIn} />
                 <Route path="/sign-out" component={SignOut} />
                 <Route path="/manage-moderators" component = {Moderators} />
+                <Route path="/home" component={Home} />
                 </>
             );
         }
@@ -311,7 +318,6 @@ const navbarHeight = {
     maxHeight: '40px !important'    
 }
 
-
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
@@ -331,7 +337,8 @@ const mapDispatchToProps = dispatch => {
         storeCities: (cities) => dispatch({ type: locationActions.STORE_CITIES, cities }),
         storeQuestions: (questions) => dispatch({ type: evaluationActions.STORE_QUESTIONS, questions }),
         storeQuestionChoices: (questionChoices) => dispatch({ type: evaluationActions.STORE_QUESTION_CHOICES, questionChoices }),
-        storeQuestionGroups: (questionGroups) => dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups })
+        storeQuestionGroups: (questionGroups) => dispatch({ type: evaluationActions.STORE_QUESTION_GROUPS, questionGroups }),
+        storePractitioners: (practitioners) => dispatch({ type: practitionerActions.STORE_PRACTITIONERS, practitioners: practitioners })
     }
 }
 
