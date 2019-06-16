@@ -1,18 +1,18 @@
 /**
  * A single row in the Practitioners list or search results. 
- * If the practitioner incldes a distance attribute, it will be displayed.
+ * If the practitioner includes a distance attribute, it will be displayed.
  */
 import React from 'react';
 
 const practitionerListItem = (props) => {
   return (
     <tr>
-        <td>{props.p.firstName}&nbsp;{props.p.lastName}</td>
-        <td>{props.p.address},&nbsp;{props.p.city}&nbsp;{props.p.province},&nbsp;{props.p.postalCode}</td> 
-        <td>{props.p.phone}</td> 
-        <td>{props.p.specialty}</td>
-        {props.p.distance ? <td>{props.p.distance.humanReadable}</td> : ''} 
-        <td><input type='button' value='View Details' onClick={() => props.select(props.p.id)}></input></td>
+        <td>{props.practitioner.firstName}&nbsp;{props.practitioner.lastName}</td>
+        <td>{props.practitioner.address},&nbsp;{props.practitioner.city}&nbsp;{props.practitioner.province},&nbsp;{props.practitioner.postalCode}</td> 
+        <td>{props.practitioner.phone}</td> 
+        <td>{props.practitioner.specialty}</td>
+        {props.practitioner.distance ? <td>{props.practitioner.distance.humanReadable}</td> : ''} 
+        <td><input type='button' value='View Details' onClick={() => props.select(props.practitioner.id)}></input></td>
     </tr>
     )
 }

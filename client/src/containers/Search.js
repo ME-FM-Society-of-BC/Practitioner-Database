@@ -103,8 +103,7 @@ class Search extends Component {
     }
 
     /**  
-     * Search by postal code only. This must be across all practitioners, so they must be fetched.
-     * TODO: Consider recording previous recent view all request and just use those.
+     * Search by postal code only. This must be across all practitioners.
      */
     searchQuick(){
         if (this.state.postalCode.length < 7){ // TODO localization
@@ -112,48 +111,70 @@ class Search extends Component {
             return;
         }
         this.setState({errorMessage: null});
-        // Fetch all practitioners
-        axios.get('/practitioners')
-        .then(response => {
-            this.props.storePractitioners(response.data);
-            })
-        .then(() => {
-            const practitioners = this.props.practitioners; // !!!!!!! WIll they be here?
-            this.getDistancesAndShow(this.state.postalCode, practitioners);
+
+        this.getDistances(this.state.postalCode, this.props.allPractitioners)
+        .then( augmentedPractitioners => {
+            this.props.storePractitioners(augmentedPractitioners);
+            this.proceedToListView(true);
         })
-        .catch (error => {
-            console.log(error);
-            alert(error)
-        });
+        .catch( error => {
+            this.setState({
+                loading: false,
+                errorMessage: error
+            });
+        })
     }
 
     performSearch(searchParams){
-        this.setState({loading: true});
+        this.setState({
+            loading: true,
+            errorMessage: null
+        });
         axios.get('/practitioners/search?' + searchParams)
         .then(response => {
-
             if (response.data.length === 0){
-                this.setState({errorMessage: 'No practioners were found matching those criteria'});
+                this.setState({
+                    loading: false,
+                    errorMessage: 'No practioners were found matching those criteria'
+                });
                 return;
             }
             if (this.state.postalCode){
-                // SInce postal code also entered, we want to now do a distance search
-                this.props.storePractitioners(response.data);
-                this.getDistancesAndShow(this.state.postalCode, response.data);
+                // Since postal code also entered, we want to now do a distance search
+                this.getDistances(this.state.postalCode, response.data)
+                .then(augmentedPractitioners => {
+                    this.setState({loading: false});
+                    if (augmentedPractitioners){
+                        this.proceedToListView(true, augmentedPractitioners);
+                    }
+                })
+                .catch(error => {
+                    this.setState({
+                        loading: false,
+                        errorMessge: error
+                    });
+                })
             }
             else {
-                this.storeAndProceed(response.data, false);
+                this.proceedToListView(false, response.data);
             }
         })
         .catch (error => {
-            this.setState({loading: false});
-            // TODO
+            this.setState({
+                loading: false,
+                errorMessage: error
+            });
         });
-
     }
 
-    getDistancesAndShow(origin, practitioners){
-        this.practitioners = practitioners; // TODO Must have here for call to insertDistances
+    /**
+     * For a given array of practtitioners, determine the distance from a specified origin
+     * @param origin the origin postal code
+     * @param practitioners the array of practitioners
+     * @return the practitioners arrey, each member augmented with the distance
+     *         null if the origin postal code was bad
+     */ 
+    getDistances(origin, practitioners){
         const practitionerIds = practitioners.map( practitioner => {
             return practitioner.id;
         })
@@ -162,54 +183,48 @@ class Search extends Component {
             return concatenated;
         }, '');
 
-        axios.get('/maps?from=' + origin + '&to=' + practitionerIds)
-        .then(response => {
-            this.setState({loading: false});
+        const augmentedPractitioners = [...practitioners];
 
-            const distances = response.data;
-            const badOriginPostalCode = distances.reduce((allBad, distance) => {
-                return allBad && distance.humanReadable === 'Not found';
-            }, true);
-
-            if (badOriginPostalCode){
-                 // Stay here and display message
-                this.setState({errorMessage: 'You have entered a postal code which is invalid or cannot be found. Please try again'});
-            }
-            else {
-                // Insert the distances and proceed to results page
-                const practitioners = this.insertDistances(this.practitioners, distances);
-                this.storeAndProceed(practitioners, true);
-            }
+        return new Promise(function (resolve, reject) {
+            axios.get('/maps?from=' + origin + '&to=' + practitionerIds)
+            .then(response => {
+                const distances = response.data;
+                const badOriginPostalCode = distances.reduce((allBad, distance) => {
+                    return allBad && distance.humanReadable === 'Not found';
+                }, true);
+    
+                if (badOriginPostalCode){
+                    // Stay here and display message
+                    reject('You have entered a postal code which is invalid or cannot be found. Please try again');
+                }
+                else {
+                    augmentedPractitioners.forEach((practitioner, i) => {
+                        practitioner.distance = distances[i]; 
+                    })        
+                    resolve(augmentedPractitioners)        
+                }
+            })
+            .catch (error => {
+                reject('Error performing distance search');
+            });
         })
-        .catch (error => {
-            this.setState({loading: false});
-
-            const distances = practitionerIds.map( id => 'Unavailable');
-            const practitioners = this.insertDistances(this.practitioners, distances);
-            this.storeAndProceed(practitioners, true);
-        });
     }
 
-    storeAndProceed(practitioners, withDistance){
-        this.props.storePractitioners(practitioners);
-
+    proceedToListView(withDistance, matchingPractitioners){
+        let queryString = '?'
+        queryString += withDistance ? 'withDistance=true': '';
+        queryString += matchingPractitioners ? '&matchingPractitioners=true' : '';
+        if (matchingPractitioners){
+            this.props.saveMatchingPractitioners(matchingPractitioners)
+        }
+        // TODO: Necessary?
         (new Promise(function (resolve, reject) {
             setTimeout(function () {
                 resolve()
             }, 100)
         })).then(() => {
-            this.props.history.push('/search-results?withDistance=' + withDistance); 
+            this.props.history.push('/search-results' + queryString); 
         });
-
-    }
-
-    /** Inserts distances into the pratitioner objects */
-    insertDistances(practitioners, distances){
-        const matchingPractitioners = [...practitioners];
-        for (let i = 0; i < matchingPractitioners.length; i++){
-            matchingPractitioners[i].distance = distances[i]; 
-        }
-        return matchingPractitioners;
     }
 
     render() {
@@ -302,15 +317,16 @@ class Search extends Component {
 const mapStateToProps = state => {
     return {
         specialties: state.practitionersReducer.specialties,
-        practitioners: state.practitionersReducer.practitioners,
+        allPractitioners: state.practitionersReducer.allPractitioners,
+        matchingPractitioners: state.practitionersReducer.matchingPractitioners,
         provinces: state.locationReducer.provinces,
         citiesMap: state.locationReducer.citiesMap
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
-        saveMatchingPractitioners: (practitioners) => dispatch({ type: actions.SAVE_SEARCH_RESULTS, matchingPractitioner: practitioners }),
-        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners: practitioners })
+        saveMatchingPractitioners: (matchingPractitioners) => dispatch({ type: actions.SAVE_SEARCH_RESULTS, matchingPractitioners }),
+        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners })
     };
 };
 

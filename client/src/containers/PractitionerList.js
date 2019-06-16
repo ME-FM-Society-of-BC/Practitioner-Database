@@ -1,20 +1,23 @@
 /**
  * Implements the Practitioner List view. 
  * <p>
- * The list may contain all the
- * Practitioners in the system (by selecting the View All menu) or those matching
- * search criteria. If the search included distance calculation, the path includes
- * the parameter 'withDistance' In this case, the initial sort order will be
+ * The list may contain all the Practitioners in the system (by selecting the View All menu) 
+ * or just those those matching search criteria. If the search included distance calculation, 
+ * the path includes the parameter 'withDistance' In this case, the initial sort order will be
  * on the distance field. 
+ * </p>
  * <p>
- * The user can also sort on Name, Phone or Specialty 
+ * If the path includes a 'matchingPractitioners' array, it is the one to be listed, rather
+ * than the liat of all Practitioners from the Redux state 
+ * </p>
+ * 
+ * <p>The user can also sort on Name, Phone or Specialty</p>
  */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import PractitionerListItem from '../components/PractitionerListItem';
-import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import { STORE_COMMENTS } from '../store/commentActions';
 import { STORE_ALL_RECOMMENDATION_ACTIONS} from '../store/evaluationActions';
 import { Button } from 'react-bootstrap';
@@ -28,52 +31,44 @@ class PractitionerList extends Component {
         super(props);
 
         if (props.location.search){
+            // Arrived here after a search
             const queryParams = new URLSearchParams(this.props.location.search);
-            for (let param of queryParams.entries()) {
-                if (param[0] === 'withDistance'){
-                    this.state.withDistance = param[1] === 'true';
-                    this.state.sortColumn = 'Distance';
-                    this.doSort('Distance', this.props.practitioners)
-                }
-            }
+            this.state.withDistance = queryParams.get('withDistance');
+            this.state.matchingPractitioners = queryParams.get('matchingPractitioners');
         }
         else {
-            // The View All menu item does not deliver any search params
+            // Arrived from the The View All menu item does not deliver any search params
             this.state.withDistance = false;
             this.state.sortColumn = 'Name';
-            this.state.fetchAll = true;
-            this.state.loading = true;
             this.state.showRecommendButton = false | this.props.loggedInUser
         }
+        this.state.showRecommendButton = false | this.props.loggedInUser
 
         this.sort = this.sort.bind(this);
     }
 
     componentDidMount() {
-        if (this.state.fetchAll){
-            this.setState({fetchAll: false});
-            // Coming from View All
-            // Fetch of all practitioners from server
-
-            axios.get('/practitioners')
-            .then(response => {
-                this.doSort(this.state.sortColumn, response.data);
-                this.setState({loading: false});
-            })
-            .catch (error => {
-                this.setState({loading: false});
-                console.log(error);
-                alert(error)
-            })
+        let practitioners;
+        if (this.state.matchingPractitioners){
+            // Practitioners to be displayed were passed from the search page
+            practitioners = this.props.matchingPractitioners
         }
+        else {
+            // All practitioners from the Redux store are to be displayed
+            practitioners = this.props.allPractitioners
+        }
+        const sortColumn = this.state.withDistance ? 'Distance' : 'Name'
+        this.doSort(sortColumn, practitioners);
     }
 
     doSort(field, practitioners){
         this.setState({sortColumn: field});
         field = field.charAt(0).toLowerCase().concat(field.substring(1));
+        
         if (field === 'name') field = 'lastName';
+        
         const sorted = [...practitioners].sort( (a, b) => {
-            if (field === 'distance'){
+        if (field === 'distance'){
                 if (a.distance.inMeters === -1){
                     return -1;
                 }
@@ -83,22 +78,28 @@ class PractitionerList extends Component {
                 return a[field] ? a[field].localeCompare(b[field]) : -1;
             }
         });
-        this.props.storePractitioners(sorted);
+
+        this.setState({
+            practitioners: sorted
+        })
     }
 
     sort(event){
-        this.doSort(event.target.id, this.props.practitioners);
+        this.doSort(event.target.id, this.state.practitioners);
     }
 
     render(){
-        // Display spinner during the search 
-        if (this.state.loading){
-            return (
-                <div className='spinner-container'>
-                    <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
-                </div>
-            )
+        if (!this.state.practitioners){
+            return (<></>)
         }
+        // Display spinner during the search 
+        // if (this.state.loading){
+        //     return (
+        //         <div className='spinner-container'>
+        //             <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
+        //         </div>
+        //     )
+        // }
         return (
         <>
             {this.props.loggedInUser ?
@@ -130,10 +131,10 @@ class PractitionerList extends Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {this.props.practitioners.map((practitioner, index) => {
+                    {this.state.practitioners.map((practitioner, index) => {
                         return <PractitionerListItem 
-                            p={practitioner} 
-                            select={() => this.selectHandler(index)} 
+                            practitioner={practitioner} 
+                            select={(id) => this.selectHandler(id)} 
                             key={practitioner.id} />
                     }, this)}
                 </tbody>
@@ -150,8 +151,7 @@ class PractitionerList extends Component {
     }
 
     // Handles selection of a Practitioner in a child PractitionerListItem component
-    selectHandler(index) {
-        const practitionerId = this.props.practitioners[index].id;
+    selectHandler(practitionerId) {
         const userId = this.props.loggedInUser ? this.props.loggedInUser.id : null;
 
         // The Practitioner may have been selected before, so only fetch actions
@@ -180,15 +180,16 @@ class PractitionerList extends Component {
 
 const mapStateToProps = state => {
     return {
-        practitioners: state.practitionersReducer.practitioners,
+        allPractitioners: state.practitionersReducer.allPractitioners,
+        matchingPractitioners: state.practitionersReducer.matchingPractitioners,
         specialties: state.practitionersReducer.specialties,
         loggedInUser: state.userReducer.loggedInUser,
         allRecommendations: state.evaluationReducer.allRecommendations
     }
 }
+
 const mapDispatchToProps = dispatch => {
     return {
-        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners: practitioners }),
         storeAllRecommendationActions: (allRecommendations, practitionerId, userId) => dispatch({ 
             type: STORE_ALL_RECOMMENDATION_ACTIONS, 
             allRecommendations: allRecommendations, 
@@ -203,6 +204,5 @@ const mapDispatchToProps = dispatch => {
 
     };
 }
-
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PractitionerList))
