@@ -36,14 +36,19 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 //axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
 axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
 
-console.log(document.baseURI);
-if (document.baseURI === "http://localhost:3000/"){
+let baseURI = document.baseURI;
+if (!baseURI) {
+    // For IE
+    baseURI = window.location.href;
+}
+console.log(baseURI);
+if (baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
     axios.defaults.baseURL ="http://localhost:8080/rest/"; 
 }
 else {
     // Client loaded from local or remote App Engine server
-    axios.defaults.baseURL =  document.baseURI + "rest/";
+    axios.defaults.baseURL =  baseURI + "rest/";
 }
 
 // For some reason things don't kick off unless I have some async code here.
