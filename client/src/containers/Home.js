@@ -22,7 +22,7 @@ class Home extends Component {
         this.props.history.push('/search');
     }
     goToSignin(){
-        this.props.history.push('/sighn-in');
+        this.props.history.push('/sign-in');
     }
     render() {
         
@@ -55,7 +55,7 @@ class Home extends Component {
                 <div className='actions'>
                     <Button type='button' className='action' onClick={this.goToView}>View Practitioners List</Button>
                     <Button type='button' className='action' onClick={this.goToSearch}>Search For Practitioner</Button>
-                    <Button type='button' className='action' onClick={this.goToSignIn}>Register or Sign In</Button>
+                    <Button type='button' className='action' onClick={this.goToSignin}>Register or Sign In</Button>
                 </div>
             }
             
