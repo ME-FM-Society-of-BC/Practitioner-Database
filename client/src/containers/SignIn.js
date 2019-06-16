@@ -32,16 +32,22 @@ class SignIn extends Component {
         .then((response) => {
             // Extract the token. Its claims are the username, role and id,
             const token = response.data;
-            this.props.storeLoggedInUser(decode(token));
             // Set request defaults to include Authorization header with the token
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-            // TODO replace() ?
-            this.props.history.push('/my-activity');
+            
+            const user = decode(token);
+            this.props.storeLoggedInUser(user);
+
+            const target = user.role === 'ADMINISTRATOR' ? '/manage-moderators' 
+                : (user.role === 'MODERATOR' ? '/pending-comments' : '/my-activity');
+
+            this.props.history.push(target);
         })
         .catch(error => {
             if (error.response.status === 401){
                 this.setState({errorMessage: 'Invalid username or password'});
             }
+            // TODO 
             else {
                 console.log(error);
             }
@@ -117,15 +123,11 @@ class SignIn extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-    }
-}
 const mapDispatchToProps = dispatch => {
     return {
         storeLoggedInUser: user => dispatch({ type: actions.STORE_LOGGED_IN_USER, user: user })
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SignIn));
+export default withRouter(connect(null, mapDispatchToProps)(SignIn));
 

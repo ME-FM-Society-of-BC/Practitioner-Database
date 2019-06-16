@@ -46,10 +46,7 @@ class ResetRequest extends Component {
         else {
             axios.post('/reset/request', this.state.email)
             .then((response) => {
-                if (response.data.status === 'FOUND'){
-//                    this.setState({step: 'password'});
-                }
-                else {
+                if (response.data.status !== 'FOUND'){
                     this.setState({errorMessage: 'No user has been found for that address. Please re-enter your email'});
                 }
              });
@@ -78,9 +75,9 @@ class ResetRequest extends Component {
         axios.post('/reset/finish', reset)
         .then( response => {
             this.setState({step: 'finished'});        
-        })
-        .catch(error => {
-            console.log(error);
+        // })
+        // .catch(error => {
+        //     console.log(error);
         });        
     }
 

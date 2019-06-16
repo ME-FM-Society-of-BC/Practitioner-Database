@@ -233,12 +233,12 @@ class PractitionerEval extends Component {
         axios.post('/actions/', ratings)
             .then( response => {
                 this.props.storeRatingActionIds(ratings, response.data);
-            })
-            .catch(error => {
-                console.log(error);
-                alert(error);
-            }
-        );
+            });
+            // .catch(error => {
+            //     console.log(error);
+            //     alert(error);
+            // }
+//        );
         this.setState(() => ({ 
             mode: 'viewAll'
         }));
@@ -276,7 +276,8 @@ class PractitionerEval extends Component {
                 userId: this.props.loggedInUser.id,
                 actionType: 'RATE',
                 questionId: questionId,
-                value: value
+                value: value,
+                date: (new Date()).getTime()
                 /*,
                 isNewValue: true*/
             };

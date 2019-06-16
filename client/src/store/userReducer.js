@@ -89,14 +89,12 @@ const storeNewUser = (user, state) => {
 
 const saveModerator = (moderator, state) => {
     // This is for the User account of a Moderator created by the Administrator
-    const moderators = [...state.moderators];
-    moderators.push(moderator);
+    const moderators = {...state.moderators};
+    moderators[moderator.userId] = moderator;
     return {
         ...state,
         moderators
     }
 }
-
-
 
 export default userReducer;

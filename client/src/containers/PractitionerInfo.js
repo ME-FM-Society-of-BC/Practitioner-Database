@@ -21,11 +21,19 @@ class PractitionerInfo extends Component {
 
         if (props.match.params.id >= 0){
             // An existing Practitioner is being displayed
-            // Find the index in the practioners array given the practitioner id
-            const index = props.idToIndex[props.match.params.id]
+            // Find the practitioner given the practitioner id
+            let practitioner;
+            for (let i = 0; i < props.practitioners.length; i++){
+                // Comparison is string to number
+                if (props.practitioners[i].id == props.match.params.id) {
+                    practitioner = props.practitioners[i];
+                    break;
+                }
+            }
+            // const index = props.idToIndex[props.match.params.id]
 
-            // Set the city list options according to province
-            const practitioner = props.practitioners[index];
+            // // Set the city list options according to province
+            // const practitioner = props.practitioners[index];
             const cityOptions = practitioner.province ? this.props.citiesMap[practitioner.province]: [];
         
             this.state = {
@@ -48,14 +56,14 @@ class PractitionerInfo extends Component {
         }
 
         // Province list must be restricted to those for which there is a moderator
-        const availableProvinces = Object.getOwnPropertyNames(this.props.moderators.reduce((names, moderator) => {
-            names[moderator.province] = '';
+        const availableProvinces = Object.values(this.props.moderators).reduce((names, moderator) => {
+            names.push(moderator.province);
             return names;
-        }, {}));
+        }, []);
         this.state.availableProvinces = availableProvinces;
 
         this.enableEdit = this.enableEdit.bind(this);
-        this.saveInfo = this.saveInfo.bind(this);
+        this.updateInfo = this.updateInfo.bind(this);
         this.saveNew = this.saveNew.bind(this);
         this.selectSpecialty = this.selectSpecialty.bind(this);
         this.changeTextValue = this.changeTextValue.bind(this);
@@ -113,9 +121,9 @@ class PractitionerInfo extends Component {
             mode:'edit'
         });
     }
-    saveInfo(){
+    updateInfo(){
         if (this.state.infoChanged){
-            this.props.updatePractitioner(this.state.practitioner);
+            this.props.updatePractitioner(this.state.practitioner, this.props.loggedInUser.id);
         }
         this.setState({
             mode:'view'
@@ -125,23 +133,26 @@ class PractitionerInfo extends Component {
     saveNew(){
         // New practitioner is sent to the server here rather than in the
         // reducer action, because the id is needed immediately for routing
-        axios.post('/practitioners', this.state.practitioner)
+        const practitioner = {
+            ...this.state.practitioner,
+            creationDate: new Date().getTime()
+        }
+        axios.post('/practitioners?userId=' + this.props.loggedInUser.id, practitioner)
             .then(response => {
-                const practitioner = {...this.state.practitioner};
                 practitioner.id = response.data;
                 this.setState({
-                    practitioner: practitioner,
+                    practitioner,
                     mode:'view',
                     infoChanged: false
                 });
                 this.props.saveNewPractitioner(this.state.practitioner);
                 this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
-            })
-           .catch(error => {
-                console.log(error);
-                alert(error);
-            }
-        );        
+            });
+        //    .catch(error => {
+        //         console.log(error);
+        //         alert(error);
+        //     }
+        // );        
     }
 
     render() {
@@ -224,7 +235,7 @@ class PractitionerInfo extends Component {
                             this.state.mode === 'view' ?
                             <Button type="button" className='button-large' onClick={this.enableEdit}>Edit Practitioner Information</Button>
                             :
-                            <Button type='button' className='button-large' onClick={this.saveInfo}>Save Practitioner Information</Button>
+                            <Button type='button' className='button-large' onClick={this.updateInfo}>Save Practitioner Information</Button>
                         }
                     </div>
                     : <></>
@@ -247,7 +258,7 @@ class PractitionerInfo extends Component {
 
 const mapStateToProps = state => {
     return {
-        practitioners: state.practitionersReducer.practitioners,
+        practitioners: state.practitionersReducer.allPractitioners,
         specialties: state.practitionersReducer.specialties,
         idToIndex: state.practitionersReducer.practitionerIdsToIndices,
         moderators: state.userReducer.moderators,
@@ -259,7 +270,7 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        updatePractitioner: (practitioner) => dispatch(actions.updatePractitioner(practitioner)),
+        updatePractitioner: (practitioner, userId) => dispatch(actions.updatePractitioner(practitioner, userId)),
         saveNewPractitioner: (practitioner) => dispatch({ type: CREATE_PRACTITIONER, practitioner: practitioner })
     };
 }

@@ -16,15 +16,16 @@ export const SAVE_SEARCH_RESULTS = 'SAVE_SEARCH_RESULTS';
  * Sends an updated practitioner to the server then dispatches to the store
  * @param {*} practitioner 
  */
-export const updatePractitioner = (practitioner) => {
+export const updatePractitioner = (practitioner, userId) => {
+    practitioner.editDate = new Date().getTime();
     return dispatch => {
-        axios.put('/practitioners/' + practitioner.id, practitioner)
+        axios.put('/practitioners/' + practitioner.id + '?userId=' + userId, practitioner)
             .then(() => {
                 dispatch({ type: UPDATE_PRACTITIONER, practitioner: practitioner })
-            })
-            .catch(error => {
-                console.log(error);
-                alert(error);
+            // })
+            // .catch(error => {
+            //     console.log(error);
+            //     alert(error);
             }
         );        
     }

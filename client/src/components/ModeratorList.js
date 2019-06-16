@@ -5,8 +5,9 @@ const moderatorList = props => {
     if (!props.moderators){
         return <div/>
     }
+
     const moderators = [];
-    props.moderators.forEach(moderator => {
+    Object.values(props.moderators).forEach(moderator => {
         const element = {
             province: moderator.province,
             username: props.users[moderator.userId].username,

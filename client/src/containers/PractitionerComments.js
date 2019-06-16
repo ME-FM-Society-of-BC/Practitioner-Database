@@ -69,7 +69,7 @@ class PractitionerComments extends Component {
                 comments.map((comment, index) => {
                     const username = this.props.allUsers[comment.userId].username;
                     return (
-                        <Comment mode='view'
+                        <Comment
                             enabled={this.props.loggedInUser != null} 
                             level={comment.parentId ? 2 : 1} 
                             text={comment.text} 
@@ -114,7 +114,7 @@ class PractitionerComments extends Component {
             parentId: this.state.parentId,
             practitionerId: this.props.match.params.id,
             userId: this.props.loggedInUser.id,
-            date: new Date(),
+            date: new Date().getTime(),
             text: this.state.commentText,
             status: 'PENDING'
         })
@@ -146,8 +146,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveComment: (comment) => dispatch(actions.saveComment(comment)),
-        updateComment: (comment) => dispatch(actions.updateComment(comment))
+        saveComment: (comment) => dispatch(actions.saveComment(comment))
     }
 }
 

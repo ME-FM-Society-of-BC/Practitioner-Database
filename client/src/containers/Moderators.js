@@ -7,6 +7,7 @@ import { PanelGroup, Panel } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import NewModerator from '../components/NewModerator';
 import ModeratorList from '../components/ModeratorList';
+import Instructions from '../components/Instructions';
 import axios from 'axios';
 import * as actions from '../store/userActions';
 import { CircleSpinner } from "react-spinners-kit";
@@ -28,26 +29,11 @@ class Moderators extends Component {
             email: '',
             role: 'MODERATOR'
         }
-//        this.state.loading = true;
         
         this.createModerator = this.createModerator.bind(this);
         this.onChange = this.onChange.bind(this);
         this.selectProvince = this.selectProvince.bind(this);
     }
-
-    // componentDidMount(){
-    //     // Fetch all moderators
-    //     axios.get('/moderators')
-    //     .then(response => {
-    //         this.setState({
-    //             loading: false,
-    //             moderators: response.data
-    //         });
-    //     })
-    //     .catch (error => {
-    //         console.log(error);
-    //     })
-    // }
 
     onChange = (event) => {
         this.setState({errorMessage: null});
@@ -109,10 +95,14 @@ class Moderators extends Component {
                 </div>
             )
         }
+        const panelStyle = {
+            width:'90%',
+            margin: 'auto',
+        };
 
         return (
             <>
-            <PanelGroup accordion id="moderators">
+            <PanelGroup style={panelStyle} accordion id="moderators">
                 <Panel eventKey="1">
                     <Panel.Heading>
                         <Panel.Title toggle>Create Moderator Account</Panel.Title>
@@ -133,9 +123,7 @@ class Moderators extends Component {
                 </Panel>
             </PanelGroup>
             <Panel>
-                <Panel.Heading>
-                    <Panel.Title >View Moderators</Panel.Title>
-                </Panel.Heading>
+                <Instructions width='20em'>Moderator List</Instructions>
                 <Panel.Body>
                     <ModeratorList moderators = {this.props.moderators} users = {this.props.allUsers}/>
                 </Panel.Body>

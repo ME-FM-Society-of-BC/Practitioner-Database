@@ -37,16 +37,6 @@ const commentReducer = (state = initialState, action) => {
         case actions.SAVE_COMMENT:
             return saveComment(action.comment, {...state.allComments});
 
-        case actions.UPDATE_COMMENT:
-            // TODO: Comment updates are not yet supported
-//            const updatedComment = {...action.comment};
-            const allComments = {...state.allComments};
-            // let comments = {
-            //     ...allComments[newComment.practitionerId];
-            return {
-                allComments: allComments
-            }
-
         default: 
             return state;
     }
@@ -80,15 +70,6 @@ const saveComment = ( (newComment, allComments) => {
 const orderComments = (allComments, action) => {
     const practitionerId = action.practitionerId;
 
-    // Convert received date strings to Date objects
-    // Incoming format is YYYY-MM-DDThh:mm:ss.mmmZ[UTC], must change to YYYY-MM-DDThh:mm:ssZ 
-    action.comments.forEach( comment => {
-        const date = comment.date.indexOf('.') > 0 ?
-            comment.date.split(".")[0] + 'Z'
-            :
-            comment.date.split('[')[0];
-        comment.date = new Date(date);
-    });
     // Extract all level 1 comments
     const level1 = action.comments.filter( comment => {
         return !comment.parentId
