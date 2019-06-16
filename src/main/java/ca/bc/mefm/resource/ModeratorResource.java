@@ -14,7 +14,7 @@ import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.Moderator;
 
 /**
- * Service endpoint for Comment entity creation and retrieval
+ * Service endpoint for Moderator entity creation and retrieval
  * @author Robert
  */
 @Path("/moderators")
