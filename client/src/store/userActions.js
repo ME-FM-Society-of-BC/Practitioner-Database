@@ -24,10 +24,6 @@ export const saveModerator = (moderator => {
             .then((response) => {
                 moderator.id = response.data;
                 dispatch({ type: SAVE_MODERATOR, moderator })
-            // })
-            // .catch(error => {
-            //     console.log(error);
-            //     alert(error);
             }
         );        
     }

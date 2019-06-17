@@ -148,11 +148,6 @@ class PractitionerInfo extends Component {
                 this.props.saveNewPractitioner(this.state.practitioner);
                 this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
             });
-        //    .catch(error => {
-        //         console.log(error);
-        //         alert(error);
-        //     }
-        // );        
     }
 
     render() {

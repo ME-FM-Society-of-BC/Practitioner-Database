@@ -35,10 +35,6 @@ class PendingComments extends Component {
         .then(() => {
             this.setState({ready: true})
         });
-        // .catch (error => {
-        //     console.log(error);
-        //     alert(error)
-        // });
     }
 
     render() {

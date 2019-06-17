@@ -22,10 +22,6 @@ export const updatePractitioner = (practitioner, userId) => {
         axios.put('/practitioners/' + practitioner.id + '?userId=' + userId, practitioner)
             .then(() => {
                 dispatch({ type: UPDATE_PRACTITIONER, practitioner: practitioner })
-            // })
-            // .catch(error => {
-            //     console.log(error);
-            //     alert(error);
             }
         );        
     }

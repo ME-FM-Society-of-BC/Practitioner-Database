@@ -234,11 +234,6 @@ class PractitionerEval extends Component {
             .then( response => {
                 this.props.storeRatingActionIds(ratings, response.data);
             });
-            // .catch(error => {
-            //     console.log(error);
-            //     alert(error);
-            // }
-//        );
         this.setState(() => ({ 
             mode: 'viewAll'
         }));

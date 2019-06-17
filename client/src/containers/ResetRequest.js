@@ -75,9 +75,6 @@ class ResetRequest extends Component {
         axios.post('/reset/finish', reset)
         .then( response => {
             this.setState({step: 'finished'});        
-        // })
-        // .catch(error => {
-        //     console.log(error);
         });        
     }
 

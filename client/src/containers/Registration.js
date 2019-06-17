@@ -54,9 +54,6 @@ class Registration extends Component {
                 // TODO replace() ?
                 this.props.history.push('/my-activity');
             }            
-        // })
-        // .catch(error => {
-        //     console.log(error);
         });        
     }
 
