@@ -76,12 +76,8 @@ class PendingCommentBlock extends Component {
             }
         }
         // Send the updates to the server 
-        // TODO: Confirm no need to send to reducer
-        axios.post('/comments/resolve', this.props.comments.slice(this.state.startIndex, this.state.endIndex + 1));
-        // .catch (error => {
-        //     console.log(error);
-        //     alert(error)
-        // });
+        axios.post('/comments/resolve/moderator=' + this.props.loggedInUser.id, 
+            this.props.comments.slice(this.state.startIndex, this.state.endIndex + 1));
         
         this.setState({
             startIndex: this.state.startIndex + this.BLOCK_SIZE
@@ -149,7 +145,8 @@ class PendingCommentBlock extends Component {
 
 const mapStateToProps = state => {
     return {
-        allUsers: state.userReducer.allUsers
+        allUsers: state.userReducer.allUsers,
+        loggedInUser: state.userReducer.loggedInUser
     }
 }
 
