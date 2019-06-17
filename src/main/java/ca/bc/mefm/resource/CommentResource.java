@@ -57,16 +57,17 @@ public class CommentResource extends AbstractResource{
      * Updates the status of a set of comments, and sends emails to the
      * authors of those which have been blocked.
      * @param comments
+     * @param moderator the user id of the moderator making the request
      * @return
      */
     @Path("resolve")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response resolve(List<Comment> comments) {
+    public Response resolve(List<Comment> comments, @QueryParam("moderator") Long moderatorId) {
     	DataAccess da = new DataAccess();
     	
-    	// TODO Address of moderator
-    	String kludge = "robert.t.toms@gmail.com";
+    	// Look up the email address of the moderator
+    	User moderator = da.find(moderatorId, User.class);
     	
     	List<User> blockedUsers = new ArrayList<User>();
     	comments.stream().forEach( comment -> {
@@ -77,7 +78,7 @@ public class CommentResource extends AbstractResource{
     		}
     	});
     	if (!blockedUsers.isEmpty()) {
-    		MailSender.sendBlockedNotification(kludge, blockedUsers);
+    		MailSender.sendBlockedNotification(moderator.getEmail(), blockedUsers);
     	}
         return responseNoContent();
     }

@@ -1,10 +1,12 @@
 package ca.bc.mefm.mail;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -15,24 +17,53 @@ import javax.mail.internet.MimeMessage;
 
 import ca.bc.mefm.data.User;
 
+/**
+ * Methods to send email messages for blocked comments, and password reset. The
+ * sending address is a "no-reply" address configured in the application properties
+ * @author Robert
+ */
 public class MailSender {
 
 	private static final Logger log = Logger.getLogger(MailSender.class.getName());
+	private static String emailSenderAddress;
+	
+	static {
+		InputStream is = MailSender.class.getClassLoader().getResourceAsStream("application.properties");
+		Properties p = new Properties();
+		try {
+			p.load(is);
+			emailSenderAddress = p.getProperty("noreply.address");
+		}
+		catch (Exception e) {
+			log.severe("Unable to load application.properties file " + e);
+		}
+	}	
 
-	public static void sendBlockedNotification(String senderAddress, List<User> blockedUsers) {
+	/**
+	 * Sends a set of messages to users who created comments which have been blocked
+	 * @param moderatorAddress
+	 * @param blockedUsers
+	 */
+	public static void sendBlockedNotification(String moderatorAddress, List<User> blockedUsers) {
 		
-		// TODO: 
-		return;
-		/*
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
+		
+		final Address[] replyTo;
+		try {
+			replyTo = new Address[]{new InternetAddress(moderatorAddress, "MEFM Society Moderator")};
+		}
+		catch (UnsupportedEncodingException e) {
+			log.severe("Error creating reply to address" + e);
+			return;
+		}		
 
 		blockedUsers.forEach( user -> {
-			
 			try {
 				Message msg = new MimeMessage(session);
-				msg.setFrom(new InternetAddress(senderAddress, "MEFM Society Moderator"));
+				msg.setFrom(new InternetAddress(emailSenderAddress, "HealthFinder4ME Moderator"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
+				msg.setReplyTo(replyTo);
 				msg.setSubject("Your comment has been blocked");
 				msg.setText("This is a test");
 				Transport.send(msg);
@@ -41,16 +72,20 @@ public class MailSender {
 				log.warning("Bad address for user " + user.getUsername());
 			} 
 		});
-		*/
 	}
 	
-	public static void sendPasswordResetCode(User user, String senderAddress, String code) {
+	/**
+	 * Sends a password reset code
+	 * @param user the user requesting the password reset
+	 * @param code the reset code
+	 */
+	public static void sendPasswordResetCode(User user, String code) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 
 		try {
 			Message msg = new MimeMessage(session);
-			msg.setFrom(new InternetAddress(senderAddress, "MEFM Society"));
+			msg.setFrom(new InternetAddress(emailSenderAddress, "HealthFinder4ME"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
 			msg.setSubject("MEFM Database Password Reset");
 			msg.setText("Your username is '" + user.getUsername() 
@@ -60,7 +95,5 @@ public class MailSender {
 		catch (MessagingException | UnsupportedEncodingException e) {
 			log.warning("Bad address for user " + user.getUsername());
 		} 
-		
 	}
-
 }

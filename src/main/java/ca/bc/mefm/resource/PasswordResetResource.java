@@ -1,13 +1,11 @@
 package ca.bc.mefm.resource;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -20,9 +18,7 @@ import ca.bc.mefm.mail.MailSender;
 import ca.bc.mefm.data.DataAccess.Filter;
 import ca.bc.mefm.data.PasswordReset;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Service endpoint for handling password reset requests 
@@ -63,8 +59,7 @@ public class PasswordResetResource extends AbstractResource{
         da.put(passwordReset);
         
         // Send email to the user with the code
-        // TODO sender address
-        MailSender.sendPasswordResetCode(user, "mail@kludge.com", code);
+        MailSender.sendPasswordResetCode(user, code);
         
         // Return it to client
         return responseOkWithBody(new Result(Status.FOUND, code));
@@ -125,13 +120,4 @@ public class PasswordResetResource extends AbstractResource{
     	
     	public Result() {}
     }
-
-//    @Getter
-//    @Setter
-//    public class Reset{    	
-//    	private String code;
-//    	private String password;
-//    	
-//    	public Reset() {}
-//    }
 }
