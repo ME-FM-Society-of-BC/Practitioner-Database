@@ -1,6 +1,5 @@
 /**
  * An administrator uses this view to assign moderators to a region (e.g. in Canada, a province)
- * 
  */
 import React, { Component } from 'react';
 import { PanelGroup, Panel } from 'react-bootstrap';
@@ -33,6 +32,7 @@ class Moderators extends Component {
         this.createModerator = this.createModerator.bind(this);
         this.onChange = this.onChange.bind(this);
         this.selectProvince = this.selectProvince.bind(this);
+        this.switchStatus = this.switchStatus.bind(this);
     }
 
     onChange = (event) => {
@@ -67,7 +67,7 @@ class Moderators extends Component {
                 this.props.saveNewModeratorUser(user)
                 
                 // Now create the moderator
-                const moderator = {...this.state.moderator, userId: response.data}
+                const moderator = {...this.state.moderator, userId: response.data, status: 'ENABLED'}
                 this.props.saveNewModerator(moderator);
                 
                 this.setState({
@@ -84,6 +84,11 @@ class Moderators extends Component {
                 });
             }
         })
+    }
+
+    switchStatus = (moderator) => {
+        moderator.status = moderator.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+        this.props.changeModeratorStatus(moderator);
     }
 
     render(){
@@ -125,7 +130,7 @@ class Moderators extends Component {
             <Panel>
                 <Instructions width='20em'>Moderator List</Instructions>
                 <Panel.Body>
-                    <ModeratorList moderators = {this.props.moderators} users = {this.props.allUsers}/>
+                    <ModeratorList moderators = {this.props.moderators} users = {this.props.allUsers} switchStatus = {this.switchStatus}/>
                 </Panel.Body>
             </Panel>
             </>
@@ -144,7 +149,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         saveNewModeratorUser: user => dispatch({ type: actions.STORE_NEW_USER, user }),
-        saveNewModerator: moderator => dispatch(actions.saveModerator(moderator))
+        saveNewModerator: moderator => dispatch(actions.saveModerator(moderator)),
+        changeModeratorStatus: moderator => dispatch(actions.changeModeratorStatus(moderator))
     };
 };
 
