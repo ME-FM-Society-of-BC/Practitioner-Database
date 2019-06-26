@@ -2,7 +2,7 @@ import 'react-app-polyfill/ie11';
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import practitionersReducer from './store/practitionersReducer';
@@ -13,6 +13,7 @@ import commentReducer from './store/commentReducer';
 import App from './App';
 import axios from 'axios';
 import thunk from 'redux-thunk';
+import { getBaseURI } from './common/utilities' 
 
 // Regarding react-app-polyfill/ie11 refer to
 // https://github.com/facebook/create-react-app/blob/master/packages/react-app-polyfill/README.md
@@ -36,27 +37,37 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 //axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
 axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
 
-let baseURI = document.baseURI;
-if (!baseURI) {
-    // For IE
-    baseURI = window.location.href;
-}
+let baseURI = getBaseURI();
 console.log(baseURI);
 if (baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
-    axios.defaults.baseURL ="http://localhost:8080/rest/"; 
+    axios.defaults.baseURL ="http://localhost:8080/"; 
 }
 else {
     // Client loaded from local or remote App Engine server
-    axios.defaults.baseURL =  baseURI + "rest/";
+    axios.defaults.baseURL =  baseURI;
 }
 
-// For some reason things don't kick off unless I have some async code here.
-// Initialize call will seed the database if it is empty
-axios.get('/initialize')
-.then(() => {
-    ReactDOM.render(app, document.getElementById('root'));
+// This does not work in Chrome
+window.addEventListener("beforeunload", function (e) {
+    const message = 'WARNING: Refreshing the browser in this application can cause errors.'
+        + '\nPlease use the menus to navigate through the application.'
+        + 'If you experience problems, enter the original url into your address bar' 
+        + '(you will again see this warning, but in that case just accept the reload.)'; 
+    this.console.log('beforeunload');
+//    e.preventDefault();
+    e.returnValue = message;
+    return message;
 });
+
+// For some reason things don't kick off unless I have some async code here.
+// (Might just be the case for local development ?)
+(new Promise(function (resolve, reject) {
+    resolve()
+})).then(() => {
+    ReactDOM.render(app, document.getElementById('root')); 
+});
+
 
 // Below was for accessing maps from the client.
 // console.log('Initializing GAPI...');
@@ -82,12 +93,14 @@ axios.get('/initialize')
 //         setTimeout(() => {loadClientWhenGapiReady(script)}, 100);
 //     }
 // }
+//     <BrowserRouter>
+
 
 const app = (
     <Provider store={store}>
-    <BrowserRouter>
+    <HashRouter>
     <App />
-    </BrowserRouter>
+    </HashRouter>
     </Provider>
     );
     

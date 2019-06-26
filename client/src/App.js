@@ -5,6 +5,8 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Banner from './components/Banner';
+import RefreshWarning from './components/RefreshWarning';
+import Instructions from './components/Instructions';
 import Home from './containers/Home';
 import MyActivity from './containers/MyActivity';
 import PendingComments from './containers/PendingComments';
@@ -32,12 +34,16 @@ import axios from 'axios';
 class App extends Component {
     
     SESSION_MINUTES = 15;
+    state = {hasError: false};
 
     constructor(props){
         super(props);
-        this.state = {
-            loading: true
-        }
+        console.log('constructor: pathname = ' + this.props.history.location.pathname);
+        // if (this.props.history.location.pathname === '/'){
+        //     this.state = {
+        //         loading: true
+        //     }
+        // }
         // Add axios interceptors
         axios.interceptors.request.use(request => {
             return request;
@@ -49,7 +55,7 @@ class App extends Component {
         // action which requires a server request 
         axios.interceptors.response.use(response => {
             this.restartSessionTimer(this.SESSION_MINUTES);
-            console.log(response.data);
+            // console.log(response.data);
             return response;
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
@@ -59,6 +65,22 @@ class App extends Component {
             }
             return Promise.reject(error);
         });
+
+        const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+        if (isChrome){
+            // First check if the warning has been given before. For now, this will
+            // be unconditional, i.e. not date stamped and compared
+            const key = 'chrome-was-shown';
+            if (!localStorage.getItem(key)){
+                this.state.showChromeWarning = true;
+                localStorage.setItem(key, 'true');
+            }
+        }
+        this.onCloseWarning = this.onCloseWarning.bind(this);
+    }
+
+    onCloseWarning(){
+        this.setState({showChromeWarning: false})
     }
 
     /**
@@ -72,21 +94,19 @@ class App extends Component {
         this.timerId = setTimeout(() => {
             if (this.props.loggedInUser){
                 // Session timing applies only to logged in users
-                this.props.history.replace('/sign-out');
+                this.props.history.push('/sign-out');
             }
         }, sessionLimit * 60000);        
     }
 
     componentDidMount() {
+        // if (this.props.history.location.pathname !== '/'){
+        //     // User is refreshing
+        //     return;
+        // }
         // Start a request chain to obtain all data required for a visitor 
         // to start using the app without registering or signing in 
-        axios.get('/roles')
-        .then(response => {
-            this.props.storeUserRoles(response.data);
-        })
-        .then(() => {
-            return axios.get('/specialties')
-        })
+        axios.get('/specialties')
         .then(response => {
             this.props.storeSpecialties(response.data);
         })
@@ -145,7 +165,7 @@ class App extends Component {
         })
         .then(() => {
             this.setState({loading: false});
-            this.props.history.replace('/home');
+            this.props.history.push('/home');
         })
         // TODO: Replace with user friendly response
         .catch(error => {
@@ -172,7 +192,27 @@ class App extends Component {
         return provinceIds.substring(0, provinceIds.length - 1);
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true };
+    }
+    
+    componentDidCatch(error, info) {
+        // You can also log the error to an error reporting service
+        console.log(error);
+        console.log(info);
+    }
+    
     render() {
+        if (this.state.hasError) {
+            // You can render any custom fallback UI
+            return (
+                <Instructions>
+                    Ooops! Something went wrong. Sorry about that
+                </Instructions>
+            )
+        }
+      
         // Display spinner until all required data are obtained from the server 
         if (this.state.loading){
             return (
@@ -181,7 +221,11 @@ class App extends Component {
                 </div>
             )
         }
-        
+
+        if (this.state.showChromeWarning) {
+            return <RefreshWarning onClose={this.onCloseWarning}/>
+        }
+
         // Establish routes according to whether the user is logged in, and if so,
         // what the user's role is. 
        
@@ -321,7 +365,6 @@ const navbarHeight = {
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
-        roles: state.userReducer.roles,
         moderators: state.userReducer.moderators,
         provinceNameToIdMap: state.locationReducer.provinceNameToIdMap
     }
@@ -330,7 +373,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         storeUsers: (users) => dispatch({ type: userActions.STORE_ALL_USERS, users }),
-        storeUserRoles: (roles) => dispatch({ type: userActions.STORE_USER_ROLES, roles }),
         storeModerators: (moderators) => dispatch({ type: userActions.STORE_MODERATORS, moderators }),
         storeSpecialties: (specialties) => dispatch({ type: practitionerActions.STORE_SPECIALTIES, specialties }),
         storeProvinces: (provinces) => dispatch({ type: locationActions.STORE_PROVINCES, provinces }),

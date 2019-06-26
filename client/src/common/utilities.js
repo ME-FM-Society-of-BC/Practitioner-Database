@@ -81,3 +81,16 @@ export const parseDimensions = dimensions => {
     }
 }
 
+/**
+ * determines the base URI of the application
+ * @return the value
+ */
+export const getBaseURI = () => {
+    let baseURI = document.baseURI;
+    if (!baseURI) {
+        // For IE
+        baseURI = window.location.href;
+    }
+    return baseURI;
+}
+
