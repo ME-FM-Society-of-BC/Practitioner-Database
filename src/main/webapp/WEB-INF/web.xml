@@ -14,8 +14,19 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
+        <!--  /rest/* -->
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Initializer</servlet-name>
+        <servlet-class>ca.bc.mefm.InitializationServlet</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>ca.bc.mefm</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     
     <!-- This servlet handles bounced emails -->
 	<servlet>
