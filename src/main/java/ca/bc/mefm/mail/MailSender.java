@@ -1,6 +1,5 @@
 package ca.bc.mefm.mail;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
@@ -15,6 +14,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import ca.bc.mefm.ApplicationProperties;
 import ca.bc.mefm.data.User;
 
 /**
@@ -25,20 +25,8 @@ import ca.bc.mefm.data.User;
 public class MailSender {
 
 	private static final Logger log = Logger.getLogger(MailSender.class.getName());
-	private static String emailSenderAddress;
+	private static final String emailSenderAddress = ApplicationProperties.get("noreply.address");
 	
-	static {
-		InputStream is = MailSender.class.getClassLoader().getResourceAsStream("application.properties");
-		Properties p = new Properties();
-		try {
-			p.load(is);
-			emailSenderAddress = p.getProperty("noreply.address");
-		}
-		catch (Exception e) {
-			log.severe("Unable to load application.properties file " + e);
-		}
-	}	
-
 	/**
 	 * Sends a set of messages to users who created comments which have been blocked
 	 * @param moderatorAddress
@@ -65,6 +53,7 @@ public class MailSender {
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
 				msg.setReplyTo(replyTo);
 				msg.setSubject("Your comment has been blocked");
+				// TODO Determine text of blocked comment message
 				msg.setText("This is a test");
 				Transport.send(msg);
 			} 
@@ -91,6 +80,7 @@ public class MailSender {
 			msg.setText("Your username is '" + user.getUsername() 
 				+ "'. On the Recover Password page, enter this code: "  + code);
 			Transport.send(msg);
+			log.info("Sent password reset code to " + user.getEmail());
 		} 
 		catch (MessagingException | UnsupportedEncodingException e) {
 			log.warning("Bad address for user " + user.getUsername());
