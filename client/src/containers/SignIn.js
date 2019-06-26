@@ -47,6 +47,9 @@ class SignIn extends Component {
             if (error.response.status === 401){
                 this.setState({errorMessage: 'Invalid username or password'});
             }
+            else if (error.response.status === 403){
+                this.setState({errorMessage: 'Access forbidden. Your account has been suspended'});
+            }
             // TODO 
             else {
                 console.log(error);
