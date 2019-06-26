@@ -4,9 +4,9 @@
 import * as actions from './evaluationActions';
 
 const initialState = {
-    questions: [],
-    questionGroups: [],
-    questionChoices: [],
+    questions: [],          // All questions (invariant)
+    questionGroups: [],     // All question groups (invariant)
+    questionChoices: [],    // All question choices (invariant)
     allRecommendations: {},
     userActions: [],
     userAnswers: {},

@@ -4,30 +4,25 @@
 import * as actions from './commentActions';
 
 const initialState = {
-    // All comments, keyed on practitionerId
-    allComments: {},
-    pendingComments: {},
-    flaggedComments: {} 
+    allComments: {},        // Maps practitionerId to comments
+    pendingComments: {},    // All flagged comments for practitioners in the same province as the logged in (moderator) user
+    flaggedComments: {}     // All pending comments for practitioners in the same province as the logged in (moderator) user
 }
 
 const commentReducer = (state = initialState, action) => {
     switch (action.type) {
 
         // Store all comments on a given practitioner
-        case actions.STORE_COMMENTS:
-            return {
-                ...state,
-                allComments: orderComments({...state.allComments}, action)
-            }
+        case actions.STORE_COMMENTS: return storePractitionerComments({...state.allComments}, action.practitionerId, action.comments)
 
-        // Store all flagged comments
+        // Store all flagged comments for practitioners in the same province as the logged in (moderator) user
         case actions.STORE_ALL_PENDING_COMMENTS:
             return {
                 ...state,
                 pendingComments: action.comments
             }
     
-        // Store all pending comments
+        // Store all pending comments for practitioners in the same province as the logged in (moderator) user
         case actions.STORE_ALL_FLAGGED_COMMENTS:
             return {
                 ...state,
@@ -42,6 +37,12 @@ const commentReducer = (state = initialState, action) => {
     }
 }
 
+/**
+ * Saves a new comment
+ * @param newComment the comment
+ * @param allComments map of practitionerId to comments
+ * @return the updated map
+ * */
 const saveComment = ( (newComment, allComments) => {
     let comments = allComments[newComment.practitionerId];
     if (!comments){
@@ -66,12 +67,18 @@ const saveComment = ( (newComment, allComments) => {
     }
 })
 
-/** Orders and nests a practitioner's comments earliest to latest, with responses nested */
-const orderComments = (allComments, action) => {
-    const practitionerId = action.practitionerId;
-
+/** 
+ * Stores all comments for a given practitioner in the comments map.
+ * The comments are ordered earliest to latest, with responses nested within each 
+ * 
+ * @param allComments map of practitionerId to all comments for the practitioner
+ * @param practitionerId id of a practitionr 
+ * @param comments all comments for the practitioner
+ * @return the updated map
+ */
+const storePractitionerComments = (allComments, practitionerId, comments) => {
     // Extract all level 1 comments
-    const level1 = action.comments.filter( comment => {
+    const level1 = comments.filter( comment => {
         return !comment.parentId
     });
     // Sort by ascending date
@@ -86,7 +93,7 @@ const orderComments = (allComments, action) => {
 
     for (let id in map){
         // Find all responses, and sort by date
-        const responses = action.comments.filter( comment => {
+        const responses = comments.filter( comment => {
             // eslint-disable-next-line
             return comment.parentId == id;
         });
