@@ -37,18 +37,18 @@ class MyActivity extends Component {
         }
         if (this.state.actions.length === 0){
             return (
-                <>
-                <Instructions width='80%'>
+            <Instructions width='80%'>
                 <p>Welcome to the My Activity page. Here you will see a record of all the actions you can perform, such as</p>
-                <ul>
-                    <li>Add a practitioner to the site</li>
-                    <li>Edit practitioner information (address, phone, etc.) previously entered by you or another user</li>
-                    <li>Rate a practitioner</li>
-                    <li>Comment on a practitioner or respond to a comment by another user</li>
-                </ul>
-                As of now, you have not performed any actions
-                </Instructions>
-                </>
+                <div>
+                    <ul>
+                        <li>Add a practitioner to the site</li>
+                        <li>Edit practitioner information (address, phone, etc.) previously entered by you or another user</li>
+                        <li>Rate a practitioner</li>
+                        <li>Comment on a practitioner or respond to a comment by another user</li>
+                    </ul>
+                </div>
+                <p>As of now, you have not performed any actions</p>
+            </Instructions>
             )
         }
         else {
