@@ -21,6 +21,7 @@
 	font-weight: bold;
 	cursor: -webkit-grab; 
 	cursor: grab;
+	padding-left: 0.8em;
 }
 
 .vertical-group {
