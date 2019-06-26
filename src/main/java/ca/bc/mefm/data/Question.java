@@ -14,11 +14,11 @@ public class Question {
 	
 	@Id
 	private Long	id;	
-	private int 	displayIndex;
+	private Integer	displayIndex;
 	private Long	questionChoiceSetId;
 	private Long 	questionGroupId;
 	private Type	type;
 	private String	text;
-	
+
 	public Question() {}
 }
