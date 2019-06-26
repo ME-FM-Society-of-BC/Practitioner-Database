@@ -14,9 +14,9 @@ const instructions = props => {
 
     return (
         <div className='instructions'>
-            <p style={style}>
+            <div style={style}>
                 {props.children}
-            </p>
+            </div>                
         </div>
     )
 }
