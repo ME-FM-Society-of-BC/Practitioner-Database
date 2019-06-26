@@ -87,7 +87,8 @@ class PractitionerInfo extends Component {
         this.setState({
             practitioner: practitioner,
             cityOptions: this.props.citiesMap[event.target.value],
-            infoChanged: true
+            infoChanged: true,
+            errorMessage: null
         })
     }
 
@@ -96,7 +97,8 @@ class PractitionerInfo extends Component {
         practitioner.city = event.target.value;
         this.setState({
             practitioner: practitioner,
-            infoChanged: true
+            infoChanged: true,
+            errorMessage: null
         })
     }
 
@@ -112,7 +114,8 @@ class PractitionerInfo extends Component {
         alteredPractitioner[name] = value;
         this.setState({
             practitioner: alteredPractitioner,
-            infoChanged: true
+            infoChanged: true,
+            errorMessage: null
         })
     }
  
@@ -122,6 +125,9 @@ class PractitionerInfo extends Component {
         });
     }
     updateInfo(){
+        if(!this.validate()){
+            return;
+        };
         if (this.state.infoChanged){
             this.props.updatePractitioner(this.state.practitioner, this.props.loggedInUser.id);
         }
@@ -131,6 +137,9 @@ class PractitionerInfo extends Component {
     }
 
     saveNew(){
+        if(!this.validate()){
+            return;
+        };
         // New practitioner is sent to the server here rather than in the
         // reducer action, because the id is needed immediately for routing
         const practitioner = {
@@ -146,8 +155,31 @@ class PractitionerInfo extends Component {
                     infoChanged: false
                 });
                 this.props.saveNewPractitioner(this.state.practitioner);
-                this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
+//                this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
+                this.props.history.push('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
             });
+    }
+
+    validate(){
+        const fields = [];
+        if (!this.state.practitioner.lastName) fields.push('last name');
+        if (!this.state.practitioner.firstName) fields.push('first name');
+        if (!this.state.practitioner.address) fields.push('address');
+        if (!this.state.practitioner.city) fields.push('city');
+        if (!this.state.practitioner.phone) fields.push('phone');
+
+        if (fields.length === 0){
+            return true;
+        }
+
+        let errorMessage = fields.reduce( (message, field) => {
+            message += field + ', ';
+            return message;
+        }, 'Please enter missing information: ');
+        
+        errorMessage = errorMessage.substring(0, errorMessage.lastIndexOf(','));
+        this.setState({errorMessage});
+        return false;
     }
 
     render() {
@@ -169,7 +201,7 @@ class PractitionerInfo extends Component {
                 {this.state.mode === 'create' ?
                     <Instructions width='40em'>
                         Enter information for a new practitioner if you have checked that he or she is not already in the list.
-                        You must provide at least first and last names, address and telephone number
+                        You must provide at least first and last names, full address and telephone number
                     </Instructions>
                     : ''
                 }
@@ -223,6 +255,9 @@ class PractitionerInfo extends Component {
                         onChange =  {(event) => this.selectSpecialty(event)}/>
                     </div>
                 </div>
+                {
+                    this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
+                }
 
                 {this.state.canEdit ?
                     <div className='horizontal-group'>
