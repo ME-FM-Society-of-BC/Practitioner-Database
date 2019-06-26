@@ -1,18 +1,16 @@
 /**
- * This reducer deals with all states related to users and user roles
+ * This reducer deals with all states related to users and moderators
  */
 import * as actions from './userActions';
 
 const initialState = {
     allUsers: [],
     moderators: [],
-    roles: {},
     loggedInUser: null
 }
 
 const userReducer = (state = initialState, action) => {
     switch (action.type){
-        case actions.STORE_USER_ROLES : return storeUserRoles(action.roles, state);
         case actions.STORE_LOGGED_IN_USER : return storeLoggedInUser(action.user, state);
         case actions.STORE_ALL_USERS : return storeAllUsers(action.users, state);
         case actions.LOGOUT : return logout(state);
@@ -21,18 +19,6 @@ const userReducer = (state = initialState, action) => {
         case actions.SAVE_MODERATOR: return saveModerator(action.moderator, state);
 
         default: return state;
-    }
-}
-const storeUserRoles = (roles, state) => {
-    // Convert the array of UserRole object to a map of role id to type
-    const roleMap = roles.reduce( (map, role) => {
-        map[role.id] = role;
-        return map;
-    }, {});
-    // Store the map rather than the array
-    return {
-        ...state,
-        roles: roleMap 
     }
 }
 

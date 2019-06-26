@@ -1,11 +1,10 @@
 /**
- * Actions associated with users and user roles
+ * Actions associated with users and moderators
  */
 import axios from 'axios';
 
 /******* Synchronous actions *********/
 export const STORE_LOGGED_IN_USER = 'STORE_LOGGED_IN_USER';
-export const STORE_USER_ROLES = 'STORE_USER_ROLES';
 export const STORE_ALL_USERS = 'STORE_ALL_USERS';
 export const STORE_NEW_USER = 'STORE_NEW_USER';
 export const STORE_MODERATORS = 'STORE_MODERATORS';
@@ -28,3 +27,20 @@ export const saveModerator = (moderator => {
         );        
     }
 })
+
+/**
+ * Sends a Moderator status change to the server then dispatches to the store
+ * @param {*} moderator 
+ */
+export const changeModeratorStatus = (moderator => {
+    return dispatch => {
+        axios.put('/moderators/' + moderator.id + '?status=' + moderator.status)
+            .then((response) => {
+                dispatch({ type: SAVE_MODERATOR, moderator })
+            }
+        );        
+    }
+})
+
+
+
