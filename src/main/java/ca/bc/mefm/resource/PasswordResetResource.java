@@ -3,6 +3,7 @@ package ca.bc.mefm.resource;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -27,6 +28,8 @@ import lombok.Getter;
 @Path("/reset")
 public class PasswordResetResource extends AbstractResource{
 
+	private static final Logger log = Logger.getLogger(PasswordResetResource.class.getName());
+	
 	public enum Status {FOUND, NOT_FOUND}
 
 	/**
@@ -39,6 +42,8 @@ public class PasswordResetResource extends AbstractResource{
 	@POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response requestReset(String email) {
+		
+		log.info("Password reset request for " + email);
     	
     	// Search for the user with the specified email address
     	DataAccess da = new DataAccess();
@@ -49,6 +54,7 @@ public class PasswordResetResource extends AbstractResource{
         
         if (list.size() == 0) {
         	// No user found for the email address
+    		log.info("User " + email + " not found");
         	return responseOkWithBody(new Result(Status.NOT_FOUND, null)); 
         }        
         User user = list.get(0);
