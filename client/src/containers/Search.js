@@ -110,7 +110,10 @@ class Search extends Component {
             this.setState({errorMessage: 'You must enter a valid postal code'});
             return;
         }
-        this.setState({errorMessage: null});
+        this.setState({
+            loading: true,
+            errorMessage: null
+        });
 
         this.getDistances(this.state.postalCode, this.props.allPractitioners)
         .then( augmentedPractitioners => {
@@ -175,13 +178,23 @@ class Search extends Component {
      *         null if the origin postal code was bad
      */ 
     getDistances(origin, practitioners){
+        // Create string of practitioner ids separated by '|',
+        // ignoring those for which there is no postal code
         const practitionerIds = practitioners.map( practitioner => {
-            return practitioner.id;
+            return practitioner.postalCode && practitioner.postalCode.trim().length > 0 ? practitioner.id : null;
         })
         .reduce((concatenated, id, index, ids) => {
-            concatenated = concatenated.concat(id).concat(index < ids.length - 1 ? '|' : '');
+            if (id){
+                concatenated = concatenated.concat(id).concat(index < ids.length - 1 ? '|' : '');
+            }
             return concatenated;
         }, '');
+
+        if (practitionerIds.length === 0){
+            return new Promise(function (resolve, reject) {
+                reject('There are no practitioners in the system whose postal codes are known')
+            })
+        }
 
         const augmentedPractitioners = [...practitioners];
 
