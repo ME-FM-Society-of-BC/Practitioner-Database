@@ -92,14 +92,6 @@ class PractitionerList extends Component {
         if (!this.state.practitioners){
             return (<></>)
         }
-        // Display spinner during the search 
-        // if (this.state.loading){
-        //     return (
-        //         <div className='spinner-container'>
-        //             <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
-        //         </div>
-        //     )
-        // }
         return (
         <>
             {this.props.loggedInUser ?
