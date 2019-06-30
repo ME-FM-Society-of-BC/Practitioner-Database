@@ -76,7 +76,7 @@ class PendingCommentBlock extends Component {
             }
         }
         // Send the updates to the server 
-        axios.post('/comments/resolve/moderator=' + this.props.loggedInUser.id, 
+        axios.post('/comments/resolve?moderator=' + this.props.loggedInUser.id, 
             this.props.comments.slice(this.state.startIndex, this.state.endIndex + 1));
         
         this.setState({
