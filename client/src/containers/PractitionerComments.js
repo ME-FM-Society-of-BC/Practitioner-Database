@@ -19,8 +19,11 @@ class PractitionerComments extends Component {
 
     state = {}
 
-    constructor(props) {
+    constructor(props) { 
         super(props);
+
+        this.state.commentMap = this.props.allComments[this.props.match.params.id]
+
         this.openComment = this.openComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.closeComment = this.closeComment.bind(this);
@@ -31,7 +34,7 @@ class PractitionerComments extends Component {
  
     render() {
         // Comments for this practitioner
-        const commentMap = this.props.allComments[this.props.match.params.id];
+        const commentMap = this.state.commentMap;
         // Flatten out
         let comments = [];
         for (let id in commentMap){
@@ -131,8 +134,7 @@ class PractitionerComments extends Component {
     }
     /** User has clicked the "Flag" button on a specific comment */
     flag(comment) {
-        comment.status = 'FLAGGED';
-        this.props.updateComment(comment);
+        this.props.flagComment(comment);
     }
 }
 
@@ -146,7 +148,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveComment: (comment) => dispatch(actions.saveComment(comment))
+        saveComment: (comment) => dispatch(actions.saveComment(comment)),
+        flagComment: (comment) => dispatch(actions.flagComment(comment))
     }
 }
 

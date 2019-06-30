@@ -13,9 +13,9 @@ const commentReducer = (state = initialState, action) => {
     switch (action.type) {
 
         // Store all comments on a given practitioner
-        case actions.STORE_COMMENTS: return storePractitionerComments({...state.allComments}, action.practitionerId, action.comments)
+        case actions.STORE_COMMENTS: return storePractitionerComments(state, action.practitionerId, action.comments)
 
-        // Store all flagged comments for practitioners in the same province as the logged in (moderator) user
+        // Store all pending comments for practitioners in the same province as the logged in (moderator) user
         case actions.STORE_ALL_PENDING_COMMENTS:
             return {
                 ...state,
@@ -29,10 +29,15 @@ const commentReducer = (state = initialState, action) => {
                 flaggedComments: action.comments
             }
 
+        // Stores a new comment
         case actions.SAVE_COMMENT:
             return saveComment(action.comment, {...state.allComments});
 
-        default: 
+        // Updates a new comment
+        case actions.UPDATE_COMMENT:
+            return updateComment({...action.comment}, state.allComments);
+        
+            default: 
             return state;
     }
 }
@@ -67,6 +72,32 @@ const saveComment = ( (newComment, allComments) => {
     }
 })
 
+/**
+ * Updates a comment
+ * @param comment the comment
+ * @param allComments map of practitionerId to comments
+ * @return the updated map
+ * */
+const updateComment = ( (updatedComment, allComments) => {
+
+    let comments = allComments[updatedComment.practitionerId];
+    // Flatten out
+    let commentsArray = [];
+    for (let id in comments){
+        commentsArray = commentsArray.concat([comments[id].comment], comments[id].responses)
+    }
+    // Find the comment and replace it
+    commentsArray = commentsArray.map( comment => {
+        return comment.id === updatedComment.id ? updatedComment : comment
+    });
+    // Transform back
+    comments = mapPractitionerComments(commentsArray);
+
+    allComments = {...allComments};
+    allComments[updatedComment.practitionerId] = comments 
+    return allComments
+})
+
 /** 
  * Stores all comments for a given practitioner in the comments map.
  * The comments are ordered earliest to latest, with responses nested within each 
@@ -76,14 +107,27 @@ const saveComment = ( (newComment, allComments) => {
  * @param comments all comments for the practitioner
  * @return the updated map
  */
-const storePractitionerComments = (allComments, practitionerId, comments) => {
+const storePractitionerComments = (state, practitionerId, comments) => {
+    let allComments = {...state.allComments};
+    allComments[practitionerId] = mapPractitionerComments(comments)
+    return {
+        ...state,
+        allComments
+    }
+}
+
+/**
+ * Transforms the array of all comments for a practitioner into a map of level 1 
+ * @param  comments the array of comments
+ */
+const mapPractitionerComments = comments =>{
     // Extract all level 1 comments
     const level1 = comments.filter( comment => {
         return !comment.parentId
     });
     // Sort by ascending date
     level1.sort( (a, b) => {
-        return a.date.getTime() - b.date.getTime();
+        return a.date - b.date;
     });
     // Map of id to "comment block", an object containing the level1 comment array for its children
     const map = level1.reduce(( map, comment) => {
@@ -98,12 +142,11 @@ const storePractitionerComments = (allComments, practitionerId, comments) => {
             return comment.parentId == id;
         });
         responses.sort( (a, b) => {
-            return a.date.getTime() - b.date.getTime();
+            return a.date - b.date;
         });
         map[id].responses = responses;
     }
-    allComments[practitionerId] = map;
-    return allComments;
+    return map
 }
 
 export default commentReducer;
