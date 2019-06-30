@@ -8,6 +8,7 @@ import Banner from './components/Banner';
 import RefreshWarning from './components/RefreshWarning';
 import Instructions from './components/Instructions';
 import Home from './containers/Home';
+import Footer from './containers/Footer';
 import MyActivity from './containers/MyActivity';
 import PendingComments from './containers/PendingComments';
 import PractitionerList from './containers/PractitionerList';
@@ -77,6 +78,8 @@ class App extends Component {
             }
         }
         this.onCloseWarning = this.onCloseWarning.bind(this);
+
+        this.state.loading = true;
     }
 
     onCloseWarning(){
@@ -165,7 +168,7 @@ class App extends Component {
         })
         .then(() => {
             this.setState({loading: false});
-            this.props.history.push('/home');
+            this.props.history.replace('/home');
         })
         // TODO: Replace with user friendly response
         .catch(error => {
@@ -344,13 +347,17 @@ class App extends Component {
                                 </LinkContainer>
                                 : 
                                 <LinkContainer to="/sign-in">
-                                    <NavItem>Signin/Register</NavItem>
+                                    <NavItem>Sign In/Register</NavItem>
                                 </LinkContainer>
                             }
                     </Nav>
                     </Navbar.Collapse>
                 </Navbar>
                 {routes}
+                {active ?
+                    <Footer/>                                
+                    : ''
+                }
             </div>
             </StyleRoot>
         );
