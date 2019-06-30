@@ -7,6 +7,7 @@ import EditableText from './../components/EditableText';
 import * as actions from '../store/userActions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { CircleSpinner } from "react-spinners-kit";
 import Registration from './Registration';
 import axios from 'axios';
 import Instructions from '../components/Instructions';
@@ -45,16 +46,23 @@ class SignIn extends Component {
         })
         .catch(error => {
             if (error.response.status === 401){
-                this.setState({errorMessage: 'Invalid username or password'});
+                this.setState({
+                    errorMessage: 'Invalid username or password',
+                    loading: false
+                });
             }
             else if (error.response.status === 403){
-                this.setState({errorMessage: 'Access forbidden. Your account has been suspended'});
+                this.setState({
+                    errorMessage: 'Access forbidden. Your account has been suspended',
+                    loading: false
+                 });
             }
             // TODO 
             else {
                 console.log(error);
-            }
-        });        
+            }            
+        }); 
+        this.setState({loading: true});       
     }
 
     requestReset = () => {
@@ -67,6 +75,15 @@ class SignIn extends Component {
             margin: 'auto',
             marginBottom: '2em'
         };
+
+        if (this.state.loading){
+            return (
+                <div className='spinner-container'>
+                    <CircleSpinner size={80} color="#686769" loading={this.state.loading}></CircleSpinner>
+                </div>
+            )
+        }
+
 
         return (
             <>
