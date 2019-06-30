@@ -155,7 +155,6 @@ class PractitionerInfo extends Component {
                     infoChanged: false
                 });
                 this.props.saveNewPractitioner(this.state.practitioner);
-//                this.props.history.replace('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
                 this.props.history.push('/practitioners/' + this.state.practitioner.id + '?newPractitioner=true');
             });
     }
@@ -164,7 +163,6 @@ class PractitionerInfo extends Component {
         const fields = [];
         if (!this.state.practitioner.lastName) fields.push('last name');
         if (!this.state.practitioner.firstName) fields.push('first name');
-        if (!this.state.practitioner.address) fields.push('address');
         if (!this.state.practitioner.city) fields.push('city');
         if (!this.state.practitioner.phone) fields.push('phone');
 
