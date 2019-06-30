@@ -22,6 +22,8 @@ import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.mail.MailSender;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * Service endpoint for Comment entity creation and retrieval
@@ -52,7 +54,21 @@ public class CommentResource extends AbstractResource{
         
         return responseCreated(comment.getId());
     }
-
+    
+    /**
+     * Updates a comment's status
+     */
+    @PUT
+    @Path("{commentId}")
+    public Response update(@PathParam("commentId") Long commentId, @QueryParam("status") Comment.Status status) {
+        DataAccess da = new DataAccess();
+        Comment comment = da.find(commentId, Comment.class);
+        comment.setStatus(status);
+        da.put(comment);
+    	
+    	return responseNoContent();
+    }
+    
     /**
      * Updates the status of a set of comments, and sends emails to the
      * authors of those which have been blocked.
@@ -69,17 +85,15 @@ public class CommentResource extends AbstractResource{
     	// Look up the email address of the moderator
     	User moderator = da.find(moderatorId, User.class);
     	
-    	List<User> blockedUsers = new ArrayList<User>();
     	comments.stream().forEach( comment -> {
     		da.put(comment);
     		if (comment.getStatus().equals(Comment.Status.BLOCKED)) {
     			User user = da.find(comment.getUserId(), User.class);
-    			blockedUsers.add(user);
+    			Practitioner practitioner = da.find(comment.getPractitionerId(), Practitioner.class);
+    			BlockedComment blockedComment = new BlockedComment(user, practitioner, comment);
+    			MailSender.sendBlockedNotification(moderator.getEmail(), blockedComment);
     		}
     	});
-    	if (!blockedUsers.isEmpty()) {
-    		MailSender.sendBlockedNotification(moderator.getEmail(), blockedUsers);
-    	}
         return responseNoContent();
     }
     
@@ -144,5 +158,19 @@ public class CommentResource extends AbstractResource{
         };
         List<Comment> list = da.getAllByFilters(Comment.class, filters);
         return responseOkWithBody(list);
+    }
+    
+    /**
+     * Wraps the user who created a blocked comment along with the practitioner the
+     * comment was directed to.
+     * @author Robert
+     *
+     */
+    @Data
+    @AllArgsConstructor
+    public class BlockedComment {
+    	private User			user;
+    	private Practitioner 	practitioner;
+    	private Comment			comment;
     }
 }
