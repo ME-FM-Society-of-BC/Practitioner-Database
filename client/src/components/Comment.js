@@ -11,7 +11,7 @@
  * MODERATED: Comment does not include the Flag button
  * FLAGGED: Comment displays a flag icon where the Flag button would otherwise be
  * BLOCKED: Coment text replaced with explanatory text 
- *  
+ * 
  */
 import React from 'react';
 
@@ -33,7 +33,7 @@ const comment = (props) => {
                     <span className="comment-button comment-flag fas fa-flag"/>
                     : ''
                 }
-                { props.status === 'PENDING' && props.enabled ?
+                { (props.status === 'PENDING' || props.status === 'MODERATED') && props.enabled ?
                     <input type='button' className='comment-button comment-flag' 
                         value='Flag' onClick={props.onClickFlag}></input>
                     : ''
