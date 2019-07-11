@@ -4,7 +4,9 @@
 import React from 'react';
 
 const instructions = props => {
+    
     const style = {maxWidth: props.width};
+    
     if (props.paddingTop){
         style.paddingTop = props.paddingTop;
     }

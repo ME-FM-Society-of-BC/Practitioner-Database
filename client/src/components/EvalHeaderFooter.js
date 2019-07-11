@@ -12,9 +12,25 @@
  */
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import Instructions from './Instructions';
 
 const evalHeaderFooter = (props) => {
-    const introStyle={'margin': '.6em', 'fontWeight': 'bold'};
+    
+    const introStyle={
+        'margin': '.6em', 
+        'fontWeight': 'bold'
+    };
+
+    const headerStyle = {
+        'maxWidth': '700px !important',
+        'width': '700px',
+        'marginLeft': 'auto',
+        'marginRight': 'auto',
+        'marginTop': '1em',
+        'padding': '5px',
+        'fontWeight': 'normal'
+    };
+    
     const createMyEvaluationButton = (
         <Button type="button" key='1' className='' onClick={props.enableEvaluation}>
             Add your own evaluation
@@ -31,8 +47,22 @@ const evalHeaderFooter = (props) => {
         </Button>
     )
     const viewAllUserIncluded = (
-        <div style={introStyle} key='4' >
-            Below are summarized all the evaluations of this practitioner.
+        <div style={headerStyle} key='4' >
+            <Instructions>
+            <p>Below are summarized all the evaluations of this practitioner.</p>
+            <p>For the purposes of the following form:</p>
+            <ul>
+                <li>
+                    ME refers to myalgic encephalomyelitis. 
+                    ME is also known as ME/CFS, chronic fatigue syndrome, systemic exertion intolerance disease (SEID). 
+                    For more information about names for the disease, 
+                    refer to <a href='https://me-pedia.org/wiki/Names_of_myalgic_encephalomyelitis_and_chronic_fatigue_syndrome' target='_blank'>this MEPedia article</a>.
+                </li>
+                <li>
+                    FM refers to fibromyalgia
+                </li>
+            </ul>
+            </Instructions>
         </div>
     )
     const anyYouWant = (
