@@ -106,19 +106,32 @@ class Search extends Component {
      * Search by postal code only. This must be across all practitioners.
      */
     searchQuick(){
+        if (this.props.allPractitioners.length === 0){
+            this.setState({
+                errorMessage: 'There are no practitioners in the system'
+            });
+            return;
+        }
         if (this.state.postalCode.length < 7){ // TODO localization
             this.setState({errorMessage: 'You must enter a valid postal code'});
             return;
         }
+        const thoseWithPostalCode = this.havingPostalCode(this.props.allPractitioners);
+        if (thoseWithPostalCode.length === 0){
+            this.setState({
+                errorMessage: 'There are no practitioners in the system'
+            });
+            return;
+        }
+
         this.setState({
             loading: true,
             errorMessage: null
         });
 
-        this.getDistances(this.state.postalCode, this.props.allPractitioners)
+        this.getDistances(this.state.postalCode, thoseWithPostalCode)
         .then( augmentedPractitioners => {
-            this.props.storePractitioners(augmentedPractitioners);
-            this.proceedToListView(true);
+            this.proceedToListView(true, augmentedPractitioners);
         })
         .catch( error => {
             this.setState({
@@ -128,12 +141,18 @@ class Search extends Component {
         })
     }
 
+    havingPostalCode(practitioners){
+        return practitioners.filter( practitioner => {
+            return !!practitioner.postalCode
+        })
+    }
+
     performSearch(searchParams){
         this.setState({
             loading: true,
             errorMessage: null
         });
-        axios.get('/practitioners/search?' + searchParams)
+        axios.get('/practitioners/search?criteria=' + searchParams)
         .then(response => {
             if (response.data.length === 0){
                 this.setState({
@@ -144,7 +163,15 @@ class Search extends Component {
             }
             if (this.state.postalCode){
                 // Since postal code also entered, we want to now do a distance search
-                this.getDistances(this.state.postalCode, response.data)
+                const thoseWithPostalCode = this.havingPostalCode(response.data);
+                if (thoseWithPostalCode.length === 0){
+                    this.setState({
+                        errorMessage: 'None of the practitioners matching those criteria have postal codes'
+                    })
+                    return;
+                }
+
+                this.getDistances(this.state.postalCode, thoseWithPostalCode)
                 .then(augmentedPractitioners => {
                     this.setState({loading: false});
                     if (augmentedPractitioners){
@@ -173,30 +200,16 @@ class Search extends Component {
     /**
      * For a given array of practtitioners, determine the distance from a specified origin
      * @param origin the origin postal code
-     * @param practitioners the array of practitioners
+     * @param practitioners an array of practitioners
      * @return the practitioners arrey, each member augmented with the distance
      *         null if the origin postal code was bad
      */ 
     getDistances(origin, practitioners){
         // Create string of practitioner ids separated by '|',
-        // ignoring those for which there is no postal code
-        const practitionerIds = practitioners.map( practitioner => {
-            return practitioner.postalCode && practitioner.postalCode.trim().length > 0 ? practitioner.id : null;
-        })
-        .reduce((concatenated, id, index, ids) => {
-            if (id){
-                concatenated = concatenated.concat(id).concat(index < ids.length - 1 ? '|' : '');
-            }
+        const practitionerIds = practitioners.reduce((concatenated, practitioner, index, ids) => {
+            concatenated = concatenated.concat(practitioner.id).concat(index < ids.length - 1 ? '|' : '');
             return concatenated;
         }, '');
-
-        if (practitionerIds.length === 0){
-            return new Promise(function (resolve, reject) {
-                reject('There are no practitioners in the system whose postal codes are known')
-            })
-        }
-
-        const augmentedPractitioners = [...practitioners];
 
         return new Promise(function (resolve, reject) {
             axios.get('/maps?from=' + origin + '&to=' + practitionerIds)
@@ -208,11 +221,16 @@ class Search extends Component {
     
                 if (badOriginPostalCode){
                     // Stay here and display message
-                    reject('You have entered a postal code which is invalid or cannot be found. Please try again');
+                    reject('You may have entered a postal code which does not exists. Please try again');
                 }
                 else {
-                    augmentedPractitioners.forEach((practitioner, i) => {
-                        practitioner.distance = distances[i]; 
+                    const augmentedPractitioners = [];
+                    practitioners.forEach((practitioner, i) => {
+                        const augmented = {
+                            ...practitioner,
+                            distance: distances[i]
+                        }
+                        augmentedPractitioners.push(augmented); 
                     })        
                     resolve(augmentedPractitioners)        
                 }
@@ -306,7 +324,7 @@ class Search extends Component {
                     />
                 <Selector 
                     label='City' valueClass='info-field' labelClass='info-label' name='city' 
-                    options={this.props.cities}
+                    options={this.state.cityOptions}
                     value={this.state.city} 
                     placeholder='Select after province...'
                     onChange =  {(event) => this.onSelect(event)}
@@ -331,7 +349,7 @@ const mapStateToProps = state => {
     return {
         specialties: state.practitionersReducer.specialties,
         allPractitioners: state.practitionersReducer.allPractitioners,
-        matchingPractitioners: state.practitionersReducer.matchingPractitioners,
+//        matchingPractitioners: state.practitionersReducer.matchingPractitioners,
         provinces: state.locationReducer.provinces,
         citiesMap: state.locationReducer.citiesMap
     }
@@ -339,7 +357,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         saveMatchingPractitioners: (matchingPractitioners) => dispatch({ type: actions.SAVE_SEARCH_RESULTS, matchingPractitioners }),
-        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners })
+//        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners })
     };
 };
 

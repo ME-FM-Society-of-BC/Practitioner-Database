@@ -1,6 +1,7 @@
 package ca.bc.mefm.resource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -49,19 +50,22 @@ public class PractitionerInformationResource extends AbstractResource{
     @Path("search")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByQuery(
-    		@QueryParam("lastName") String lastName,
-    		@QueryParam("firstName") String firstName,
-    		@QueryParam("city") String city,
-    		@QueryParam("province") String province,
-    		@QueryParam("specialtyId") Long specialtyId){
+    public Response search(@QueryParam("criteria") String criteria){
+    	
+    	List<String> items = Arrays.asList(criteria.split("\\|"));
     	
         List<DataAccess.Filter> filters = new ArrayList<DataAccess.Filter>();
-        if (lastName != null)filters.add(new Filter("lastName", lastName));
-        if (firstName != null)filters.add(new Filter("firstName", firstName));
-        if (city != null)filters.add(new Filter("city", city));
-        if (province != null)filters.add(new Filter("province", province));
-        if (specialtyId != null)filters.add(new Filter("specialtyId", specialtyId));
+        
+        items.stream().forEach( item -> {
+        	String p[] = item.split("=");
+        	if (p[0].endsWith("Id")) {
+        		filters.add(new Filter(p[0], Long.valueOf(p[1])));
+        	}
+        	else {
+        		// For string fields
+            	filters.add(new Filter(p[0], p[1]));        		
+        	}
+        });
         
     	DataAccess da = new DataAccess();
         List<Practitioner> list = da.getAllByFilters(Practitioner.class, filters.toArray(new DataAccess.Filter[] {}));
