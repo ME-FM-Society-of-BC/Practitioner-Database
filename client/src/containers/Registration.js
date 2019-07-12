@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import EditableText from './../components/EditableText';
+import { isValidEmail } from '../common/utilities';
 import * as actions from '../store/userActions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ class Registration extends Component {
         role: 'ACTIVE'
     };
 
+    /** Common change handler for all fields in the form */
     onChange = (event) => {
         this.setState({errorMessage: null});
         const {name, value} = event.target;
@@ -26,6 +28,7 @@ class Registration extends Component {
         });
     }
 
+    /** Validates the firld values and sends the registration request to the server */
     register = () => {
         const message = this.validate();
         this.setState({errorMessage: message});
@@ -61,11 +64,14 @@ class Registration extends Component {
         if (!this.state.email){
             return "Please provide your email address";
         }
-        if (!this.state.email.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")){
+        if (!isValidEmail(this.state.email)){
             return "That's not a valid email";
         }
         if (!this.state.username){
             return "Please enter a username";
+        }
+        if (isValidEmail(this.state.username)){
+            return "You must not use your email address as your username. (Your username is displayed with any comments you enter.)"
         }
         if (!this.state.password){
             return "Please provide a password";
@@ -112,10 +118,9 @@ class Registration extends Component {
                                 placeholder='Password'
                                 value={this.state.confirmPassword}
                                 changeHandler={this.onChange} />
-                <br/>
-                <Button type='button' onClick={this.register}>Register</Button>
+                <Button type='button' className='button-large' onClick={this.register}>Register</Button>
                 {
-                    this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
+                    this.state.errorMessage ? <div className='error-message' style={{'maxWidth': '24em'}}>{this.state.errorMessage}</div> : ''
                 }
             </div>
             </div>

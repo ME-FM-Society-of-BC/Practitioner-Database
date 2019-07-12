@@ -82,7 +82,7 @@ export const parseDimensions = dimensions => {
 }
 
 /**
- * determines the base URI of the application
+ * Determines the base URI of the application
  * @return the value
  */
 export const getBaseURI = () => {
@@ -93,4 +93,11 @@ export const getBaseURI = () => {
     }
     return baseURI;
 }
+
+/**
+ * Checks that a string is a valid email address 
+ */
+export const isValidEmail = ( s => {
+    return s.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+})
 
