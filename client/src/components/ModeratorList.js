@@ -1,5 +1,9 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+
+/**
+ * Displays a list of all moderators
+ * @param {*} props 
+ */
 const moderatorList = props => {
 
     if (!props.moderators){
@@ -8,19 +12,12 @@ const moderatorList = props => {
 
     const moderators = [];
     Object.values(props.moderators).forEach(moderator => {
-        // const element = {
-        //     province: moderator.province,
-        //     username: props.users[moderator.userId].username,
-        //     email: props.users[moderator.userId].email,
-        //     id: moderator.id,
-
-        // }
         moderator.username = props.users[moderator.userId].username;
         moderator.email = props.users[moderator.userId].email
-//        moderators.push(element)
         moderators.push(moderator);
     });
 
+    // NOTE: react-bootstrap Button sizing seems not to work to render a small button. Hence use of <input type='button'...
     return (
         <table>
             <thead>
@@ -47,7 +44,5 @@ const moderatorList = props => {
         </table>
     )
 }
-// <Button className='btn-xs btn-outline-secondary' onClick={() => props.switchStatus(moderator.id)}>{action}</Button>
-//<input type='button' id={moderator.id} value={action} onClick={props.switchStatus}></input>
 
 export default moderatorList;
