@@ -116,8 +116,10 @@
 }
 
 .button-large {
-	margin: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
+
 .input-wrapper {
 	display: flex;
 	display: -webkit-box;

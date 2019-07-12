@@ -48,8 +48,7 @@ const newModerator = props => {
                             value={props.province} 
                             placeholder='Select ...'
                             onChange={props.onSelect}/>
-            <br/>
-            <Button type='button' onClick={props.onCreate}>Create</Button>
+            <Button type='button' className='button-large' onClick={props.onCreate}>Create</Button>
             {
                 props.errorMessage ? <div className='error-message'>{props.errorMessage}</div> : ''
             }

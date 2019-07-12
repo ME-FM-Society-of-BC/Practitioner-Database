@@ -286,9 +286,7 @@ class Search extends Component {
                 <EditableText valueClass='info-field' labelClass='info-label' 
                         label='Postal Code' value={this.state.postalCode} 
                         name='postalCode' changeHandler={this.onChange}/>
-                <br/>
-                <Button onClick={this.searchQuick}>Quick Search</Button>
-                <br/>
+                <Button className='button-large' onClick={this.searchQuick}>Quick Search</Button>
                 <Instructions width='40em'>
                     <p>
                     You can also search by entering information in any of the fields below, then click the Full Search button.
@@ -329,8 +327,7 @@ class Search extends Component {
                     placeholder='Select after province...'
                     onChange =  {(event) => this.onSelect(event)}
                     />
-                <br/>
-                <Button onClick={this.searchFull}>Full Search</Button>
+                <Button className='button-large' onClick={this.searchFull}>Full Search</Button>
                 {
                 this.state.errorMessage ?
                     <div className='error-message'>{this.state.errorMessage}</div>

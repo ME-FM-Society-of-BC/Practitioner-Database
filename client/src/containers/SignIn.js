@@ -115,9 +115,7 @@ class SignIn extends Component {
                                         placeholder='Password'
                                         changeHandler={this.onChange} />
 
-                        <br/>
-
-                        <Button type='button' onClick={this.signIn}>Sign In</Button>
+                        <Button type='button' className='button-large' onClick={this.signIn}>Sign In</Button>
                         {
                             this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
                         }
