@@ -139,7 +139,7 @@ class PractitionerList extends Component {
     recommend = () => {
         // Go to the Practitioner View. The negative id value in 
         // the path signifies a practitioner is being created    
-        this.props.history.push(this.props.match.url + '/-1');
+        this.props.history.push('/practitioners/-1');
     }
 
     // Handles selection of a Practitioner in a child PractitionerListItem component
