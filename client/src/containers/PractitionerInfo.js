@@ -30,10 +30,7 @@ class PractitionerInfo extends Component {
                     break;
                 }
             }
-            // const index = props.idToIndex[props.match.params.id]
-
-            // // Set the city list options according to province
-            // const practitioner = props.practitioners[index];
+            // Set the city list options according to province
             const cityOptions = practitioner.province ? this.props.citiesMap[practitioner.province]: [];
         
             this.state = {
@@ -55,12 +52,14 @@ class PractitionerInfo extends Component {
             }
         }
 
-        // Province list must be restricted to those for which there is a moderator
-        const availableProvinces = Object.values(this.props.moderators).reduce((names, moderator) => {
-            names.push(moderator.province);
-            return names;
-        }, []);
-        this.state.availableProvinces = availableProvinces;
+        // Province list must be restricted to those for which there is a moderator.
+        // There can be multiple moderators per province, so create map to avoid duplicates
+        this.state.availableProvinces = Object.keys(
+            Object.values(this.props.moderators).reduce((names, moderator) => {
+                names[moderator.province] = '';
+                return names;
+            }, {})            
+        );
 
         this.enableEdit = this.enableEdit.bind(this);
         this.updateInfo = this.updateInfo.bind(this);
@@ -198,8 +197,15 @@ class PractitionerInfo extends Component {
             <Panel.Body>
                 {this.state.mode === 'create' ?
                     <Instructions width='40em'>
+                        <p>
                         Enter information for a new practitioner if you have checked that he or she is not already in the list.
-                        You must provide at least first and last names, full address and telephone number
+                        You must provide at least first and last names, province, city and telephone number.
+                        </p>
+                        <p>
+                        If you know it, please include the practitioner's postal code. 
+                        This helps patients to search for practitioners near them.
+                        Remember that you can return here later to add it or other information.   
+                        </p>
                     </Instructions>
                     : ''
                 }
@@ -247,6 +253,7 @@ class PractitionerInfo extends Component {
                     <Selector label='Specialty'
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
+                        type='react-select'
                         options={this.props.specialties.text}
                         value={this.state.practitioner.specialty} 
                         placeholder='Select one...'
