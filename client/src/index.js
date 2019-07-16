@@ -34,7 +34,6 @@ const rootReducer = combineReducers(
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
-//axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
 axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
 
 let baseURI = getBaseURI();
@@ -55,7 +54,6 @@ window.addEventListener("beforeunload", function (e) {
         + 'If you experience problems, enter the original url into your address bar' 
         + '(you will again see this warning, but in that case just accept the reload.)'; 
     this.console.log('beforeunload');
-//    e.preventDefault();
     e.returnValue = message;
     return message;
 });
@@ -67,34 +65,6 @@ window.addEventListener("beforeunload", function (e) {
 })).then(() => {
     ReactDOM.render(app, document.getElementById('root')); 
 });
-
-
-// Below was for accessing maps from the client.
-// console.log('Initializing GAPI...');
-// console.log('Creating the google script tag...');
-
-// const script = document.createElement("script");
-// script.src = "https://apis.google.com/js/client.js";
-// script.onload = () => {
-//     console.log('Loaded script, now loading our api...')
-//     // Gapi isn't available immediately so we have to wait until it is to use gapi.
-//     loadClientWhenGapiReady(script);
-// };
-// document.body.appendChild(script);
-
-// const loadClientWhenGapiReady = (script) => {
-//     console.log('Trying To Load Client!');
-//     console.log(script)
-//     if(script.getAttribute('gapi_processed')){
-//         console.log('Client is ready! Now you can access gapi. :)');
-//     }
-//     else{
-//         console.log('Client wasn\'t ready, trying again in 100ms');
-//         setTimeout(() => {loadClientWhenGapiReady(script)}, 100);
-//     }
-// }
-//     <BrowserRouter>
-
 
 const app = (
     <Provider store={store}>

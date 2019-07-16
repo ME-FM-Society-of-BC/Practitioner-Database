@@ -3,7 +3,6 @@ package ca.bc.mefm.mail;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -30,7 +29,7 @@ public class MailSender {
 	private static final String noReplyAddress = ApplicationProperties.get("email.address.noreply");
 	
 	/**
-	 * Sends a set of messages to users who created comments which have been blocked
+	 * Sends a message to user who created a comment which have been blocked
 	 * @param moderatorAddress
 	 * @param blockedComment
 	 */

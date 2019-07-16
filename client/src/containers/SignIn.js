@@ -1,5 +1,5 @@
  /**
- * Implements the Registration View
+ * Implements the SignIn View
  */
 import React, { Component } from 'react';
 import { Panel, Button } from 'react-bootstrap';
