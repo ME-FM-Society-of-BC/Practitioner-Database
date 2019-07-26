@@ -31,8 +31,6 @@ public class Practitioner {
 	private String	website;
 	@Index
 	private Long 	specialtyId;
-//	private Date	creationDate;
-//	private Date	editDate;
 	private Long	creationDate;
 	private Long	editDate;
 
