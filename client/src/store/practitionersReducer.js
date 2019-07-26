@@ -74,17 +74,39 @@ const convertSpecialties = (specialtiesIn => {
     // Specialties need to be accessed in three forms - as an array of the
     // specialty text value for use in drop down selectors, as a map 
     // the text value to the specialty id. and vice-versa
-    const specialtyText = specialtiesIn.map(specialty => specialty.text);
     const valueToId = {};
     const idToValue = {}
+    const groups = {};
+
     specialtiesIn.forEach(specialty => {
         valueToId[specialty.text] = specialty.id;
         idToValue[specialty.id] = specialty.text;
+
+        // Separate specialty text into arrays for each group
+        let group = groups[specialty.group];
+        if (!group){
+            group = [];
+            groups[specialty.group] = group;
+        }
+        group.push(specialty.text);
     });
+
+    // Combine them into a the structure compatible with react-select.
+    const groupNames = Object.keys(groups);
+    const options = [];
+    groupNames.forEach( groupName => {
+        const group = {label: groupName, options: []}
+        options.push(group);
+        groups[groupName].forEach( specialtyText => {
+            group.options.push({label: specialtyText, value: valueToId[specialtyText]})
+        })
+    })
+
+
     const specialties = {
-        text: specialtyText,
-        valueToId: valueToId,
-        idToValue: idToValue
+        options,
+        valueToId,
+        idToValue
     };
     return specialties;
 
