@@ -40,11 +40,6 @@ class App extends Component {
     constructor(props){
         super(props);
         console.log('constructor: pathname = ' + this.props.history.location.pathname);
-        // if (this.props.history.location.pathname === '/'){
-        //     this.state = {
-        //         loading: true
-        //     }
-        // }
         // Add axios interceptors
         axios.interceptors.request.use(request => {
             return request;
@@ -56,7 +51,6 @@ class App extends Component {
         // action which requires a server request 
         axios.interceptors.response.use(response => {
             this.restartSessionTimer(this.SESSION_MINUTES);
-            // console.log(response.data);
             return response;
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
@@ -353,16 +347,29 @@ class App extends Component {
                     </Nav>
                     </Navbar.Collapse>
                 </Navbar>
-                {routes}
                 {active ?
-                    <Footer/>                                
-                    : ''
+                    <div>
+                        <div style={{height: '90%',marginBottom:'10%'}}>
+                            {routes}
+                        </div>
+                        <Footer/> 
+                    </div>                               
+                    : 
+                    <div style={{height: '100%'}}>
+                        {routes}
+                    </div>                               
                 }
             </div>
             </StyleRoot>
         );
     }
 }
+// {routes}
+// {active ?
+//     <Footer/>                                
+//     : ''
+// }
+
 
 const navbarHeight = {
     minHeight: '40px !important',
