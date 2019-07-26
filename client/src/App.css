@@ -29,12 +29,16 @@
 	width: 100%;
 	position: fixed;
 	bottom: 0;
-	height: auto
+	height: 2.5em;
+	display: flex;
+	align-items: center;
+	justify-content: center;  
 }
 .footer > span {
 	cursor: -webkit-grab; 
 	cursor: grab;
 	color: white;
+	width: auto
 }
 
 .vertical-group {
