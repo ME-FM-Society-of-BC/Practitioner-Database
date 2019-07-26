@@ -33,9 +33,24 @@ import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
 
 /**
- * Servlet to initialize the database entities
+ * Servlet to initialize the database entities. 
+ * TODO: This is an "ongoing kludge" which should be considered for replacement
+ * <p>
+ * The behaviour is determined by the datastore.load.version application property.
+ * The property is a string in the format
+ * </p>
+ * <p>
+ * n[E,...]
+ * </p>
+ * <p>
+ * where
+ * <ul>
+ * <li>n is the database version</li>
+ * <li>E is the name of an entity class all of whose instances should be removed and replaced</li>
+ * </ul>
+ * The entity values are hard coded
+ * 
  * @author Robert
- *
  */
 public class InitializationServlet extends HttpServlet {
 	
@@ -46,49 +61,74 @@ public class InitializationServlet extends HttpServlet {
 		super.init(config);
 		ObjectifyService.run(new VoidWork() {
 		    public void vrun() {
-		    	String newVersion = ApplicationProperties.get("datastore.load.version");
-				initialize(newVersion);
+		    	String operation = ApplicationProperties.get("datastore.load.operation");
+		    	try {
+		    		initialize(operation);
+		    	}
+		    	catch (ClassNotFoundException e) {
+		    		log.severe("Error initializing database: " + e.getMessage());
+		    	}
 		    }
 		});
 	}
     
-	private void initialize(String newVersion){
+	private void initialize(String operation) throws ClassNotFoundException{
+		
+		String[] parts = operation.split(",");
+		String newVersion = parts[0];
+		boolean replaceAll = true;
+		String[] entitiesToReplace = null;;
+		
+		if (parts.length > 1) {
+			// Version is accompanied by entity list
+			entitiesToReplace = parts[1].split(",");
+			replaceAll = false;
+		}
     	
         DataAccess da = new DataAccess();
         
-        boolean create = false;
+        boolean createOrUpdate = false;
         DatastoreVersion currentVersion;        
         List<DatastoreVersion> versions = da.getAll(DatastoreVersion.class);
         
         if (versions.isEmpty()) {
-        	create = true;
-        	currentVersion = new DatastoreVersion("1");
+        	// Database is empty:  
+        	createOrUpdate = true;
+        	currentVersion = new DatastoreVersion(newVersion);
         }
         else {
         	currentVersion = versions.get(0);
         	if (!currentVersion.getVersion().equals(newVersion)) {
-        		create = true;
+        		// Version update
+        		createOrUpdate = true;
         		currentVersion.setVersion(newVersion);
         	}
         }
         
-        if (create) {
+        if (createOrUpdate) {
     		log.info("Populating datastore with version " + newVersion);
-    		clearAll(da);
+    		if (entitiesToReplace != null && entitiesToReplace.length > 0) {
+    			// Update only specified entity types
+    			replace(da, entitiesToReplace);
+    		}
+    		else {    		
+    			clearAll(da);
+    			populateAll(da); 
+    		}
         	da.put(currentVersion);
-        	populateAll(da);        	
+
         }
         else {
             // As missing municipalities are detected, need convenient method to
             // re-populate. Triggered by removing province entities in the Datastore console
-            List<Province> existingProvinces = da.getAll(Province.class);
-        	if (existingProvinces.isEmpty()) {
-            	// If only the provinces are gone, empty the cities and recreate both
-            	log.info("Repopulating provinces and cities " + newVersion);
-            	da.deleteAll(City.class);
-            	provinces.forEach((Province o) -> da.put(o));        	
-            	addCities(da);        	
-        	}
+//            List<Province> existingProvinces = da.getAll(Province.class);
+//        	if (existingProvinces.isEmpty()) {
+//            	// If only the provinces are gone, empty the cities and recreate both
+//            	log.info("Repopulating provinces and cities " + newVersion);
+//            	da.deleteAll(City.class);
+//            	provinces.forEach((Province o) -> da.put(o));        	
+//            	addCities(da);        	
+//        	}
         }
         // TODO: REmove kludge for populating practitioners for search/my activity testing
 //        practitioners.forEach((Practitioner o) -> da.put(o));
@@ -108,6 +148,21 @@ public class InitializationServlet extends HttpServlet {
 
     	addAdmin(da);
 		
+	}
+	
+	private void replace(DataAccess da, String [] entityClasses) throws ClassNotFoundException{
+		for (String entityClass: entityClasses) {
+			clearAllOfClass(da, Class.forName("ca.bc.mefm.data." + entityClass));
+			
+			switch (entityClass) {
+				case "Specialty": specialties.forEach((Specialty o) -> da.put(o)); break;
+				case "QuestionChoice": questionChoices.forEach((QuestionChoice o) -> da.put(o)); break;
+				case "QuestionGroup": questionGroups.forEach((QuestionGroup o) -> da.put(o)); break;
+				case "Question": questions.forEach((Question o) -> da.put(o)); break;
+				case "Province": provinces.forEach((Province o) -> da.put(o)); break;
+				case "City": addCities(da); break;
+			}
+		}
 	}
     
     private void addAdmin(DataAccess da) {
@@ -217,49 +272,52 @@ public class InitializationServlet extends HttpServlet {
     });
     
     List<Specialty> specialties = Arrays.asList(new Specialty[]{
-        new Specialty(1L, "Anaesthesia"),
-        new Specialty(2L, "Cardiology"),
-        new Specialty(3L, "Chiropody"),
-        new Specialty(4L, "Clinical Immunology"),
-        new Specialty(5L, "Dental"),
-        new Specialty(6L, "Dietician"),
-        new Specialty(7L, "Emergency Medicine"),
-        new Specialty(8L, "Endocrinology"),
-        new Specialty(9L, "Family and General Practice"),
-        new Specialty(10L, "Gastroenterology"),
-        new Specialty(11L, "Genetics"),
-        new Specialty(12L, "Geriatrics"),
-        new Specialty(13L, "Haematology "),
-        new Specialty(14L, "Internal Medicine"),
-        new Specialty(15L, "Kinesiology"),
-        new Specialty(16L, "Midwife"),
-        new Specialty(17L, "Neurology"),
-        new Specialty(18L, "Nuclear Medicine "),
-        new Specialty(19L, "Nurse Practioner"),
-        new Specialty(20L, "Obstetrics and Gynaecology"),
-        new Specialty(21L, "Occupational Therapy"),
-        new Specialty(22L, "Ophthalmology "),
-        new Specialty(23L, "Optometry"),
-        new Specialty(24L, "Osteopathy"),
-        new Specialty(25L, "Otolaryngology "),
-        new Specialty(26L, "Paediatrics"),
-        new Specialty(27L, "Pathology "),
-        new Specialty(28L, "Physical Medicine "),
-        new Specialty(29L, "Physiotherapy"),
-        new Specialty(30L, "Psychiatry"),
-        new Specialty(31L, "Psychology"),
-        new Specialty(32L, "Respiratory Diseases "),
-        new Specialty(33L, "Rheumatology "),
-        new Specialty(34L, "Urology "),
-        new Specialty(35L, "Naturopath"),
-        new Specialty(36L, "Integrative Medicine"),
-        new Specialty(37L, "Chiropractor"),
-        new Specialty(38L, "Massage Therapy"),
-        new Specialty(39L, "Traditional Chinese Medicine"),
-        new Specialty(41L, "Osteopath"),
-        new Specialty(42L, "Acupuncture"),
-        new Specialty(43L, "Homeopath"),
-        new Specialty(44L, "Other Alternative Profession")
+        new Specialty(1L, "Anaesthesia", Specialty.CONVENTIONAL),
+        new Specialty(2L, "Cardiology", Specialty.CONVENTIONAL),
+        new Specialty(3L, "Chiropody", Specialty.CONVENTIONAL),
+        new Specialty(4L, "Clinical Immunology", Specialty.CONVENTIONAL),
+        new Specialty(5L, "Clinical Pharmacology", Specialty.CONVENTIONAL),
+        new Specialty(6L, "Dental", Specialty.CONVENTIONAL),
+        new Specialty(7L, "Dietician", Specialty.CONVENTIONAL),
+        new Specialty(8L, "Emergency Medicine", Specialty.CONVENTIONAL),
+        new Specialty(9L, "Endocrinology", Specialty.CONVENTIONAL),
+        new Specialty(10L, "Family and General Practice", Specialty.CONVENTIONAL),
+        new Specialty(11L, "Gastroenterology", Specialty.CONVENTIONAL),
+        new Specialty(12L, "Genetics", Specialty.CONVENTIONAL),
+        new Specialty(13L, "Geriatrics", Specialty.CONVENTIONAL),
+        new Specialty(14L, "Haematology ", Specialty.CONVENTIONAL),
+        new Specialty(15L, "Internal Medicine", Specialty.CONVENTIONAL),
+        new Specialty(16L, "Kinesiology", Specialty.CONVENTIONAL),
+        new Specialty(17L, "Midwife", Specialty.CONVENTIONAL),
+        new Specialty(18L, "Neurology", Specialty.CONVENTIONAL),
+        new Specialty(19L, "Nuclear Medicine ", Specialty.CONVENTIONAL),
+        new Specialty(20L, "Nurse Practioner", Specialty.CONVENTIONAL),
+        new Specialty(21L, "Obstetrics and Gynaecology", Specialty.CONVENTIONAL),
+        new Specialty(22L, "Occupational Therapy", Specialty.CONVENTIONAL),
+        new Specialty(23L, "Ophthalmology ", Specialty.CONVENTIONAL),
+        new Specialty(24L, "Optometry", Specialty.CONVENTIONAL),
+        new Specialty(25L, "Osteopathy", Specialty.CONVENTIONAL),
+        new Specialty(26L, "Otolaryngology ", Specialty.CONVENTIONAL),
+        new Specialty(27L, "Paediatrics", Specialty.CONVENTIONAL),
+        new Specialty(28L, "Pain Medicine", Specialty.CONVENTIONAL),
+        new Specialty(29L, "Pathology ", Specialty.CONVENTIONAL),
+        new Specialty(30L, "Physical Medicine ", Specialty.CONVENTIONAL),
+        new Specialty(31L, "Physiotherapy", Specialty.CONVENTIONAL),
+        new Specialty(32L, "Psychiatry", Specialty.CONVENTIONAL),
+        new Specialty(33L, "Psychology", Specialty.CONVENTIONAL),
+        new Specialty(34L, "Respiratory Diseases ", Specialty.CONVENTIONAL),
+        new Specialty(35L, "Rheumatology ", Specialty.CONVENTIONAL),
+        new Specialty(36L, "Urology ", Specialty.CONVENTIONAL),
+        
+        new Specialty(37L, "Acupuncture", Specialty.ALTERNATIVE),
+        new Specialty(38L, "Chiropractor", Specialty.ALTERNATIVE),
+        new Specialty(39L, "Homeopath", Specialty.ALTERNATIVE),
+        new Specialty(40L, "Integrative Medicine", Specialty.ALTERNATIVE),
+        new Specialty(41L, "Massage Therapy", Specialty.ALTERNATIVE),
+        new Specialty(42L, "Naturopath", Specialty.ALTERNATIVE),
+        new Specialty(43L, "Osteopath", Specialty.ALTERNATIVE),
+        new Specialty(44L, "Traditional Chinese Medicine", Specialty.ALTERNATIVE),
+        new Specialty(45L, "Other", Specialty.ALTERNATIVE)
     });
 
     List<QuestionChoice> questionChoices = Arrays.asList(new QuestionChoice[]{
