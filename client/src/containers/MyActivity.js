@@ -78,7 +78,7 @@ class MyActivity extends Component {
                             + this.state.practitioners[action.practitionerId].lastName + '. ';
                         const type = action.actionType;
                         const description = types[type].concat(practitionerName);
-                        return <Activity type={action.type} date={date} description={description}/>
+                        return <Activity type={action.type} date={date} description={description} key={action.id}/>
                     })
                     }
                     </div>
