@@ -38,85 +38,143 @@ const evaluationReducer = (state = initialState, action) => {
             }
             
         // Stores all actions by all users for a practitioner, received from the server
-        case actions.STORE_ALL_RECOMMENDATION_ACTIONS:
-            const newAllRecommendations = {...state.allRecommendations};
-            newAllRecommendations[action.practitionerId] = action.allRecommendations;
-
-            // Save rating recommendation answers in separate             
-            allActionsAndAnswers = findUserActionsAndAnswers(action.userId, action.allRecommendations);
-            return {
-                ...state,
-                allRecommendations: newAllRecommendations,
-                userActions: allActionsAndAnswers.userActions,
-                userAnswers: allActionsAndAnswers.userAnswers,
-                allAnswers: allActionsAndAnswers.allAnswers
-            }
+        case actions.STORE_ALL_RECOMMENDATION_ACTIONS: 
+            return storeAllRecommendationActions(state, action);
         
         // Saves a single rating action. It will only be sent to the server when
         // the "Save My Evaluations" button is pressed   
         case actions.SAVE_USER_RATING_ACTION:
-            const practitionerId = action.recommendation.practitionerId;
-            const userId = action.recommendation.userId;
-            let allRecommendations = {...state.allRecommendations};
-            
-            // An existing Practitioner will have at least an empty recommendation list.
-            // A Practitioner who has just been created, and for whom the user has
-            // not yet selected any evaluation answers will not
-            let isReplacement = false;
-            let forThisPractitioner = allRecommendations[practitionerId];
-            if (!forThisPractitioner){
-                forThisPractitioner = [];
-            }
-            // Look for a rating action by the current user with matching questionId
-            for (let i = 0; i < forThisPractitioner.length; i++){
-                const recommendation = forThisPractitioner[i];
-                if (recommendation.actionType === 'RATE' 
-                && recommendation.userId === userId 
-                && recommendation.questionId === action.recommendation.questionId){
-                    isReplacement = true;
-                    // Existing id may be undefined if this is just a change the answer 
-                    // to a question that was first answered before being previously saved
-                    action.recommendation.id = recommendation.id;
-                    recommendation.value = action.recommendation.value;
-                    break;
-                }
-            }
-            // If not replacement of an old value, add it
-            if (!isReplacement){
-                forThisPractitioner.push(action.recommendation)
-            }
-            allRecommendations[practitionerId] = forThisPractitioner;
-            
-            // Now re-calculate all user actions
-            allActionsAndAnswers = findUserActionsAndAnswers(userId, forThisPractitioner);
-
-            // Save new user actions for later transmission to server.
-            const queuedUserRatings = {...state.queuedUserRatings}; 
-            queuedUserRatings[action.recommendation.questionId] = action.recommendation;
-
-            return {
-                ...state,
-                allRecommendations: allRecommendations,
-                userActions: allActionsAndAnswers.userActions,
-                userAnswers: allActionsAndAnswers.userAnswers,
-                allAnswers: allActionsAndAnswers.allAnswers,
-                queuedUserRatings: queuedUserRatings
-            };
+            return saveUserRatingAction(state, action);
 
         case actions.STORE_RATING_ACTION_IDS:
-            // Does not need to be immutable,because ids have no effect on UI
-            const idArray = action.idArray;
-            const ratings = action.ratings;
-            for (let i = 0; i < ratings.length; i++){
-                state.userAnswers[ratings[i].questionId].id = idArray[i];
-            }
-            return {
-                ...state,
-                queuedUserRatings: {}
-            }
-            
+            return storeRatingActionIds(state, action);
+
+        // Clears all recommendation actions by all users for the "current" practitioner
+        case actions.CLEAR_ALL_RATINGS :
+            return clearAllRatings(state);
+
         default: 
             return state;
+    }
+}
+
+const storeAllRecommendationActions = (state, action) => {
+
+    const allRecommendations = removePreviousAnswers(action.allRecommendations);
+    const newAllRecommendations = {...state.allRecommendations};
+    newAllRecommendations[action.practitionerId] = allRecommendations;
+
+    // Save rating recommendation answers in separate             
+    const allActionsAndAnswers = findUserActionsAndAnswers(action.userId, allRecommendations);
+    return {
+        ...state,
+        allRecommendations: newAllRecommendations,
+        userActions: allActionsAndAnswers.userActions,
+        userAnswers: allActionsAndAnswers.userAnswers,
+        allAnswers: allActionsAndAnswers.allAnswers
+    }
+}
+
+// When a user changes her mind, the new action does not override the previous
+// one. This supports the idea of a complete history of actions. However, only
+// the most recent one must be used. Otherwise the average rating will not be correct 
+const removePreviousAnswers = allRecommendations => {
+    // Create a map of userid to a map of questionId to recommendation. 
+    // For given userId/questionId, only the most recent recommendation action is stored
+    const byUser = {};
+    allRecommendations.forEach(recommendation => {
+        let byQuestion = byUser[recommendation.userId];
+        if (!byQuestion){
+            byQuestion = {};
+            byUser[recommendation.userId] = byQuestion;
+        }
+        let mostRecent = byQuestion[recommendation.questionId];
+        if (mostRecent){
+            if (recommendation.date > mostRecent.date) {
+                mostRecent = recommendation;
+            } 
+        }
+        else {
+            mostRecent = recommendation
+        }
+        byQuestion[recommendation.questionId] = mostRecent;
+    })
+
+    // Now flatten it back out
+    const prunedSet = [];
+    Object.keys(byUser).forEach(userId => {
+        const byQuestion = byUser[userId];
+        Object.keys(byQuestion).forEach(questionId => {
+            prunedSet.push(byQuestion[questionId]);
+        })
+    })
+ 
+    return prunedSet;
+}
+
+const saveUserRatingAction = (state, action) => {
+    
+    const practitionerId = action.recommendation.practitionerId;
+    const userId = action.recommendation.userId;
+    let allRecommendations = {...state.allRecommendations};
+    
+    // An existing Practitioner will have at least an empty recommendation list.
+    // A Practitioner who has just been created, and for whom the user has
+    // not yet selected any evaluation answers will not
+    let isReplacement = false;
+    let forThisPractitioner = allRecommendations[practitionerId];
+    if (!forThisPractitioner){
+        forThisPractitioner = [];
+    }
+    // Look for a rating action by the current user with matching questionId
+    for (let i = 0; i < forThisPractitioner.length; i++){
+        const recommendation = forThisPractitioner[i];
+        if (recommendation.actionType === 'RATE' 
+        && recommendation.userId === userId 
+        && recommendation.questionId === action.recommendation.questionId){
+            isReplacement = true;
+            // Existing id may be undefined if this is just a change the answer 
+            // to a question that was first answered before being previously saved
+            action.recommendation.id = recommendation.id;
+            recommendation.value = action.recommendation.value;
+            break;
+        }
+    }
+    // If not replacement of an old value, add it
+    if (!isReplacement){
+        forThisPractitioner.push(action.recommendation)
+    }
+    allRecommendations[practitionerId] = forThisPractitioner;
+    
+    // Now re-calculate all user actions
+    const allActionsAndAnswers = findUserActionsAndAnswers(userId, forThisPractitioner);
+
+    // Save new user actions for later transmission to server.
+    const queuedUserRatings = {...state.queuedUserRatings}; 
+    queuedUserRatings[action.recommendation.questionId] = action.recommendation;
+
+    return {
+        ...state,
+        allRecommendations: allRecommendations,
+        userActions: allActionsAndAnswers.userActions,
+        userAnswers: allActionsAndAnswers.userAnswers,
+        allAnswers: allActionsAndAnswers.allAnswers,
+        queuedUserRatings: queuedUserRatings
+    };
+}
+
+const storeRatingActionIds = (state, action) => {
+    // Does not need to be immutable,because ids have no effect on UI
+    const idArray = action.idArray;
+    const ratings = action.ratings;
+
+//    const userAnswers = state,userAnswers xxxx
+    for (let i = 0; i < ratings.length; i++){
+        state.userAnswers[ratings[i].questionId].id = idArray[i];
+    }
+    return {
+        ...state,
+        queuedUserRatings: {}
     }
 }
     
@@ -154,9 +212,19 @@ const findUserActionsAndAnswers = (userId, allActions) => {
     }, {});
     
     return {
-        userActions: userActions,
-        userAnswers: userAnswers,
-        allAnswers: allAnswers
+        userActions,
+        userAnswers,
+        allAnswers
+    }
+}
+
+const clearAllRatings = state => {
+    return {
+        ...state,
+        userActions: [],
+        userAnswers: {},
+        queuedUserRatings: {},
+        allAnswers: {}
     }
 }
         
