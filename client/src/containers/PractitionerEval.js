@@ -42,18 +42,8 @@ class PractitionerEval extends Component {
         this.enableEvaluation = this.enableEvaluation.bind(this);
         this.saveEvaluation = this.saveEvaluation.bind(this);
 
-        const practitionerId = this.props.match.params['id'];
-        if (practitionerId) {
-            // An existing Practitioner is being viewed. The user can switch the
-            // mode to 'edit' with the button in the EvalHeaderFooter component
-            this.state.practitionerId = practitionerId;
-            this.state.mode ='viewAll';
-        }
-        else {
-            // A new Practitioner is being created
-            this.state.mode = 'create';
-        }
-
+        this.state.practitionerId = this.props.match.params['id'];
+        this.state.mode = this.props.newPractitioner ? 'create' : 'viewAll';
     }
 
     createQuestionItems(){
@@ -250,8 +240,10 @@ class PractitionerEval extends Component {
      * @param {Event} event 
      */
     onChange(event){
-        const rating = event.target.value;
-        const controlName = event.target.name;
+        // TODO-SELECT
+        let rating = event.target ? event.target.value : event.value;
+        let controlName = event.target ? event.target.name : event.name;
+
         const questionId = controlName.split('-')[1];
         const question = this.questionMap[questionId];
         
@@ -273,8 +265,6 @@ class PractitionerEval extends Component {
                 questionId: questionId,
                 value: value,
                 date: (new Date()).getTime()
-                /*,
-                isNewValue: true*/
             };
             this.props.saveUserRatingAction(recommendationAction);
         }
