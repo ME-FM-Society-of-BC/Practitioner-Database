@@ -22,8 +22,6 @@ class PractitionerComments extends Component {
     constructor(props) { 
         super(props);
 
-        this.state.commentMap = this.props.allComments[this.props.match.params.id]
-
         this.openComment = this.openComment.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.closeComment = this.closeComment.bind(this);
@@ -34,7 +32,7 @@ class PractitionerComments extends Component {
  
     render() {
         // Comments for this practitioner
-        const commentMap = this.state.commentMap;
+        const commentMap = this.props.allComments[this.props.match.params.id];
         // Flatten out
         let comments = [];
         for (let id in commentMap){

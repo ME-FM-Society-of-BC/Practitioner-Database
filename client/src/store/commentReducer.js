@@ -31,11 +31,11 @@ const commentReducer = (state = initialState, action) => {
 
         // Stores a new comment
         case actions.SAVE_COMMENT:
-            return saveComment(action.comment, {...state.allComments});
+            return saveComment(action.comment, state);
 
         // Updates a new comment
         case actions.UPDATE_COMMENT:
-            return updateComment({...action.comment}, state.allComments);
+            return updateComment({...action.comment}, state);
         
             default: 
             return state;
@@ -48,13 +48,9 @@ const commentReducer = (state = initialState, action) => {
  * @param allComments map of practitionerId to comments
  * @return the updated map
  * */
-const saveComment = ( (newComment, allComments) => {
-    let comments = allComments[newComment.practitionerId];
-    if (!comments){
-        // First comment for this practitioner
-        comments = {};
-        allComments[newComment.practitionerId] = comments;
-    }
+const saveComment = ( (newComment, state) => {
+    const allComments = {...state.allComments}
+    let comments = {...allComments[newComment.practitionerId]};
 
     if (newComment.parentId){
         // Comment is a response. 
@@ -67,8 +63,10 @@ const saveComment = ( (newComment, allComments) => {
         // Insert as a new parent comment
         comments[newComment.id] = {comment: newComment, responses: []}
     }
+    allComments[newComment.practitionerId] = comments;
     return {
-        allComments: allComments
+        ...state,
+        allComments
     }
 })
 
@@ -78,9 +76,11 @@ const saveComment = ( (newComment, allComments) => {
  * @param allComments map of practitionerId to comments
  * @return the updated map
  * */
-const updateComment = ( (updatedComment, allComments) => {
-
-    let comments = allComments[updatedComment.practitionerId];
+const updateComment = ( (updatedComment, state) => {
+    
+    let allComments = {...state.allComments};
+    let comments = {...allComments[updatedComment.practitionerId]};
+    
     // Flatten out
     let commentsArray = [];
     for (let id in comments){
@@ -93,9 +93,11 @@ const updateComment = ( (updatedComment, allComments) => {
     // Transform back
     comments = mapPractitionerComments(commentsArray);
 
-    allComments = {...allComments};
     allComments[updatedComment.practitionerId] = comments 
-    return allComments
+    return {
+        ...state,
+        allComments
+    }
 })
 
 /** 
