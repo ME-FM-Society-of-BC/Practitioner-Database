@@ -47,7 +47,7 @@ class Moderators extends Component {
 
     selectProvince = (event) => {
         this.setState({
-            moderator: {province: event.target.value}
+            moderator: {province: event.value}
         });
     }
 

@@ -45,7 +45,7 @@ const newModerator = props => {
                             labelClass='info-label info-label-reg'
                             valueClass='info-field info-field-reg'
                             options={props.provinces}
-                            value={props.province} 
+                            value={{label: props.province, value: props.province}} 
                             placeholder='Select ...'
                             onChange={props.onSelect}/>
             <Button type='button' className='button-large' onClick={props.onCreate}>Create</Button>

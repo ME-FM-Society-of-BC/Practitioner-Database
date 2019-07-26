@@ -10,7 +10,8 @@
 * label:                the control label
 * labelClass:           label style class
 * valueClass:           value style class
-* options:              array of option text values
+* options:              array of options, each one either a text string,
+*                       or {'label': string, 'options': [{label: string, value: object }]} if options are to be grouped
 * selectHandler:        function to receive the onChange event     
 * dimensions:           12-column grid dimensions of the label and options list in format "x1,x2[,x3]"
 *                       where x1 = column width of label
@@ -25,19 +26,61 @@ import { parseDimensions } from '../common/utilities';
 import StarRating from './StarRating';
 import Select from 'react-select';
 
-const selector = (props) => {
-    
+const control = (provided, state) => ({
+    ...provided,
+    alignItems: 'left',
+    width: '15em',
+    maxHeight: '32px',
+    minHeight: '32px',
+    padding: '0px 0px',
+    border: '2px solid #dce4ec',
+    borderRadius: '4px',
+    backgroundColor: '#ecf0f1',
+    color: '#2c3e50',
+    marginTop: '3px'
+});
+
+const placeholder = (provided, state) => ({
+    ...provided,
+    position: 'static',
+    verticalAlign: 'middle',
+    transform: ''
+}) 
+
+const option = (provided, state) => ({
+    ...provided,
+    textAlign: 'left'
+})
+
+const groupOption = (provided, state) => ({
+    ...provided,
+    textAlign: 'left',
+    paddingLeft: '1em',
+    fontSize: '90%'
+})
+
+const groupHeading = (provided, state) => ({
+    ...provided,
+    textAlign: 'left',
+    textTransform: '',
+    fontWeight: 'bold',
+    fontSize: '100%',
+    color: '#2c3e50'
+})
+
+const onChange = ((event, props) => {
+    event = {...event, name: props.name};
+    props.onChange(event);
+})
+
+const selector = (props) => {    
+     
     let labelClasses = props.labelClass;
     let valueClasses = props.valueClass;
     if (props.dimensions){
         let d = parseDimensions(props.dimensions);
         labelClasses += ' ' + d.labelWidth + ' ' + d.labelOffset;
         valueClasses += ' ' + d.valueWidth;
-    }
-
-    let options = props.options;
-    if (!props.type || props.type === 'select'){
-        options = [props.placeholder].concat(options);
     }
 
     let component = undefined;
@@ -57,40 +100,40 @@ const selector = (props) => {
         }
     }
     else {
-        if (props && props.type === 'react-select'){
-            component = (
+        const optionsAreGrouped = props.options.length > 0 && (typeof props.options[0] === 'object');
+        
+        const options = optionsAreGrouped ? 
+            props.options
+            :
+            props.options.map( option => {
+                return {'label': option, 'value':option}
+            });
+        
+        const customStyles = optionsAreGrouped ?
+            { control, placeholder, option: groupOption, groupHeading }
+            :
+            { control, placeholder, option };            
+        
+        component= (
             <Select
-                className={valueClasses}
-                options={props.options}
-                onInputChange={props.onChange}
-            /> 
-            )
-        }
-        else {
-            component = (
-            <select
+                options={options} 
+                placeholder={props.placeholder}
+                onChange={event => {onChange(event, props)}}
+                isDisabled={props.mode === 'view'}
                 name={props.name}
-                disabled={props.mode === 'view'} 
-                onChange={(event) => props.onChange(event)} 
-                className={valueClasses}
-                value={props.value}>
-                {
-                    options.map((text, index) => {
-                        return (<option value={text} key={index} >{text}</option>)
-                    }, this)
-                }
-            </select>
-            )
-        }  
-     }
+                styles={customStyles}
+                value={props.value}
+            />
+        ) 
+    }
         
     return (
         <div className='input-wrapper'>
             <span className={labelClasses}>{props.label}</span>
             {component}
-            </div>
+        </div>
     )
 }
-        
+   
 export default selector;
         

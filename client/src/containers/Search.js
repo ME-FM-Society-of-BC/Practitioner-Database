@@ -47,14 +47,22 @@ class Search extends Component {
     }
 
     onSelect(event){
-        const {name, value} = event.target;
         this.setState({
-            [name]: value
+            [event.name]: event.value
         });
-        if (name === 'province'){
-            this.setState({
-                cityOptions: this.props.citiesMap[value]
-            })
+        if (event.name === 'province'){
+            const cityOptions = this.props.citiesMap[event.value];
+            if (cityOptions){
+                this.setState({
+                    cityOptions: this.props.citiesMap[event.value],
+                    errorMessage: null
+                })
+            }
+            else {
+                this.setState({
+                    errorMessage: 'Unable to perform search in province for which there is no moderator'
+                })
+            }
         }
     }
 
@@ -88,8 +96,8 @@ class Search extends Component {
         return fieldsToCheck.reduce((string, fieldName) => {
             if (fieldName === 'specialty'){
                 if (this.state.specialty){
-                    return string.concat('specialtyId=')
-                    .concat(this.props.specialties.valueToId[this.state.specialty])
+                    return string.concat('specialtyId=').concat(this.state.specialty)
+/*                    .concat(this.props.specialties.valueToId[this.state.specialty])*/
                     .concat('|');
                 }
                 else {
@@ -308,7 +316,7 @@ class Search extends Component {
                     />
                 <Selector 
                     label='Specialty' valueClass='info-field' labelClass='info-label' name='specialty' 
-                    options={this.props.specialties.text}
+                    options={this.props.specialties.options}
                     value={this.state.specialty} 
                     placeholder='Select ...'
                     onChange =  {(event) => this.onSelect(event)}

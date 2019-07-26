@@ -49,7 +49,7 @@ const questionGroup = props => {
                     const options=props.choiceSets[question.questionChoiceSetId];
                     const userAnswers = userHasEvaluated ? props.userAnswers : null;
                     const userAnswer = userAnswers ? userAnswers[question.id] : null;
-                    const value = userAnswer ? options[userAnswer.value] : '';
+                    const value = userAnswer ? {label: options[userAnswer.value], value: userAnswer.value} : '';
 
                     return (
                         <Selector

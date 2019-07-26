@@ -45,10 +45,10 @@ class PractitionerInfo extends Component {
         }
         else {
             // A new Practitioner is being created
-            console.log("New Practitioner");
             this.state = {
                 mode: 'create',
-                practitioner: {}
+                practitioner: {},
+                cityOptions: []
             }
         }
 
@@ -71,8 +71,8 @@ class PractitionerInfo extends Component {
     selectSpecialty(event) {
         const alteredPractitioner = {
             ...this.state.practitioner,
-            specialty: event.target.value,
-            specialtyId: this.props.specialties.valueToId[event.target.value]
+            specialty: event.label, /* TODO-SELECT specialty: event.target.value,*/
+            specialtyId: event.value
         }
         this.setState({
             practitioner: alteredPractitioner,
@@ -82,10 +82,10 @@ class PractitionerInfo extends Component {
 
     selectProvince(event){
         const practitioner = {...this.state.practitioner};
-        practitioner.province = event.target.value;
+        practitioner.province = event.value;
         this.setState({
             practitioner: practitioner,
-            cityOptions: this.props.citiesMap[event.target.value],
+            cityOptions: this.props.citiesMap[event.value], 
             infoChanged: true,
             errorMessage: null
         })
@@ -93,7 +93,7 @@ class PractitionerInfo extends Component {
 
     selectCity(event){
         const practitioner = {...this.state.practitioner};
-        practitioner.city = event.target.value;
+        practitioner.city = event.value; // TO-SELECT
         this.setState({
             practitioner: practitioner,
             infoChanged: true,
@@ -224,14 +224,18 @@ class PractitionerInfo extends Component {
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
                         options={this.state.availableProvinces}
-                        value={this.state.practitioner.province} 
+                        value={this.state.practitioner.province ?
+                            {label: this.state.practitioner.province, value: this.state.practitioner.province}
+                            : null} 
                         placeholder='Select ...'
                         onChange =  {(event) => this.selectProvince(event)}/>
                     <Selector label='City'
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
                         options={this.state.cityOptions}
-                        value={this.state.practitioner.city} 
+                        value={this.state.practitioner.city ?
+                            {label: this.state.practitioner.city, value: this.state.practitioner.city}
+                            : null} 
                         placeholder='Select after province...'
                         onChange =  {(event) => this.selectCity(event)}/>
                     </div>
@@ -254,8 +258,10 @@ class PractitionerInfo extends Component {
                         valueClass='info-field' labelClass='info-label'  
                         mode={this.state.mode} 
                         type='react-select'
-                        options={this.props.specialties.text}
-                        value={this.state.practitioner.specialty} 
+                        options={this.props.specialties.options}
+                        value={this.state.practitioner.specialty ?
+                            {label: this.state.practitioner.specialty, value: this.state.practitioner.specialtyId}
+                            : null}
                         placeholder='Select one...'
                         onChange =  {(event) => this.selectSpecialty(event)}/>
                     </div>
