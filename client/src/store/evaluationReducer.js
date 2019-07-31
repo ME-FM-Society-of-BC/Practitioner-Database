@@ -16,8 +16,6 @@ const initialState = {
 
 const evaluationReducer = (state = initialState, action) => {
 
-    let allActionsAndAnswers = null;
-
     switch (action.type) {
         case actions.STORE_QUESTIONS:
             return {
