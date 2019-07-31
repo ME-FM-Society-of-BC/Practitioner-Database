@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
-import { handlePostalCode } from '../common/utilities';
+import { handlePostalCode, handlePhoneNumber } from '../common/utilities';
 
 class PractitionerInfo extends Component {
 
@@ -25,6 +25,7 @@ class PractitionerInfo extends Component {
             let practitioner;
             for (let i = 0; i < props.practitioners.length; i++){
                 // Comparison is string to number
+                // eslint-disable-next-line
                 if (props.practitioners[i].id == props.match.params.id) {
                     practitioner = props.practitioners[i];
                     break;
@@ -71,7 +72,7 @@ class PractitionerInfo extends Component {
     selectSpecialty(event) {
         const alteredPractitioner = {
             ...this.state.practitioner,
-            specialty: event.label, /* TODO-SELECT specialty: event.target.value,*/
+            specialty: event.label, 
             specialtyId: event.value
         }
         this.setState({
@@ -105,6 +106,9 @@ class PractitionerInfo extends Component {
         let value = event.target.value;
         if (name === 'postalCode'){
             value = handlePostalCode(value);
+        }
+        else if (name === 'phone'){
+            value = handlePhoneNumber(value);
         }
         else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
             value = value.toUpperCase();
@@ -163,7 +167,7 @@ class PractitionerInfo extends Component {
         if (!this.state.practitioner.lastName) fields.push('last name');
         if (!this.state.practitioner.firstName) fields.push('first name');
         if (!this.state.practitioner.city) fields.push('city');
-        if (!this.state.practitioner.phone) fields.push('phone');
+        if (!this.state.practitioner.phone || this.state.practitioner.phone.length < 13) fields.push('phone');
 
         if (fields.length === 0){
             return true;

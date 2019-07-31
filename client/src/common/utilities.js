@@ -32,6 +32,60 @@ export const handlePostalCode = value =>{
     return value
 }
 
+/**
+  * Manages keystrokes entered in a phone number field. The purpose is
+  * to coerce the value into the format '(111)222-3333'
+  * @param value the value of the entry field after the keystroke
+  * @return the postal code field after the rules have been applied
+  */
+  export const handlePhoneNumber = value => {
+    // First check if user has pasted a string in the wrong format
+    if (value.length > 1 && value[0] !== '('){
+        if (value.startsWith('1 ') || value.startsWith('1-')){
+            value = value.substring(2);
+            if (value[0] === '('){
+                return;
+            }
+        }
+        if (value.indexOf('-') > 0){
+            const parts = value.split('-');
+            if (parts.length === 3){
+                value = '(' + parts[0] + ')' + parts[1] + '-' + parts[2]
+                return value;
+            }
+        }
+    }
+    const newChar = value[value.length - 1];
+    if (newChar === ' '){
+        switch (value.length) {
+            case 1: value = '('; break;
+            case 5: value = value.substring(0, 4) + ')'; break;
+            default: value = value.substring(0, value.length);
+        } 
+    }
+    else if (newChar === '('){
+        value = value.length === 1 ? value : value.substring(0, value.length - 1)
+    }
+    else if (newChar === ')'){
+        value = value.length === 5 ? value : value.substring(0, value.length - 1)
+    }
+    else if (newChar === '-'){
+        value = value.length === 9 ? value : value.substring(0, value.length - 1)
+    }
+    else if (0 <= newChar && newChar <= 9){
+    // eslint-disable-next-line
+            switch (value.length){
+            case 1: value = '(' + value; break;
+            case 5: value = value.substring(0, value.length - 1) + ')' + newChar; break;
+            case 9: value = value.substring(0, value.length - 1) + '-' + newChar; break;
+            case 14: value = value.substring(0, value.length - 1); 
+        }
+    }
+    else {
+        value = value.substring(0, value.length - 1)
+    }
+    return value
+}
  /**
  * Given an array of entities, creates a map of the entity id to the the entity's
  * index in the array. 
@@ -98,6 +152,10 @@ export const getBaseURI = () => {
  * Checks that a string is a valid email address 
  */
 export const isValidEmail = ( s => {
+    // eslint-disable-next-line
     return s.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+    // return s.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+    // return s.match("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+//    return s.match("/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/");
 })
 
