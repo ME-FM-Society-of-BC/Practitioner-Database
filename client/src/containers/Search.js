@@ -8,7 +8,6 @@ import EditableText from '../components/EditableText';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import * as actions from '../store/practitionerActions';
-import { STORE_PRACTITIONERS } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
 import { handlePostalCode } from '../common/utilities';
 import { CircleSpinner } from "react-spinners-kit";
@@ -22,13 +21,16 @@ class Search extends Component {
         city: '',
         province: '',
         specialty: '',
+        specialtyId: '',
         cityOptions: []
     };
 
     constructor(props){
         super(props);
         this.onChange= this.onChange.bind(this);
-        this.onSelect = this.onSelect.bind(this);
+        this.onSelectSpecialty = this.onSelectSpecialty.bind(this);
+        this.onSelectProvince = this.onSelectProvince.bind(this);
+        this.onSelectCity = this.onSelectCity.bind(this);
         this.searchFull = this.searchFull.bind(this);
         this.searchQuick = this.searchQuick.bind(this);
     }
@@ -46,24 +48,29 @@ class Search extends Component {
         });
     }
 
-    onSelect(event){
-        this.setState({
-            [event.name]: event.value
-        });
-        if (event.name === 'province'){
-            const cityOptions = this.props.citiesMap[event.value];
-            if (cityOptions){
-                this.setState({
-                    cityOptions: this.props.citiesMap[event.value],
-                    errorMessage: null
-                })
-            }
-            else {
-                this.setState({
-                    errorMessage: 'Unable to perform search in province for which there is no moderator'
-                })
-            }
+    onSelectProvince(event){
+        this.setState({province: event.value})
+        const cityOptions = this.props.citiesMap[event.value];
+        if (cityOptions){
+            this.setState({
+                cityOptions: this.props.citiesMap[event.value],
+                errorMessage: null
+            })
         }
+        else {
+            this.setState({
+                errorMessage: 'Unable to perform search in province for which there is no moderator'
+            })
+        }
+}
+    onSelectCity(event){
+        this.setState({city: event.value})
+    }
+    onSelectSpecialty(event){
+        this.setState({
+            specialty: event.label,
+            specialtyId: event.value
+        })
     }
 
     // Search by criteria
@@ -73,7 +80,7 @@ class Search extends Component {
             return;
         }
         this.setState({errorMessage: null});
-        let searchParams = this.assembleSearchString(['lastName', 'firstName', 'city', 'province', 'specialty']);
+        let searchParams = this.assembleSearchString(['lastName', 'firstName', 'city', 'province', 'specialtyId']);
         
         if (searchParams.length === 0){
             if (this.state.postalCode){
@@ -94,19 +101,7 @@ class Search extends Component {
 
     assembleSearchString(fieldsToCheck){
         return fieldsToCheck.reduce((string, fieldName) => {
-            if (fieldName === 'specialty'){
-                if (this.state.specialty){
-                    return string.concat('specialtyId=').concat(this.state.specialty)
-/*                    .concat(this.props.specialties.valueToId[this.state.specialty])*/
-                    .concat('|');
-                }
-                else {
-                    return string;
-                }
-            }
-            else {
-                return string.concat(this.state[fieldName] ? fieldName + '=' + this.state[fieldName] +  '|' : '');
-            }
+            return string.concat(this.state[fieldName] ? fieldName + '=' + this.state[fieldName] +  '|' : '');
         }, '');
     }
 
@@ -229,7 +224,10 @@ class Search extends Component {
     
                 if (badOriginPostalCode){
                     // Stay here and display message
-                    reject('You may have entered a postal code which does not exists. Please try again');
+                    reject('We were unable to calculate distances from that postal code.\n' +
+                        'Please check that the value you entered is correct.\n' + 
+                        'If there is still a problem, please use the Full Search without Postal Code.\n' +
+                        'We will have a fix for this problem soon.');
                 }
                 else {
                     const augmentedPractitioners = [];
@@ -283,6 +281,7 @@ class Search extends Component {
         };
 
         return (
+            <>
             <Panel style={panelStyle}>
             <Panel.Body>
             <div className='horizontal-group'>
@@ -295,6 +294,7 @@ class Search extends Component {
                         label='Postal Code' value={this.state.postalCode} 
                         name='postalCode' changeHandler={this.onChange}/>
                 <Button className='button-large' onClick={this.searchQuick}>Quick Search</Button>
+
                 <Instructions width='40em'>
                     <p>
                     You can also search by entering information in any of the fields below, then click the Full Search button.
@@ -317,23 +317,29 @@ class Search extends Component {
                 <Selector 
                     label='Specialty' valueClass='info-field' labelClass='info-label' name='specialty' 
                     options={this.props.specialties.options}
-                    value={this.state.specialty} 
+                    value={this.state.specialty ?
+                        {label: this.state.specialty, value: this.state.specialtyId}
+                        : null} 
                     placeholder='Select ...'
-                    onChange =  {(event) => this.onSelect(event)}
+                    onChange =  {(event) => this.onSelectSpecialty(event)}
                     />
                 <Selector 
                     label='Province' valueClass='info-field' labelClass='info-label' name='province'  
                     options={this.props.provinces}
-                    value={this.state.province} 
+                    value={this.state.province ?
+                        {label: this.state.province, value: this.state.province}
+                        : null} 
                     placeholder='Select ...'
-                    onChange =  {(event) => this.onSelect(event)}
+                    onChange =  {(event) => this.onSelectProvince(event)}
                     />
                 <Selector 
                     label='City' valueClass='info-field' labelClass='info-label' name='city' 
                     options={this.state.cityOptions}
-                    value={this.state.city} 
+                    value={this.state.city ?
+                        {label: this.state.city, value: this.state.city}
+                        : null} 
                     placeholder='Select after province...'
-                    onChange =  {(event) => this.onSelect(event)}
+                    onChange =  {(event) => this.onSelectCity(event)}
                     />
                 <Button className='button-large' onClick={this.searchFull}>Full Search</Button>
                 {
@@ -346,6 +352,7 @@ class Search extends Component {
             </div>            
             </Panel.Body>
             </Panel>
+            </>
         )
     }
 }
@@ -354,7 +361,6 @@ const mapStateToProps = state => {
     return {
         specialties: state.practitionersReducer.specialties,
         allPractitioners: state.practitionersReducer.allPractitioners,
-//        matchingPractitioners: state.practitionersReducer.matchingPractitioners,
         provinces: state.locationReducer.provinces,
         citiesMap: state.locationReducer.citiesMap
     }
@@ -362,7 +368,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         saveMatchingPractitioners: (matchingPractitioners) => dispatch({ type: actions.SAVE_SEARCH_RESULTS, matchingPractitioners }),
-//        storePractitioners: (practitioners) => dispatch({ type: STORE_PRACTITIONERS, practitioners })
     };
 };
 
