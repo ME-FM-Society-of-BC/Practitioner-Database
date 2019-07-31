@@ -33,7 +33,7 @@ export const saveComment = ((comment) => {
  */
 export const flagComment = ((comment) => {
     return dispatch => {
-        axios.put('/comments/' + comment.id + '?status=' + 'FLAGGED')
+        axios.put('/comments/' + comment.id + '?status=FLAGGED')
             .then((response) => {
                 comment.status = 'FLAGGED';
                 dispatch({ type: UPDATE_COMMENT, comment: comment })

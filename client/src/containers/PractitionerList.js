@@ -21,7 +21,6 @@ import PractitionerListItem from '../components/PractitionerListItem';
 import { STORE_COMMENTS } from '../store/commentActions';
 import { STORE_ALL_RECOMMENDATION_ACTIONS} from '../store/evaluationActions';
 import { Button } from 'react-bootstrap';
-import { CircleSpinner } from "react-spinners-kit";
 
 class PractitionerList extends Component {
 
