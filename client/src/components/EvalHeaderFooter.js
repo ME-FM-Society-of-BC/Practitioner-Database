@@ -56,7 +56,7 @@ const evalHeaderFooter = (props) => {
                     ME refers to myalgic encephalomyelitis. 
                     ME is also known as ME/CFS, chronic fatigue syndrome, systemic exertion intolerance disease (SEID). 
                     For more information about names for the disease, 
-                    refer to <a href='https://me-pedia.org/wiki/Names_of_myalgic_encephalomyelitis_and_chronic_fatigue_syndrome' target='_blank'>this MEPedia article</a>.
+                    refer to <a href='https://me-pedia.org/wiki/Names_of_myalgic_encephalomyelitis_and_chronic_fatigue_syndrome' target='_blank' rel='noopener noreferrer'>this MEPedia article</a>.
                 </li>
                 <li>
                     FM refers to fibromyalgia
@@ -82,7 +82,9 @@ const evalHeaderFooter = (props) => {
             }
             break;
         case 'edit':
-            components.push(anyYouWant);
+            if (props.isHeader) {
+                components.push(anyYouWant);
+            }
             components.push(saveMyEvaluationButton);
             break;
         default:  // view
