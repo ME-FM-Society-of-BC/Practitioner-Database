@@ -4,12 +4,22 @@
  */
 import React from 'react';
 
+const formatAddress = practitioner => {
+    return (practitioner.address ? practitioner.address + ', ' : '')
+        + practitioner.city + ', ' + practitioner.province
+        + (practitioner.postalCode ? ', ' + practitioner.postalCode : '');
+}
+
+const formatName = practitioner => {
+    return practitioner.firstName + ' ' + practitioner.lastName
+}
+
 const practitionerListItem = (props) => {
     // NOTE: react-bootstrap Button sizing seems not to work to render a small button. Hence use of <input type='button'...
     return (
         <tr>
-            <td>{props.practitioner.firstName}&nbsp;{props.practitioner.lastName}</td>
-            <td>{props.practitioner.address},&nbsp;{props.practitioner.city}&nbsp;{props.practitioner.province},&nbsp;{props.practitioner.postalCode}</td> 
+            <td>{formatName(props.practitioner)}</td>
+            <td>{formatAddress(props.practitioner)}</td> 
             <td>{props.practitioner.phone}</td> 
             <td>{props.practitioner.specialty}</td>
             {props.practitioner.distance ? <td>{props.practitioner.distance.humanReadable}</td> : ''} 
@@ -17,4 +27,6 @@ const practitionerListItem = (props) => {
         </tr>
     )
 }
+
 export default practitionerListItem;
+
