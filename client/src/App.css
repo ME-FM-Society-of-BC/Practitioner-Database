@@ -216,6 +216,7 @@
 	padding: 4px;
 	color: red;
 	margin-top: 2em;
+	max-width: 42em;
 }
 
 .spinner-container {
