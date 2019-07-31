@@ -1,7 +1,6 @@
 package ca.bc.mefm;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,8 +11,6 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.DistanceMatrixRow;
 
-import ca.bc.mefm.data.UserRole;
-import ca.bc.mefm.data.User.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
