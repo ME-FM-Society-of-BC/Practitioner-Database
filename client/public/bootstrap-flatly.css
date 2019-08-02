@@ -4216,11 +4216,12 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     border-radius: 0;
   }
 }
+/* RT: Change height, font-size */
 .navbar-brand {
   float: left;
-  height: 60px;
-  padding: 19.5px 15px;
-  font-size: 19px;
+  height: 40px;
+  padding: 13px 15px;
+  font-size: 15px;
   line-height: 21px;
 }
 .navbar-brand:hover,

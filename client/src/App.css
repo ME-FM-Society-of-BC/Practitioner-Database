@@ -17,6 +17,10 @@
   color: #61dafb;
 }
 
+.centered {
+	margin: 0 auto;
+}
+
 .execute {
 	font-weight: bold;
 	cursor: -webkit-grab; 
@@ -227,6 +231,11 @@
 	margin-top:30%;
 }
 
+.copy-url {
+	float: left;
+	margin-top: 10px;
+}
+
 /*****************************************************************************/
 /* Responsive table styles */
 table {
@@ -288,8 +297,14 @@ only screen and (max-width: 768px)  {
 		padding-right: 10px; 
 		white-space: nowrap;
 	}
+
+	.copy-url {		
+		margin-top: 20px;
+		margin-left: 15px;
+	}
 	
 	/* To convert a table, the column labels must be duplicated here */
+	/* TODO: This technique should be replaced with a flex solution */
 
 	#practitioner-list td:nth-of-type(1):before { content: "Name"; }
 	#practitioner-list td:nth-of-type(2):before { content: "Address"; }

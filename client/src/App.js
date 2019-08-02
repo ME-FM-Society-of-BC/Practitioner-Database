@@ -5,6 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Banner from './components/Banner';
+import CopyUrl from './containers/CopyUrl';
 import RefreshWarning from './components/RefreshWarning';
 import Instructions from './components/Instructions';
 import Home from './containers/Home';
@@ -294,9 +295,12 @@ class App extends Component {
                 <Banner/>
                 <Navbar collapseOnSelect style={navbarHeight}>
                     <Navbar.Header>
+                        <CopyUrl/>
                         <Navbar.Toggle />
                     </Navbar.Header>
+                    
                     <Navbar.Collapse>
+                    
                         <Nav pullRight>
                             <LinkContainer to="/home">
                                 <NavItem>Home</NavItem>
@@ -364,12 +368,6 @@ class App extends Component {
         );
     }
 }
-// {routes}
-// {active ?
-//     <Footer/>                                
-//     : ''
-// }
-
 
 const navbarHeight = {
     minHeight: '40px !important',
