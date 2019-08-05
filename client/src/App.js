@@ -73,7 +73,9 @@ class App extends Component {
             }
         }
         this.onCloseWarning = this.onCloseWarning.bind(this);
-
+        this.showUrlPopup = this.showUrlPopup.bind(this);
+        this.hideUrlPopup = this.hideUrlPopup.bind(this);
+        
         this.state.loading = true;
     }
 
@@ -98,10 +100,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        // if (this.props.history.location.pathname !== '/'){
-        //     // User is refreshing
-        //     return;
-        // }
         // Start a request chain to obtain all data required for a visitor 
         // to start using the app without registering or signing in 
         axios.get('/specialties')
@@ -200,6 +198,17 @@ class App extends Component {
         console.log(error);
         console.log(info);
     }
+
+    // Displays the CopyUrl popup component
+    showUrlPopup(){ this.setState({ showUrlPopup: true }) }
+    // Hides the CopyUrl popup component
+    hideUrlPopup(){ 
+        this.setState({ showUrlPopup: false });
+        // When the CopyUrl component is shown, the url will lose the current location.
+        // Need to explicitly go back. Presumably this is required because the event triggering
+        // the CopyUrl display is within the Navbar
+        this.props.history.goBack(); 
+    }
     
     render() {
         if (this.state.hasError) {
@@ -294,8 +303,8 @@ class App extends Component {
             <div className="App">
                 <Banner/>
                 <Navbar collapseOnSelect style={navbarHeight}>
-                    <Navbar.Header>
-                        <CopyUrl/>
+                    <Navbar.Header>                        
+                        <a className='copy-url' href='#' style={{color: '#ffffff'}} onClick={this.showUrlPopup}>Share</a>
                         <Navbar.Toggle />
                     </Navbar.Header>
                     
@@ -364,6 +373,9 @@ class App extends Component {
                     </div>                               
                 }
             </div>
+            {
+                this.state.showUrlPopup ? <CopyUrl close={this.hideUrlPopup}/> : null
+            }
             </StyleRoot>
         );
     }
