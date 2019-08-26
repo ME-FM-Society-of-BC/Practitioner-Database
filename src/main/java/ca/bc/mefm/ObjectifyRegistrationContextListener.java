@@ -11,6 +11,7 @@ import ca.bc.mefm.data.DatastoreVersion;
 import ca.bc.mefm.data.Moderator;
 import ca.bc.mefm.data.PasswordReset;
 import ca.bc.mefm.data.Practitioner;
+import ca.bc.mefm.data.Property;
 import ca.bc.mefm.data.Province;
 import ca.bc.mefm.data.Question;
 import ca.bc.mefm.data.QuestionChoice;
@@ -29,6 +30,7 @@ public class ObjectifyRegistrationContextListener implements ServletContextListe
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {    	
+    	ObjectifyService.register(Property.class);
     	ObjectifyService.register(Comment.class);
     	ObjectifyService.register(Practitioner.class);
     	ObjectifyService.register(QuestionChoice.class);
