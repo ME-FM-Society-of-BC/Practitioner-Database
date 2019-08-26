@@ -5,7 +5,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Singleton holding application properties
+ * Singleton holding application properties from the application.properties file
  * @author Robert
  *
  */
