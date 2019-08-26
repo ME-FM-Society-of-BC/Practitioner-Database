@@ -25,7 +25,7 @@ public class GoogleMapsApi {
 	
 	private GoogleMapsApi() {
 		context = new GeoApiContext.Builder(new GaeRequestHandler.Builder())
-				.apiKey("AIzaSyC5CyPj-3kttOqL4YM09tuGQJnjtfAzdrM").build();
+				.apiKey(DatabaseProperties.get("mapsapi.key")).build();
 	}	
 	
 	// Singleton instance
