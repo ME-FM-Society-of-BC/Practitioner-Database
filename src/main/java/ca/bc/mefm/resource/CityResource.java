@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.City;
 import ca.bc.mefm.data.DataAccess;
-import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
  * Service endpoint for City entity retrieval. 
