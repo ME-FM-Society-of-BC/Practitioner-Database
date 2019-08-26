@@ -31,6 +31,7 @@ import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
+import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
  * Servlet to initialize the database entities. 
@@ -166,14 +167,16 @@ public class InitializationServlet extends HttpServlet {
 	}
     
     private void addAdmin(DataAccess da) {
-		User admin = new User();
+		User admin = new User();		
+		
 		admin.setCreated((new Date()).getTime());
-		admin.setEmail("info@mefm.bc.ca");
+		admin.setEmail(ApplicationProperties.get("email.address.admin"));
 		admin.setRole(UserRole.Type.ADMINISTRATOR);
-		admin.setUsername("admin");
+		admin.setUsername(DatabaseProperties.get("admin.user"));
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		admin.setPassword(encoder.encode("mefm2004"));
+		admin.setPassword(encoder.encode(DatabaseProperties.get("admin.password")));
 		admin.setStatus(User.Status.ENABLED);
+		
 		da.put(admin);    	
     }
     
