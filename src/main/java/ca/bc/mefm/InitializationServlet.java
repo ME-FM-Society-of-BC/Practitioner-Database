@@ -31,7 +31,6 @@ import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
-import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
  * Servlet to initialize the database entities. 
@@ -75,15 +74,15 @@ public class InitializationServlet extends HttpServlet {
     
 	private void initialize(String operation) throws ClassNotFoundException{
 		
-		String[] parts = operation.split(",");
+		String[] parts = operation.split(":");
 		String newVersion = parts[0];
-		boolean replaceAll = true;
-		String[] entitiesToReplace = null;;
+		String[] entitiesToReplace = null;
 		
+		log.info("Database load version specifies " + newVersion);
 		if (parts.length > 1) {
 			// Version is accompanied by entity list
 			entitiesToReplace = parts[1].split(",");
-			replaceAll = false;
+			log.info("Number of entity types to replace: " + entitiesToReplace.length);
 		}
     	
         DataAccess da = new DataAccess();
@@ -96,6 +95,7 @@ public class InitializationServlet extends HttpServlet {
         	// Database is empty:  
         	createOrUpdate = true;
         	currentVersion = new DatastoreVersion(newVersion);
+        	log.info("Database is empty");
         }
         else {
         	currentVersion = versions.get(0);
@@ -103,6 +103,7 @@ public class InitializationServlet extends HttpServlet {
         		// Version update
         		createOrUpdate = true;
         		currentVersion.setVersion(newVersion);
+        		log.info("Updating from version " + currentVersion.getVersion() + " to " + newVersion);
         	}
         }
         
@@ -154,6 +155,7 @@ public class InitializationServlet extends HttpServlet {
 	private void replace(DataAccess da, String [] entityClasses) throws ClassNotFoundException{
 		for (String entityClass: entityClasses) {
 			clearAllOfClass(da, Class.forName("ca.bc.mefm.data." + entityClass));
+			log.info("Replacing all entities of type " + entityClass);
 			
 			switch (entityClass) {
 				case "Specialty": specialties.forEach((Specialty o) -> da.put(o)); break;
@@ -167,6 +169,7 @@ public class InitializationServlet extends HttpServlet {
 	}
     
     private void addAdmin(DataAccess da) {
+    	log.info("Adding admin user");
 		User admin = new User();		
 		
 		admin.setCreated((new Date()).getTime());
@@ -180,7 +183,9 @@ public class InitializationServlet extends HttpServlet {
 		da.put(admin);    	
     }
     
+    // Clears all except Property entities
     private void clearAll(DataAccess da) {
+    	log.info("Clearing all except Property entities");
     	clearAllOfClass(da, Comment.class);
     	clearAllOfClass(da, Practitioner.class);
     	clearAllOfClass(da, QuestionChoice.class);
