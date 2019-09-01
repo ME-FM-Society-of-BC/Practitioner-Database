@@ -177,7 +177,7 @@ class PractitionerEval extends Component {
                             const options=this.questionChoiceSets[component.question.questionChoiceSetId];
                             const userAnswers = userHasEvaluated ? this.props.userAnswers : null;
                             const userAnswer = userAnswers ? userAnswers[component.question.id] : null;
-                            const value = userAnswer ? options[userAnswer.value] : '';
+                            const value = userAnswer ? {label: options[userAnswer.value], value: userAnswer.value} : '';
                             return (
                                 <div key={component.key} className='question-wrapper bordered vertical-group'>
                                 <Selector
