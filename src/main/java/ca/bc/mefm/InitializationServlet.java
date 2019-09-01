@@ -170,14 +170,26 @@ public class InitializationServlet extends HttpServlet {
     
     private void addAdmin(DataAccess da) {
     	log.info("Adding admin user");
+    	
+    	String adminUser = DatabaseProperties.get("admin.user");
+    	String adminPassword ;   	
+    	
+    	if (adminUser == null) {
+    		// For local testing
+    		adminUser = "admin";
+    		adminPassword = "admin";
+    	}
+    	else {
+    		adminPassword = DatabaseProperties.get("admin.password");
+    	}
+    	
 		User admin = new User();		
+		admin.setUsername(adminUser);
+		admin.setPassword((new BCryptPasswordEncoder()).encode(adminPassword));
 		
 		admin.setCreated((new Date()).getTime());
 		admin.setEmail(ApplicationProperties.get("email.address.admin"));
 		admin.setRole(UserRole.Type.ADMINISTRATOR);
-		admin.setUsername(DatabaseProperties.get("admin.user"));
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		admin.setPassword(encoder.encode(DatabaseProperties.get("admin.password")));
 		admin.setStatus(User.Status.ENABLED);
 		
 		da.put(admin);    	
