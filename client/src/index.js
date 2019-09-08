@@ -37,6 +37,7 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 axios.defaults.headers.post['Content-Type'] = 'application/json'; // Necessary ?
 
 let baseURI = getBaseURI();
+baseURI = baseURI.indexOf('#') > 0 ? baseURI.substring(0, baseURI.indexOf('#')) : baseURI; 
 console.log(baseURI);
 if (baseURI === "http://localhost:3000/"){
     // Client loaded from VSCode local server 
