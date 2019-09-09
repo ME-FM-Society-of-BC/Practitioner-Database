@@ -43,6 +43,10 @@ class App extends Component {
         console.log('constructor: pathname = ' + this.props.history.location.pathname);
         // Add axios interceptors
         axios.interceptors.request.use(request => {
+            this.setState({
+                requestUrl: request.url,
+                requestData: request.data
+            });
             return request;
         }, error => {
             console.log(error);
@@ -57,7 +61,10 @@ class App extends Component {
             this.restartSessionTimer(this.SESSION_MINUTES);
             console.log(error);
             if (error.response.status !== 401 && error.response.status !== 403){
-                alert(error);
+                alert('An error has occurred. Please report this information:\n'
+                    + 'Status = ' + error.response.status
+                    + '\nURL = ' + this.state.requestUrl
+                    + '\ndata = ' + JSON.stringify(this.state.requestData));
             }
             return Promise.reject(error);
         });
