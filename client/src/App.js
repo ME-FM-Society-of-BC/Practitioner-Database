@@ -201,13 +201,19 @@ class App extends Component {
     }
     
     componentDidCatch(error, info) {
-        // You can also log the error to an error reporting service
         console.log(error);
         console.log(info);
+        // Report error to server for logging
+        axios.post('/errors', {
+            error: JSON.stringify(error),
+            info: JSON.stringify(info)
+        });
     }
 
     // Displays the CopyUrl popup component
-    showUrlPopup(){ this.setState({ showUrlPopup: true }) }
+    showUrlPopup(){ 
+        this.setState({ showUrlPopup: true }) 
+    }
     // Hides the CopyUrl popup component
     hideUrlPopup(){ 
         this.setState({ showUrlPopup: false });
@@ -222,8 +228,9 @@ class App extends Component {
             // You can render any custom fallback UI
             return (
                 <Instructions>
-                    Ooops! Something went wrong. Sorry about that
-                </Instructions>
+                    <p>Ooops! Something went wrong. Sorry about that</p>
+                    <p>Please close your browser and start again. </p>
+                 </Instructions>
             )
         }
       
