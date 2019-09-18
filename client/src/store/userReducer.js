@@ -26,10 +26,23 @@ const storeLoggedInUser = (user, state) => {
     // If the user is a Moderator, add an "isModerator" property]
     user.isModerator = user.role === 'MODERATOR';
     user.isAdministrator = user.role === 'ADMINISTRATOR';
+    // This may be a user who has just been created.
+    const allUsers = checkAndAddNewUser(user, state.allUsers);
     return {
         ...state,
-        loggedInUser: user
+        loggedInUser: user,
+        allUsers
     }   
+}
+
+// If the logged in user is not in the user map, he/she is new: add to map
+const checkAndAddNewUser = (user, allUsers) => {
+    if (allUsers[user.id]){
+        return allUsers;
+    }
+    const newAllUsers = {...allUsers}
+    newAllUsers[user.id] = user;
+    return newAllUsers;
 }
 
 const storeAllUsers = (users, state) => {
