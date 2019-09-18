@@ -41,20 +41,18 @@ export const handlePostalCode = value =>{
   export const handlePhoneNumber = value => {
     // First check if user has pasted a string in the wrong format
     if (value.length > 1 && value[0] !== '('){
-        if (value.startsWith('1 ') || value.startsWith('1-')){
-            value = value.substring(2);
-            if (value[0] === '('){
-                return;
-            }
+        // Strip out everything except digits
+        if (value[0] === '1'){
+            // Remove leading 1
+            value = value.substring(1);
         }
-        if (value.indexOf('-') > 0){
-            const parts = value.split('-');
-            if (parts.length === 3){
-                value = '(' + parts[0] + ')' + parts[1] + '-' + parts[2]
-                return value;
-            }
-        }
+        // Remove all characters except first ten digits
+        value = value.replace(/\D/g, "");
+        value = value.substring(0,10);
+        value = '(' + value.slice(0,3) + ')' + value.slice(3,6) + '-' + value.slice(6,10)
+        return value;
     }
+    
     const newChar = value[value.length - 1];
     if (newChar === ' '){
         switch (value.length) {
