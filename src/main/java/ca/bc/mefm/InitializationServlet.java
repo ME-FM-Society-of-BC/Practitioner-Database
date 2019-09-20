@@ -119,22 +119,7 @@ public class InitializationServlet extends HttpServlet {
     		}
         	da.put(currentVersion);
 
-        }
-        else {
-            // As missing municipalities are detected, need convenient method to
-            // re-populate. Triggered by removing province entities in the Datastore console
-//            List<Province> existingProvinces = da.getAll(Province.class);
-//        	if (existingProvinces.isEmpty()) {
-//            	// If only the provinces are gone, empty the cities and recreate both
-//            	log.info("Repopulating provinces and cities " + newVersion);
-//            	da.deleteAll(City.class);
-//            	provinces.forEach((Province o) -> da.put(o));        	
-//            	addCities(da);        	
-//        	}
-        }
-        // TODO: REmove kludge for populating practitioners for search/my activity testing
-//        practitioners.forEach((Practitioner o) -> da.put(o));
-        
+        }       
     }
 	
 	private void populateAll(DataAccess da) {
@@ -236,41 +221,13 @@ public class InitializationServlet extends HttpServlet {
         addCities(12L, namesNU, da);
         addCities(13L, namesYU, da);
     	
-    }
-    
-    // TODO Kludge
-    List<Practitioner> practitioners = Arrays.asList(new Practitioner[]{
-        new Practitioner(1L, "One",   	"Jane", "", "","British Columbia",	"Canada","V6G-1W8","","", 5L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(2L, "Two", 	"John", "", "","British Columbia",	"Canada","V8V-4V9","","", 6L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(3L, "Three",   "", 	"", "","British Columbia",	"Canada","V9B-3R3","","", 7L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(4L, "Four", 	"", 	"", "","British Columbia",	"Canada","V9B-1H8","","", 8L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(5L, "Five",   "", 	"", "","British Columbia",	"Canada","V9C-2W8","","", 5L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(6L, "Six",	"", 	"", "","British Columbia",	"Canada","V8Z-1M8","","", 6L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(7L, "Seven",   	"", 	"", "","British Columbia",	"Canada","V8Y-2L3","","", 7L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(8L, "Eight", 	"", 	"", "","British Columbia",	"Canada","V8P-5C2","","", 8L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(9L, "Nine",   	"", 	"", "","British Columbia",	"Canada","bad-bad","","", 5L, (new Date()).getTime(), (new Date()).getTime()),
-        new Practitioner(10L, "Ten", "", 	"", "","British Columbia",	"Canada","V7B-0V7","","", 6L, (new Date()).getTime(), (new Date()).getTime())
-    });
-    List<Comment> comments = Arrays.asList(new Comment[]{
-    	new Comment(1L, null, 1L, 1L, (new Date()).getTime(), "He's an idiot", Comment.Status.PENDING),
-    	new Comment(2L, 1L,   2L, 1L, (new Date()).getTime(), "Yes he is", Comment.Status.PENDING),
-    	new Comment(3L, 1L,   1L, 1L, (new Date()).getTime(), "No he isn't", Comment.Status.PENDING),
-    	new Comment(4L, null, 2L, 1L, (new Date()).getTime(), "I like him a lot", Comment.Status.PENDING),
-    	new Comment(5L, 4L,   1L, 1L, (new Date()).getTime(), "So do I", Comment.Status.PENDING),
-    	new Comment(6L, 4L,   2L, 1L, (new Date()).getTime(), "Me too!", Comment.Status.PENDING),
-    	new Comment(7L, 4L,   1L, 1L, (new Date()).getTime(), "Me me me!", Comment.Status.PENDING),
-    	
-    	new Comment(8L, null, 2L, 2L, (new Date()).getTime(), "She's great", Comment.Status.PENDING),    	
-    	new Comment(9L, 8L,   1L, 2L, (new Date()).getTime(), "She's great!", Comment.Status.PENDING)    	
-    });
-    
+    }  
     
     /** Builds a city list for a specified province */
     private void addCities(Long provinceId, String[] cityNames, DataAccess da){
     	List<City> cities =	Stream.of(cityNames).map(cityName -> new City(provinceId, cityName)).collect(Collectors.toList());
     	da.put(cities);
     }
-
     
     List<UserRole> roles = Arrays.asList(new UserRole[]{
         new UserRole(1L, UserRole.Type.ACTIVE),
@@ -278,19 +235,7 @@ public class InitializationServlet extends HttpServlet {
         new UserRole(2L, UserRole.Type.ADMINISTRATOR),
         new UserRole(2L, UserRole.Type.SUPPORT)
     });
-
-    // Two built in accounts are created. The first is for the MEFM ADMINISTRATOR 
-    // responsible for approving moderators for each region. For Canada, this corresponds
-    // to provinces. 
-    // The secopnd is for a technical administrator. This is intended to support possible
-    // future capabilities related to modification or updates to the database schema and/or 
-    // modifications to the question definitions
-    
-    List<User> users = Arrays.asList(new User[]{
-            new User(1L, "admin", "admin", "your-email-here", UserRole.Type.ADMINISTRATOR, (new Date()).getTime(), User.Status.ENABLED),
-            new User(2L, "support", "password", "robert.t.toms@gmail.com", UserRole.Type.SUPPORT, (new Date()).getTime(), User.Status.ENABLED)
-    });
-    
+   
     List<Specialty> specialties = Arrays.asList(new Specialty[]{
         new Specialty(1L, "Anaesthesia", Specialty.CONVENTIONAL),
         new Specialty(2L, "Cardiology", Specialty.CONVENTIONAL),
@@ -417,7 +362,7 @@ public class InitializationServlet extends HttpServlet {
         new Question( 15L, 15, 2L,    null,   Question.Type.SINGLE_CHOICE,  "7 How is the practitioner's bedside manner at your visit?"),
         new Question( 16L, 16, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Developing a treatment plan? "),
         new Question( 17L, 17, 3L,    7L,     Question.Type.SINGLE_CHOICE,  "Overseeing a treatment plan?"),
-        new Question( 18L, 18, 3L,    null,   Question.Type.SINGLE_CHOICE,  "9 How willing is the practitioner to read information you bring to the consult?"),
+        new Question( 18L, 18, 4L,    null,   Question.Type.SINGLE_CHOICE,  "9 How willing is the practitioner to read information you bring to the consult?"),
         new Question( 19L, 19, 4L,    null,   Question.Type.SINGLE_CHOICE,  "10 How willing is the practitioner to prescribe alternative or off-label treatments?"),
         new Question( 20L, 20, 5L,    null,   Question.Type.SINGLE_CHOICE,  "11 How effective was is practitioner at helping to manage pain issues?"),
         new Question( 21L, 21, 3L,    null,   Question.Type.SINGLE_CHOICE,  "12 How helpful was the practitioner with completing insurance/disability forms?"),
