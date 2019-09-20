@@ -33,6 +33,17 @@ export const handlePostalCode = value =>{
 }
 
 /**
+  * Manages keystrokes entered in last or first name field. The purpose is to coerce the value 
+  * into Camel Case. (Google Datastore does not support case insenstive search)
+  * @param value the value of the entry field after the keystroke
+  * @return the postal code field after the rules have been applied
+  */
+  export const camelCase = value => {
+    return value.length === 0 ? '' 
+        : value[0].toUpperCase() + (value.length > 1 ? value.substring(1).toLowerCase() : '');
+  }
+    
+/**
   * Manages keystrokes entered in a phone number field. The purpose is
   * to coerce the value into the format '(111)222-3333'
   * @param value the value of the entry field after the keystroke

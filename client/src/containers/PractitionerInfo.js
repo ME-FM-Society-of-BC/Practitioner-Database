@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
-import { handlePostalCode, handlePhoneNumber } from '../common/utilities';
+import { handlePostalCode, handlePhoneNumber, camelCase } from '../common/utilities';
 
 class PractitionerInfo extends Component {
 
@@ -110,8 +110,8 @@ class PractitionerInfo extends Component {
         else if (name === 'phone'){
             value = handlePhoneNumber(value);
         }
-        else if (value.length === 1 && (name === 'lastName' || name === 'firstName')){
-            value = value.toUpperCase();
+        else if (name === 'lastName' || name === 'firstName'){
+            value = camelCase(value);
         }
         const alteredPractitioner = {...this.state.practitioner};
         alteredPractitioner[name] = value;
