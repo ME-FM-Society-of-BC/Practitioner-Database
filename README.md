@@ -5,6 +5,9 @@ This repository holds the MEFM Practitioner Database application. The technology
 
 The code is organized as a Java maven project holding the Java REST server web application, with an additional client folder containing the React client application. Note that creating and bundling the client code is not performed by the maven build. Refer to the Building section for more details.  
 
+## Background
+This is a volunteer project undertaken by the contributors to assist the ME/FM Society of BC (https://www.mefm.bc.ca/). It provides a public forum for patients with Myalgic Encephalomyelitis (ME) and/or Fibromyalgia (FM) to share information. The current version is a non localized English application for use in Canadian provinces. 
+
 ## Building
 Ensure that you have the following installed:
 
