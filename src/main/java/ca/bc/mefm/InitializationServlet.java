@@ -41,7 +41,7 @@ import ca.bc.mefm.data.UserRole;
  *  	n[:E,...]
  * where
  *   	n is the database version</li>
- * 		E is the name of an entity class all of whose instances should be removed and replaced</li>
+ *      E is the name of an entity class all of whose instances should be removed and replaced</li>
  *
  * The entity values are hard coded in this file
  *

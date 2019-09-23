@@ -1,6 +1,5 @@
 rem
-rem Build the react client and install it in the webapp folder.
+rem Build the react client
 rem
 cd client
-npm run buil
-pause
+npm run build
