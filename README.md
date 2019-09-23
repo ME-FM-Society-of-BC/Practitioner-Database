@@ -1,5 +1,9 @@
 # Practitioner-Database-Server
-This repository holds the MEFM Practitioner Database application. The server is a Google App Engine application. The client is a React application. 
+This repository holds the MEFM Practitioner Database application. The technology stack comprises:
+- Java REST server hosted on Google App Engine, backed by Google Datastore
+- React/Redux front end
+
+The code is organized as an 
 
 ## Build Prerequisites
 1. Maven, version 3.0 or later 
