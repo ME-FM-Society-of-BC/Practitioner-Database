@@ -31,7 +31,7 @@ class Home extends Component {
                 <p> 
                 ME (<a href="https://www.mefm.bc.ca/me-info" target="_blank" rel="noopener noreferrer">myalgic encephalomyelitis</a>) 
                 and <a href="https://www.mefm.bc.ca/fm-info" target="_blank" rel="noopener noreferrer">fibromyalgia</a> are 
-                complex illnesses which affect over one million Canadians. Both conditions have been subjected to systemic 
+                complex chronic diseases which affect over one million Canadians. Both conditions have been subjected to systemic 
                 stigma in the health care system, resulting in a severe shortage of knowledgeable doctors and other health 
                 care practitioners. This has left patients desperately seeking professional medical support for diagnosis 
                 and treatment. In many cases the stigma faced by patients seeking health care has led to the prescription 
