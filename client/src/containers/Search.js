@@ -164,9 +164,19 @@ class Search extends Component {
                 });
                 return;
             }
+            // TODO: The respponse contains the full practitioner entity, rather than just a
+            // list od Ids, so must transform specialtyId to the specialty text. Consider
+            // modifying  the protocol to return ids only
+            const matchingPractitioners = response.data.map( practitioner => {
+                return {
+                    ...practitioner,
+                    specialty: this.props.specialties.idToValue[practitioner.specialtyId]
+                }            
+            })
+            
             if (this.state.postalCode){
                 // Since postal code also entered, we want to now do a distance search
-                const thoseWithPostalCode = this.havingPostalCode(response.data);
+                const thoseWithPostalCode = this.havingPostalCode(matchingPractitioners);
                 if (thoseWithPostalCode.length === 0){
                     this.setState({
                         errorMessage: 'None of the practitioners matching those criteria have postal codes'
@@ -189,7 +199,7 @@ class Search extends Component {
                 })
             }
             else {
-                this.proceedToListView(false, response.data);
+                this.proceedToListView(false, matchingPractitioners);
             }
         })
         .catch (error => {
