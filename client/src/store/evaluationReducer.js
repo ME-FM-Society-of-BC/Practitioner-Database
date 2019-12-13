@@ -18,9 +18,10 @@ const evaluationReducer = (state = initialState, action) => {
 
     switch (action.type) {
         case actions.STORE_QUESTIONS:
+            const questions = action.questions.sort(function(a, b){return a.displayIndex - b.displayIndex});
             return {
                 ...state,
-                questions: state.questions.concat(action.questions)
+                questions: state.questions.concat(questions)
             }
         
         case actions.STORE_QUESTION_GROUPS:

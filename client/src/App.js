@@ -82,6 +82,7 @@ class App extends Component {
         this.onCloseWarning = this.onCloseWarning.bind(this);
         this.showUrlPopup = this.showUrlPopup.bind(this);
         this.hideUrlPopup = this.hideUrlPopup.bind(this);
+        this.storeThem = this.storeThem.bind(this);
         
         this.state.loading = true;
     }
@@ -107,64 +108,44 @@ class App extends Component {
     }
 
     componentDidMount() {
-        // Start a request chain to obtain all data required for a visitor 
-        // to start using the app without registering or signing in 
-        axios.get('/specialties')
-        .then(response => {
-            this.props.storeSpecialties(response.data);
+        Promise.all([
+            axios.get('/specialties'),
+            axios.get('/provinces'),
+            axios.get('/moderators'),
+            axios.get('/questions'),
+            axios.get('/questionchoices'),
+            axios.get('/questiongroups'),
+            axios.get('/users'),
+            axios.get('/practitioners')
+           ])
+        .then(([
+            specialties, 
+            provinces, 
+            moderators, 
+            questions,    
+            questionchoices, 
+            questiongroups, 
+            users,
+            practitioners
+            ]) => {
+            this.storeThem({
+                specialties, 
+                provinces, 
+                moderators, 
+                questions,    
+                questionchoices, 
+                questiongroups, 
+                users,
+                practitioners
+            });
         })
-        .then(() => {
-            return axios.get('/provinces')
-        })
-        .then(response => {
-            this.props.storeProvinces(response.data);
-        })
-
-        .then(() => {
-            return axios.get('/moderators')
-        })
-        .then(response => {
-            this.props.storeModerators(response.data);
-        })
-        .then(() => {
-            const provinceIds = this.getAllProvinceIds(Object.values(this.props.moderators));
+        .then( () => {      
             // This is a "moot" request if no moderators
+            const provinceIds = this.getAllProvinceIds(Object.values(this.props.moderators));
             return axios.get('/cities?provinces=' + provinceIds)
         })
-        .then(response => {
+        .then( response => {
             this.props.storeCities(response.data);
-        })
-        .then(() => {
-            return axios.get('/questions')
-        })
-        .then(response => {
-            // Sort the questions by display order
-            const questions = response.data.sort(function(a, b){return a.displayIndex - b.displayIndex});
-            this.props.storeQuestions(questions);
-        })
-        .then(() => {
-            return axios.get('/questionchoices')
-        })
-        .then(response => {
-            this.props.storeQuestionChoices(response.data);
-        })
-        .then(() => {
-            return axios.get('/questiongroups')
-        })
-        .then(response => {
-            this.props.storeQuestionGroups(response.data);
-        })
-        .then(() => {
-            return axios.get('/users')
-        })
-        .then(response => {
-            this.props.storeUsers(response.data);
-        })
-        .then(() => {
-            return axios.get('/practitioners')
-        })
-        .then(response => {
-            this.props.storePractitioners(response.data);
         })
         .then(() => {
             this.setState({loading: false});
@@ -173,10 +154,21 @@ class App extends Component {
         // TODO: Replace with user friendly response
         .catch(error => {
             console.log(error);
-        });        
+        })        
+    }
+    
+    storeThem(all){
+        this.props.storeSpecialties    (all.specialties.data);
+        this.props.storeProvinces      (all.provinces.data);
+        this.props.storeModerators     (all.moderators.data);
+        this.props.storeQuestions      (all.questions.data);
+        this.props.storeQuestionChoices(all.questionchoices.data);
+        this.props.storeQuestionGroups (all.questiongroups.data);
+        this.props.storeUsers          (all.users.data);
+        this.props.storePractitioners  (all.practitioners.data);
     }
 
-    // Given the moderators array, create a string 
+    // Given the moderators array, create a string of province ids separated by '|'
     getAllProvinceIds(moderators){
         // Determine to which provinces moderators are assigned
         // (Multiple moderators can be assigned to a given province)
