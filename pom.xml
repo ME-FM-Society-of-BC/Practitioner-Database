@@ -200,16 +200,6 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>Build frontend</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>Install node and npm locally to the project</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
@@ -224,6 +214,16 @@
                         <phase>generate-resources</phase>
                         <configuration>
                             <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Build frontend</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>run build</arguments>
                         </configuration>
                     </execution>
                 </executions>
