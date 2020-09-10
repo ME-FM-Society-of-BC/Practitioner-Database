@@ -1,4 +1,4 @@
-# Practitioner-Database
+builds the React client code using the # Practitioner-Database
 This repository holds the MEFM Practitioner Database application. The technology stack comprises:
 - Java REST server hosted on Google App Engine, backed by Google Datastore
 - React/Redux front end
@@ -19,10 +19,7 @@ Ensure that you have the following installed:
 - Node.js
 - JDK 8+
 
-For now, building the complete application is a three step process:
-1. Build the client by running the build-client.bat script 
-2. Copy the build artifacts into the server webapp folder with install-client.bat. 
-2. Run maven 
+The Maven pom builds and packages the React client code using the frontend-maven-plugin. When the build is performed for the first time, Node.js is downloaded and installed locally within the project
 
 ## Running in Eclipse
 1. Install Google Cloud Tools for Eclipse. Instructions at https://cloud.google.com/eclipse/docs/
