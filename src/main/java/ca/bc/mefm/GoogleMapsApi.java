@@ -2,6 +2,8 @@ package ca.bc.mefm;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.google.maps.DistanceMatrixApiRequest;
@@ -19,13 +21,25 @@ import lombok.Getter;
  * @author Robert
  */
 public class GoogleMapsApi {
+	
+	private static final Logger log = Logger.getLogger(GoogleMapsApi.class.getName());
 
 	private static GeoApiContext 	context;	
 	private static GoogleMapsApi 	instance;	
 	
 	private GoogleMapsApi() {
+		String key = DatabaseProperties.get("mapsapi.key");
+		if (key == null) {
+			// In the development environment, there is no datastore Property entity 
+			// for the api key. It should then be found as a local system property
+			key = System.getenv("mapsapi.key");
+			if (key == null) {
+				log.log(Level.SEVERE, "The mapsapi.key variable is not set");
+				System.exit(-1);
+			}
+		}
 		context = new GeoApiContext.Builder(new GaeRequestHandler.Builder())
-				.apiKey(DatabaseProperties.get("mapsapi.key")).build();
+				.apiKey(key).build();
 	}	
 	
 	// Singleton instance

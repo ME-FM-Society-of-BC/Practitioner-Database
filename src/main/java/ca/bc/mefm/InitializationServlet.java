@@ -155,7 +155,8 @@ public class InitializationServlet extends HttpServlet {
         String adminPassword ;
 
         if (adminUser == null) {
-            // For local testing
+            // The development console datastore viewer does not allow the creation of entities. Thus there are
+        	// no pre-seeded admin.user, admin.password and mapsapi.key Property entities. 
             adminUser = "admin";
             adminPassword = "admin";
         }
