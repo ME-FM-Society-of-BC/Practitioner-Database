@@ -99,6 +99,9 @@ class PractitionerList extends Component {
                 </Button>
                 : ''
             }
+            <div style={{paddingTop: '0.5em', paddingBottom: '0.5em', paddingLeft: '10%', display: 'flex', alignItems:'left', fontWeight: 'bold'}}>
+                {this.state.practitioners.length}&nbsp;{this.state.practitioners.length === 1 ? 'Practitioner' : 'Practitioners'} Found
+            </div>
             <table>
                 <thead>
                     <tr>
