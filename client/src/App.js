@@ -17,7 +17,7 @@ import Practitioner from './containers/Practitioner';
 import NewPractitioner from './components/NewPractitioner';
 import Search from './containers/Search';
 import SignIn from './containers/SignIn';
-import SignOut from './components/SignOut';
+import SignOut from './containers/SignOut';
 import Moderators from './containers/Moderators';
 import ResetRequest from './containers/ResetRequest';
 import './App.css';
