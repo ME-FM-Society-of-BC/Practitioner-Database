@@ -7,8 +7,8 @@
  * on the distance field. 
  * </p>
  * <p>
- * If the path includes a 'matchingPractitioners' array, it is the one to be listed, rather
- * than the liat of all Practitioners from the Redux state 
+ * If the path includes a 'withMatchingPractitioners' parameter, the "matchingPractitioners" array
+ * in the Redux store is listed, rather than its list of all practitioners 
  * </p>
  * 
  * <p>The user can also sort on Name, Phone or Specialty</p>
@@ -33,13 +33,12 @@ class PractitionerList extends Component {
             // Arrived here after a search
             const queryParams = new URLSearchParams(this.props.location.search);
             this.state.withDistance = queryParams.get('withDistance');
-            this.state.matchingPractitioners = queryParams.get('matchingPractitioners');
+            this.state.withMatchingPractitioners = queryParams.get('withMatchingPractitioners');
         }
         else {
             // Arrived from the The View All menu item does not deliver any search params
             this.state.withDistance = false;
             this.state.sortColumn = 'Name';
-            this.state.showRecommendButton = false | this.props.loggedInUser
         }
         this.state.showRecommendButton = false | this.props.loggedInUser
 
@@ -48,7 +47,7 @@ class PractitionerList extends Component {
 
     componentDidMount() {
         let practitioners;
-        if (this.state.matchingPractitioners){
+        if (this.state.withMatchingPractitioners){
             // Practitioners to be displayed were passed from the search page
             practitioners = this.props.matchingPractitioners
         }

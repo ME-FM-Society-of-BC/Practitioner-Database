@@ -25,6 +25,7 @@ public class User {
 	private UserRole.Type	role;
 	private Long			created;
 	private Status			status;
+	private Long			lastLogin;
 	
 	public User() {}
 	

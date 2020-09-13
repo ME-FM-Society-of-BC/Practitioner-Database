@@ -164,8 +164,8 @@ class Search extends Component {
                 });
                 return;
             }
-            // TODO: The respponse contains the full practitioner entity, rather than just a
-            // list od Ids, so must transform specialtyId to the specialty text. Consider
+            // TODO: The response contains the full practitioner entity, rather than just a
+            // list of Ids, so must transform specialtyId to the specialty text. Consider
             // modifying  the protocol to return ids only
             const matchingPractitioners = response.data.map( practitioner => {
                 return {
@@ -260,7 +260,7 @@ class Search extends Component {
     proceedToListView(withDistance, matchingPractitioners){
         let queryString = '?'
         queryString += withDistance ? 'withDistance=true': '';
-        queryString += matchingPractitioners ? '&matchingPractitioners=true' : '';
+        queryString += matchingPractitioners ? '&withMatchingPractitioners=true' : '';
         if (matchingPractitioners){
             this.props.saveMatchingPractitioners(matchingPractitioners)
         }

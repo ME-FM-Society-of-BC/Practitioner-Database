@@ -5,11 +5,22 @@
     padding: 0.1em;
     border-bottom: 1px solid #ecf0f1;
 }
-.activity .date {
 
-}
 .activity .description {
     margin-left: 1em;
+}
+
+.activity-panel{
+    width: 90%;
+    margin: auto;
+}
+.new-practitioners {
+    display: flex;
+    justify-content: space-around;
+}
+.new-practitioners > div {
+    padding-top: 1em;
+    text-align: left
 }
 
 @media 
@@ -23,5 +34,9 @@ only screen and (max-width: 768px) {
     .activity .description {
         margin-left: 0;
         text-align: left;
+    }
+    .new-practitioners {
+        justify-content: flex-start;
+        flex-direction: column;
     }
 }

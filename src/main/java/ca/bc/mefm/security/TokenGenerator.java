@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenGenerator {
 
-    public static String generateToken(String username, String roleName, Long id) {
+    public static String generateToken(String username, String roleName, Long id, Long lastLogin) {
         Key key = KeyGenerator.getKey();
         
 //        Calendar calendar = new GregorianCalendar();
@@ -18,6 +18,7 @@ public class TokenGenerator {
                 .claim("username", username)
                 .claim("role", roleName)
                 .claim("id", id)
+                .claim("lastLogin", lastLogin)
                 .signWith(SignatureAlgorithm.HS512, key)
                 .compact();
         

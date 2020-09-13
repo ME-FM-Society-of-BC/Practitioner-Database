@@ -70,10 +70,12 @@ public class UserResource extends AbstractResource{
         newUser.setPassword(encoder.encode(newUser.getPassword()));
     	
         newUser.setStatus(User.Status.ENABLED);
-        newUser.setCreated(new Date().getTime());
+        Long now = new Date().getTime();
+        newUser.setCreated(now);
+        newUser.setLastLogin(now);
         da.put(newUser);
 
-		String token = TokenGenerator.generateToken(newUser.getUsername(), newUser.getRole().toString(), newUser.getId());
+		String token = TokenGenerator.generateToken(newUser.getUsername(), newUser.getRole().toString(), newUser.getId(), newUser.getLastLogin());
 	    return responseCreated(newUser.getId(), token);
     }
     
@@ -93,13 +95,14 @@ public class UserResource extends AbstractResource{
     			|| user.getStatus().equals(User.Status.SUSPENDED)) {
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
-    	String encrypted = user.getPassword();
     	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     	if (!encoder.matches(credentials.getPassword(), user.getPassword())) {
     		return Response.status(Response.Status.UNAUTHORIZED).build();
     	}
     	else {
-    		String token = TokenGenerator.generateToken(user.getUsername(), user.getRole().toString(), user.getId());
+    		String token = TokenGenerator.generateToken(user.getUsername(), user.getRole().toString(), user.getId(), user.getLastLogin());
+    		user.setLastLogin((new Date()).getTime());
+    		da.put(user);
     	    return responseOkWithBody(token);
     	}
     }
