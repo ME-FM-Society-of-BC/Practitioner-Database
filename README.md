@@ -1,9 +1,9 @@
-builds the React client code using the # Practitioner-Database
+## Practitioner-Database
 This repository holds the MEFM Practitioner Database application. The technology stack comprises:
 - Java REST server hosted on Google App Engine, backed by Google Datastore
 - React/Redux front end
 
-The code is organized as a Java maven project holding the Java REST server web application, with an additional client folder containing the React client application. Note that creating and bundling the client code is not performed by the maven build. Refer to the Building section for more details.  
+The code is organized as a Java maven project holding both the the Java REST server web application, and the React client application.   
 
 ## Background
 This is a project undertaken to assist the ME/FM Society of BC (https://www.mefm.bc.ca/). It provides a public forum for patients with Myalgic Encephalomyelitis (ME) and/or Fibromyalgia (FM) to share information. The current version is a non localized English application for use in Canadian provinces.
@@ -12,16 +12,7 @@ Future work on the project is anticipated to include:
 - language localization
 - geographic localization (i.e. country/(state/province etc.)/city selection lists)
 
-## Building
-Ensure that you have the following installed:
+#### Refer to the Wiki for additional information 
 
-- Maven, version 3.0 or later 
-- Node.js
-- JDK 8+
 
-The Maven pom builds and packages the React client code using the frontend-maven-plugin. When the build is performed for the first time, Node.js is downloaded and installed locally within the project
-
-## Running in Eclipse
-1. Install Google Cloud Tools for Eclipse. Instructions at https://cloud.google.com/eclipse/docs/
-2. Install Lombok. Instructions at https://projectlombok.org/setup/eclipse
 
