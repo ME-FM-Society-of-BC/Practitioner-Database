@@ -22,6 +22,7 @@ import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
+import ca.bc.mefm.VersionManager.EntityVersion;
 
 /**
  * Registers all entity classes with the Objectify service
@@ -47,6 +48,7 @@ public class ObjectifyRegistrationContextListener implements ServletContextListe
     	ObjectifyService.register(Moderator.class);
     	ObjectifyService.register(PasswordReset.class);
     	ObjectifyService.register(DatastoreVersion.class);
+    	ObjectifyService.register(EntityVersion.class);
     	ObjectifyService.register(ErrorLog.class);
     }
 
