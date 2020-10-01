@@ -25,6 +25,7 @@ const practitionersReducer = (state = initialState, action) => {
 };
 
 const storePractitioners = (state, practitioners) => {
+    console.log(actions.STORE_PRACTITIONERS)
     // Add the specialty text to each practitioner
     const allPractitioners = practitioners.map((practitioner) => {
         return {
@@ -43,6 +44,7 @@ const storePractitioners = (state, practitioners) => {
 }
 
 const storeSpecialties = (state, specialties) => {
+    console.log(actions.STORE_SPECIALTIES)
     return {
         ...state,
         specialties: convertSpecialties(specialties)

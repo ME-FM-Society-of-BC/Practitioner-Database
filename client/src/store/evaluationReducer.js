@@ -18,6 +18,7 @@ const evaluationReducer = (state = initialState, action) => {
 
     switch (action.type) {
         case actions.STORE_QUESTIONS:
+            console.log(actions.STORE_QUESTIONS)
             const questions = action.questions.sort(function(a, b){return a.displayIndex - b.displayIndex});
             return {
                 ...state,
@@ -25,12 +26,14 @@ const evaluationReducer = (state = initialState, action) => {
             }
         
         case actions.STORE_QUESTION_GROUPS:
+            console.log(actions.STORE_QUESTION_GROUPS)
             return {
                 ...state,
                 questionGroups: state.questionGroups.concat(action.questionGroups)
             }
         
         case actions.STORE_QUESTION_CHOICES:
+            console.log(actions.STORE_QUESTION_CHOICES)
             return {
                 ...state,
                 questionChoices: state.questionChoices.concat(action.questionChoices)
@@ -167,7 +170,6 @@ const storeRatingActionIds = (state, action) => {
     const idArray = action.idArray;
     const ratings = action.ratings;
 
-//    const userAnswers = state,userAnswers xxxx
     for (let i = 0; i < ratings.length; i++){
         state.userAnswers[ratings[i].questionId].id = idArray[i];
     }
