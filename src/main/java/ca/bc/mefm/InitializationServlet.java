@@ -1,8 +1,11 @@
 package ca.bc.mefm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,20 +20,15 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.VoidWork;
 
 import ca.bc.mefm.data.City;
-import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
-import ca.bc.mefm.data.DatastoreVersion;
-import ca.bc.mefm.data.Moderator;
-import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.Province;
 import ca.bc.mefm.data.Question;
 import ca.bc.mefm.data.QuestionChoice;
-import ca.bc.mefm.data.QuestionChoiceSet;
 import ca.bc.mefm.data.QuestionGroup;
-import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
+import ca.bc.mefm.data.DataAccess.Filter;
 
 /**
  * Servlet to initialize the database entities.
@@ -40,23 +38,71 @@ import ca.bc.mefm.data.UserRole;
  * The property is a string in the format
  *  	n[:E,...]
  * where
- *   	n is the database version</li>
- *      E is the name of an entity class all of whose instances should be removed and replaced</li>
+ *   	<li>n is the database version</li>
+ *      <li>E is the name of an entity class all of whose instances should be removed and replaced</li>
+ * If E is "City" it will be appended with "[p1, p2..] where pn is a province abbreviation
  *
- * The entity values are hard coded in this file
+ * The current version is stored in a single DatastoreVersion entity in the database.
+ * 
+ * If the new and current version numbers differ:
+ * - if no entities are specified, then the entire database will be recreated (apart from the 
+ *   DatastoreVersion entity and the EntityVersion entities (see below))
+ * - if one or more entity class names are specified, all entities of the specified classes are replaced
+ *
+ * The datastore also contains a single instance EntityVersions entity. Corresponding to each updateable entity type
  *
  * @author Robert
  */
 public class InitializationServlet extends HttpServlet {
 
+	// Province abbreviations
+	public enum PA {BC, AB, SK, MN, ON, QU, NB, NS, NFLD, PEI, NWT, NU, YU}
+	public String[] provinceAbbrevs = {
+			PA.BC.toString(), 
+			PA.AB.toString(), 
+			PA.SK.toString(), 
+			PA.MN.toString(), 
+			PA.ON.toString(), 
+			PA.QU.toString(), 
+			PA.NB.toString(), 
+			PA.NS.toString(), 
+			PA.NFLD.toString(), 
+			PA.PEI.toString(), 
+			PA.NWT.toString(), 
+			PA.NU.toString(), 
+			PA.YU.toString()			
+	};
+	// Map province abbreviations to Province entity id value
+	public static final Map<String, Long> provinceIds = new HashMap<String, Long>();	
+	static {
+		provinceIds.put(PA.BC.toString(),   1L);
+        provinceIds.put(PA.AB.toString(),   2L); 
+		provinceIds.put(PA.SK.toString(),   3L); 
+		provinceIds.put(PA.MN.toString(),   4L); 
+		provinceIds.put(PA.ON.toString(),   5L); 
+		provinceIds.put(PA.QU.toString(),   6L); 
+		provinceIds.put(PA.NB.toString(),   7L); 
+		provinceIds.put(PA.NS.toString(),   8L); 
+		provinceIds.put(PA.NFLD.toString(), 9L); 
+		provinceIds.put(PA.PEI.toString(),  10L); 
+		provinceIds.put(PA.NWT.toString(),  11L); 
+		provinceIds.put(PA.NU.toString(),   12L); 
+		provinceIds.put(PA.YU.toString(),   13L);			
+	}
+	
+    public List<Province> provinces = new ArrayList<Province>();
+	
     private static final Logger log = Logger.getLogger(InitializationServlet.class.getName());
-
+    
     @Override
     public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    	log.info("Starting...");
+    	super.init(config);
         ObjectifyService.run(new VoidWork() {
             public void vrun() {
+            	setup();
                 String operation = ApplicationProperties.get("datastore.load.operation");
+                VersionManager.checkAndInitialize();
                 try {
                     initialize(operation);
                 }
@@ -65,6 +111,24 @@ public class InitializationServlet extends HttpServlet {
                 }
             }
         });
+    }
+    
+    // Create the Province entities
+    private void setup() {
+    	log.info("Setup...");
+        provinces.add(new Province(provinceIds.get(PA.BC.toString()),    "British Columbia",     PA.BC.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.AB.toString()),    "Alberta",              PA.AB.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.SK.toString()),    "Saskatchewan",         PA.SK.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.MN.toString()),    "Manitoba",             PA.MN.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.ON.toString()),    "Ontario",              PA.ON.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.QU.toString()),    "Quebec",               PA.QU.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.NB.toString()),    "New Brunswick",        PA.NB.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.NS.toString()),    "Nova Scotia",          PA.NS.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.NFLD.toString()),  "Newfoundland",         PA.NFLD.toString()));
+        provinces.add(new Province(provinceIds.get(PA.PEI.toString()),   "Prince Edward Island", PA.PEI.toString())); 
+        provinces.add(new Province(provinceIds.get(PA.NWT.toString()),   "Northwest Territories",PA.NWT.toString())); 
+        provinces.add(new Province(provinceIds.get(PA.NU.toString()),    "Nunavut",              PA.NU.toString()));  
+        provinces.add(new Province(provinceIds.get(PA.YU.toString()),    "Yukon",                PA.YU.toString()));        
     }
 
     private void initialize(String operation) throws ClassNotFoundException{
@@ -77,74 +141,66 @@ public class InitializationServlet extends HttpServlet {
         if (parts.length > 1) {
             // Version is accompanied by entity list
             entitiesToReplace = parts[1].split(",");
+            // TODO: Add check for valid names (accounting for "CITY_AB" etc
             log.info("Number of entity types to replace: " + entitiesToReplace.length);
         }
 
         DataAccess da = new DataAccess();
 
-        boolean createOrUpdate = false;
-        DatastoreVersion currentVersion;
-        List<DatastoreVersion> versions = da.getAll(DatastoreVersion.class);
-
-        if (versions.isEmpty()) {
-            // Database is empty:
-            createOrUpdate = true;
-            currentVersion = new DatastoreVersion(newVersion);
-            log.info("Database is empty");
+        if (VersionManager.isPopulated()) {
+        	if (VersionManager.isDatastoreVersionCurrent(newVersion)) {
+        		// No change from last time the app was started
+                log.info("No changes since last startup ");
+        		return;
+        	}
+        	else {
+        		// If no replaceable entity classes specified, assume that all are to be replaced
+        		if (entitiesToReplace == null || entitiesToReplace.length == 0) {
+        			entitiesToReplace = VersionManager.replaceableEntityTypes;
+        		}
+                replace(da, entitiesToReplace);        		
+        	}
         }
         else {
-            currentVersion = versions.get(0);
-            if (!currentVersion.getVersion().equals(newVersion)) {
-                // Version update
-                createOrUpdate = true;
-                currentVersion.setVersion(newVersion);
-                log.info("Updating from version " + currentVersion.getVersion() + " to " + newVersion);
-            }
+            log.info("Populating a new database");
+            populateAll(da);
+            entitiesToReplace = VersionManager.replaceableEntityTypes; 
         }
-
-        if (createOrUpdate) {
-            log.info("Populating datastore with version " + newVersion);
-            if (entitiesToReplace != null && entitiesToReplace.length > 0) {
-                // Update only specified entity types
-                replace(da, entitiesToReplace);
-            }
-            else {
-                clearAll(da);
-                populateAll(da);
-            }
-            da.put(currentVersion);
-
-        }
+        VersionManager.updateVersions(newVersion, entitiesToReplace);
     }
 
     private void populateAll(DataAccess da) {
+    	da.put(roles);
+    	da.put(specialties);
+    	da.put(questionChoices);
+    	da.put(questionGroups);
+    	da.put(questions);
+    	da.put(provinces);
 
-        roles.forEach((UserRole o) -> da.put(o));
-        specialties.forEach((Specialty o) -> da.put(o));
-        questionChoices.forEach((QuestionChoice o) -> da.put(o));
-        questionGroups.forEach((QuestionGroup o) -> da.put(o));
-        questions.forEach((Question o) -> da.put(o));
-        provinces.forEach((Province o) -> da.put(o));
-
-        addCities(da);
-
+        addCities(da, provinceAbbrevs);
         addAdmin(da);
-
     }
 
-    private void replace(DataAccess da, String [] entityClasses) throws ClassNotFoundException{
-        for (String entityClass: entityClasses) {
-            clearAllOfClass(da, Class.forName("ca.bc.mefm.data." + entityClass));
-            log.info("Replacing all entities of type " + entityClass);
-
-            switch (entityClass) {
-                case "Specialty": specialties.forEach((Specialty o) -> da.put(o)); break;
-                case "QuestionChoice": questionChoices.forEach((QuestionChoice o) -> da.put(o)); break;
-                case "QuestionGroup": questionGroups.forEach((QuestionGroup o) -> da.put(o)); break;
-                case "Question": questions.forEach((Question o) -> da.put(o)); break;
-                case "Province": provinces.forEach((Province o) -> da.put(o)); break;
-                case "City": addCities(da); break;
-            }
+    /**
+     * Replaces all entities of specified entity classes. 
+     * @param da
+     * @param entityTypees
+     * @throws ClassNotFoundException
+     */
+    private void replace(DataAccess da, String[] entityTypes) throws ClassNotFoundException{
+    	for (int i = 0; i < entityTypes.length; i++) {
+    		String entityType = entityTypes[i];
+    		log.info("Replacing all entities of type " + entityType);
+         	
+    		switch (entityType) {
+    		case "Specialty": 		clearAllOfClass(da, entityType);	specialties.forEach((Specialty o) -> da.put(o)); break;
+    		case "QuestionChoice": 	clearAllOfClass(da, entityType);	questionChoices.forEach((QuestionChoice o) -> da.put(o)); break;
+    		case "QuestionGroup": 	clearAllOfClass(da, entityType);	questionGroups.forEach((QuestionGroup o) -> da.put(o)); break;
+    		case "Question": 		clearAllOfClass(da, entityType);	questions.forEach((Question o) -> da.put(o)); break;
+    		case "Province":		clearAllOfClass(da, entityType);	provinces.forEach((Province o) -> da.put(o)); break;
+    		case "City":   			clearAllOfClass(da, entityType);  	addCities(da, provinceAbbrevs); break;
+    		default:
+    		}
         }
     }
 
@@ -163,7 +219,6 @@ public class InitializationServlet extends HttpServlet {
         else {
             adminPassword = DatabaseProperties.get("admin.password");
         }
-
         User admin = new User();
         admin.setUsername(adminUser);
         admin.setPassword((new BCryptPasswordEncoder()).encode(adminPassword));
@@ -176,53 +231,40 @@ public class InitializationServlet extends HttpServlet {
         da.put(admin);
     }
 
-    // Clears all except Property entities
-    private void clearAll(DataAccess da) {
-        log.info("Clearing all except Property entities");
-        clearAllOfClass(da, Comment.class);
-        clearAllOfClass(da, Practitioner.class);
-        clearAllOfClass(da, QuestionChoice.class);
-        clearAllOfClass(da, QuestionGroup.class);
-        clearAllOfClass(da, Question.class);
-        clearAllOfClass(da, QuestionChoiceSet.class);
-        clearAllOfClass(da, RecommendationAction.class);
-        clearAllOfClass(da, User.class);
-        clearAllOfClass(da, Specialty.class);
-        clearAllOfClass(da, Province.class);
-        clearAllOfClass(da, City.class);
-        clearAllOfClass(da, Moderator.class);
-    }
-
-    private <T> int clearAllOfClass(DataAccess da, Class<T> clazz) {
-        List<T> allEntities = da.getAll(clazz);
-        allEntities.forEach(entity -> {
+    private void clearAllOfClass(DataAccess da, String entityClass) throws ClassNotFoundException{
+    	log.info("Clearing all entities of class " + entityClass);
+    	da.getAll(Class.forName("ca.bc.mefm.data." + entityClass)).forEach( entity -> {
             da.delete(entity);
         });
-
-        return allEntities.size();
+    }
+    
+    private void clearCities(DataAccess da, String provinceAbbrev) {
+    	Long provinceId = provinceIds.get(provinceAbbrev);
+        
+    	// Fetch all comments with the specifies status
+        DataAccess.Filter[] filters = new DataAccess.Filter[] {
+        	new Filter("provinceId", provinceId)	
+        };
+        // TODO This is brute force. Need new DataAccess method e.g. deleteAllByFilters
+        log.info("Deleting all cities in " + provinceAbbrev);
+        List<City> cities = da.getAllByFilters(City.class, filters);
+        cities.forEach( city -> {
+        	da.delete(city);
+        });
+    	
     }
 
-    private void addCities(DataAccess da) {
-        addCities(1L, namesBC, da);
-        addCities(2L, namesAB, da);
-        addCities(3L, namesSK, da);
-        addCities(4L, namesMN, da);
-        addCities(5L, namesON, da);
-        addCities(6L, namesQU, da);
-        addCities(7L, namesNB, da);
-        addCities(8L, namesNS, da);
-        addCities(9L, namesNFLD, da);
-        addCities(10L, namesPEI, da);
-        addCities(11L, namesNWT, da);
-        addCities(12L, namesNU, da);
-        addCities(13L, namesYU, da);
-
-    }
-
-    /** Builds a city list for a specified province */
-    private void addCities(Long provinceId, String[] cityNames, DataAccess da){
-        List<City> cities = Stream.of(cityNames).map(cityName -> new City(provinceId, cityName)).collect(Collectors.toList());
-        da.put(cities);
+    /** Adds the cities in all provinces specified by an array of province abbreviations */ 
+    private void addCities(DataAccess da, String[] keys) {    	
+    	Arrays.asList(keys).forEach(key -> {
+    		String[] cityNames = allCities.get(key);
+    		Long provinceId = provinceIds.get(key);
+            List<City> cities = Stream.of(cityNames).map(cityName -> {
+            	City city = new City(provinceId, cityName);
+            	return city;
+            }).collect(Collectors.toList());
+            da.put(cities);
+    	});
     }
 
     List<UserRole> roles = Arrays.asList(new UserRole[]{
@@ -374,24 +416,9 @@ public class InitializationServlet extends HttpServlet {
         new Question( 31L, 31, 8L,    null,   Question.Type.SINGLE_CHOICE,  "19 If answer to Q.18 is NO, what is the practitioner's consult fee?"),
         new Question( 32L, 32, 9L,    null,   Question.Type.SINGLE_CHOICE,  "20 How likely are you to recommend this practitioner?")
         });
+ 
 
-    List<Province> provinces = Arrays.asList(new Province[]{
-            new Province(1L, "British Columbia", "BC"),
-            new Province(2L, "Alberta", "AB"),
-            new Province(3L, "Saskatchewan", "SK"),
-            new Province(4L, "Manitoba", "MN"),
-            new Province(5L, "Ontario", "ON"),
-            new Province(6L, "Quebec", "QU"),
-            new Province(7L, "New Brunswick", "NB"),
-            new Province(8L, "Nova Scotia", "NS"),
-            new Province(9L, "Newfoundland", "NFLD"),
-            new Province(10L, "Prince Edward Island", "PEI"),
-            new Province(11L, "Northwest Territories", "NWT"),
-            new Province(12L, "Nunavut", "NU"),
-            new Province(13L, "Yukon", "YU")
-        });
-
-    static String[] namesBC = new String[]{
+    static String[] citiesBC = new String[]{
             "Abbotsford",
             "Armstrong",
             "Burnaby",
@@ -559,7 +586,7 @@ public class InitializationServlet extends HttpServlet {
             "Texada Island"
             };
 
-            String[] namesAB = new String[]{
+    static String[] citiesAB = new String[]{
             "Acme",
             "Airdrie",
             "Alberta Beach",
@@ -824,7 +851,7 @@ public class InitializationServlet extends HttpServlet {
             "Yellowstone",
             "Youngstown"};
 
-            String[] namesSK = new String[]{
+    static String[] citiesSK = new String[]{
             "Abbey",
             "Aberdeen",
             "Abernethy",
@@ -1286,7 +1313,7 @@ public class InitializationServlet extends HttpServlet {
             "Zelma",
             "Zenon Park"};
 
-            String[] namesMN = new String[]{
+    static String[] citiesMN = new String[]{
             "Altona",
             "Arborg",
             "Beausejour",
@@ -1325,7 +1352,7 @@ public class InitializationServlet extends HttpServlet {
             "Winnipeg",
             "Winnipeg Beach"};
 
-            String[] namesON = new String[]{
+    static String[] citiesON = new String[]{
             "Addington Highlands",
             "Adelaide-Metcalfe",
             "Adjala-Tosorontio",
@@ -1745,7 +1772,7 @@ public class InitializationServlet extends HttpServlet {
             "Zorra"};
 
 
-            String[] namesQU = new String[]{
+    static String[] citiesQU = new String[]{
             "Abercorn",
             "Acton Vale",
             "Adstock",
@@ -2858,7 +2885,7 @@ public class InitializationServlet extends HttpServlet {
             "Yamaska"};
 
 
-            String[] namesNB = new String[]{
+    static String[] citiesNB = new String[]{
             "Bathurst",
             "Campbellton",
             "Dieppe",
@@ -2965,7 +2992,7 @@ public class InitializationServlet extends HttpServlet {
             "Upper Miramichi"};
 
 
-            String[] namesNS = new String[]{
+    static String[] citiesNS = new String[]{
             "Cape Breton",
             "Halifax",
             "Queens",
@@ -3018,7 +3045,7 @@ public class InitializationServlet extends HttpServlet {
             "Yarmouth"};
 
 
-            String[] namesPEI = new String[]{
+    static String[] citiesPEI = new String[]{
             "Charlottetown",
             "Summerside",
             "Alberton",
@@ -3083,7 +3110,7 @@ public class InitializationServlet extends HttpServlet {
             "York"};
 
 
-            String[] namesNFLD = new String[]{
+    static String[] citiesNFLD = new String[]{
             "Corner Brook",
             "Mount Pearl",
             "St. John's",
@@ -3363,7 +3390,7 @@ public class InitializationServlet extends HttpServlet {
             "York Harbour"};
 
 
-            String[] namesNWT = new String[]{
+    static String[] citiesNWT = new String[]{
             "Aklavik",
             "Behchoko`",
             "Deline",
@@ -3390,7 +3417,7 @@ public class InitializationServlet extends HttpServlet {
             "Yellowknife"};
 
 
-            String[] namesNU = new String[]{
+    static String[] citiesNU = new String[]{
             "Arctic Bay",
             "Arviat",
             "Baker Lake",
@@ -3417,7 +3444,7 @@ public class InitializationServlet extends HttpServlet {
             "Taloyoak",
             "Whale Cove"};
 
-            String[] namesYU = new String[]{
+    static String[] citiesYU = new String[]{
             "Carmacks",
             "Dawson",
             "Faro",
@@ -3426,4 +3453,21 @@ public class InitializationServlet extends HttpServlet {
             "Teslin",
             "Watson Lake",
             "Whitehorse"};
+            
+     static HashMap<String, String[]> allCities = new HashMap<String, String[]>();
+     static {
+    	 allCities.put(PA.BC.toString(), citiesBC);
+    	 allCities.put(PA.AB.toString(), citiesAB);
+    	 allCities.put(PA.SK.toString(), citiesSK);
+    	 allCities.put(PA.MN.toString(), citiesMN);
+    	 allCities.put(PA.ON.toString(), citiesON);
+    	 allCities.put(PA.QU.toString(), citiesQU);
+    	 allCities.put(PA.NB.toString(), citiesNB);
+    	 allCities.put(PA.NS.toString(), citiesNS);
+    	 allCities.put(PA.NFLD.toString(), citiesNFLD);
+    	 allCities.put(PA.PEI.toString(), citiesPEI);
+    	 allCities.put(PA.NWT.toString(), citiesNWT);
+    	 allCities.put(PA.NU.toString(), citiesNU);
+    	 allCities.put(PA.YU.toString(), citiesYU);
+     }
 }
