@@ -11,6 +11,8 @@ import * as actions from '../store/practitionerActions';
 import Instructions from '../components/Instructions';
 import { handlePostalCode } from '../common/utilities';
 import { CircleSpinner } from "react-spinners-kit";
+import { STORE_CITIES }from '../store/locationActions';
+import { fetchCities } from '../entityFetcher';
 
 class Search extends Component {
 
@@ -33,6 +35,28 @@ class Search extends Component {
         this.onSelectCity = this.onSelectCity.bind(this);
         this.searchFull = this.searchFull.bind(this);
         this.searchQuick = this.searchQuick.bind(this);
+        
+        // Province list must be restricted to those for which there is a moderator.
+        this.state.availableProvinces = Object.keys(
+            Object.values(this.props.moderators).reduce((names, moderator) => {
+                names[moderator.province] = '';
+                return names;
+            }, {})            
+        );
+
+        this.confirmCitiesAreLoaded()  
+    }
+    /** 
+     * This check is included only to account for scenarios in which the same browser is being
+     * used for combinations of admin and active user sessions
+     */
+    confirmCitiesAreLoaded(){      
+        this.state.availableProvinces.forEach( province => {
+            if (!this.props.citiesMap[province]){
+                fetchCities(this.props.storeCities);
+                return
+            }
+        })
     }
 
     onChange = (event) => {     
@@ -51,18 +75,11 @@ class Search extends Component {
     onSelectProvince(event){
         this.setState({province: event.value})
         const cityOptions = this.props.citiesMap[event.value];
-        if (cityOptions){
-            this.setState({
-                cityOptions: this.props.citiesMap[event.value],
-                errorMessage: null
-            })
-        }
-        else {
-            this.setState({
-                errorMessage: 'Unable to perform search in province for which there is no moderator'
-            })
-        }
-}
+        this.setState({
+            cityOptions: this.props.citiesMap[event.value],
+            errorMessage: null
+        })
+    }
     onSelectCity(event){
         this.setState({city: event.value})
     }
@@ -335,7 +352,7 @@ class Search extends Component {
                     />
                 <Selector 
                     label='Province' valueClass='info-field' labelClass='info-label' name='province'  
-                    options={this.props.provinces}
+                    options={this.state.availableProvinces}
                     value={this.state.province ?
                         {label: this.state.province, value: this.state.province}
                         : null} 
@@ -371,13 +388,14 @@ const mapStateToProps = state => {
     return {
         specialties: state.practitionersReducer.specialties,
         allPractitioners: state.practitionersReducer.allPractitioners,
-        provinces: state.locationReducer.provinces,
+        moderators: state.userReducer.moderators,
         citiesMap: state.locationReducer.citiesMap
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
         saveMatchingPractitioners: (matchingPractitioners) => dispatch({ type: actions.SAVE_SEARCH_RESULTS, matchingPractitioners }),
+        storeCities: cities => dispatch({ type: STORE_CITIES, cities})
     };
 };
 

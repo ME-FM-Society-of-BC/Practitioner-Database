@@ -9,7 +9,9 @@ import ModeratorList from '../components/ModeratorList';
 import Instructions from '../components/Instructions';
 import axios from 'axios';
 import * as actions from '../store/userActions';
+import { STORE_CITIES }from '../store/locationActions';
 import { CircleSpinner } from "react-spinners-kit";
+import { fetchCities } from '../entityFetcher';
 
 class Moderators extends Component {
 
@@ -82,6 +84,10 @@ class Moderators extends Component {
                         province: ''
                     }
                 });
+                // When a moderator is created, the cities must be refetched. Otherwise, the browser
+                // used by the admin to create the moderator will have no cities until a chaange to the
+                // cities lists on the server happen to change. 
+                fetchCities(this.props.storeCities);
             }
         })
     }
@@ -150,7 +156,8 @@ const mapDispatchToProps = dispatch => {
     return {
         saveNewModeratorUser: user => dispatch({ type: actions.STORE_NEW_USER, user }),
         saveNewModerator: moderator => dispatch(actions.saveModerator(moderator)),
-        changeModeratorStatus: moderator => dispatch(actions.changeModeratorStatus(moderator))
+        changeModeratorStatus: moderator => dispatch(actions.changeModeratorStatus(moderator)),
+        storeCities: cities => dispatch({ type: STORE_CITIES, cities})
     };
 };
 

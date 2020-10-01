@@ -11,6 +11,8 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { CREATE_PRACTITIONER } from '../store/practitionerActions';
+import { STORE_CITIES }from '../store/locationActions';
+import { fetchCities } from '../entityFetcher';
 import Instructions from '../components/Instructions';
 import { handlePostalCode, handlePhoneNumber, camelCase } from '../common/utilities';
 
@@ -54,7 +56,6 @@ class PractitionerInfo extends Component {
         }
 
         // Province list must be restricted to those for which there is a moderator.
-        // There can be multiple moderators per province, so create map to avoid duplicates
         this.state.availableProvinces = Object.keys(
             Object.values(this.props.moderators).reduce((names, moderator) => {
                 names[moderator.province] = '';
@@ -62,11 +63,26 @@ class PractitionerInfo extends Component {
             }, {})            
         );
 
+        this.confirmCitiesAreLoaded()  
+
         this.enableEdit = this.enableEdit.bind(this);
         this.updateInfo = this.updateInfo.bind(this);
         this.saveNew = this.saveNew.bind(this);
         this.selectSpecialty = this.selectSpecialty.bind(this);
         this.changeTextValue = this.changeTextValue.bind(this);
+    }
+
+    /** 
+     * This check is included only to account for scenarios in which the same browser is being
+     * used for combinations of admin and active user sessions
+     */
+    confirmCitiesAreLoaded(){      
+        this.state.availableProvinces.forEach( province => {
+            if (!this.props.citiesMap[province]){
+                fetchCities(this.props.storeCities);
+                return
+            }
+        })
     }
 
     selectSpecialty(event) {
@@ -309,14 +325,14 @@ const mapStateToProps = state => {
         moderators: state.userReducer.moderators,
         loggedInUser: state.userReducer.loggedInUser,
         allProvinces: state.locationReducer.provinces,
-        citiesMap: state.locationReducer.citiesMap,
-        provinceNamesToIdMap: state.locationReducer.provinceNamesToIdMap
-    }
+        citiesMap: state.locationReducer.citiesMap
+     }
 }
 const mapDispatchToProps = dispatch => {
     return {
         updatePractitioner: (practitioner, userId) => dispatch(actions.updatePractitioner(practitioner, userId)),
-        saveNewPractitioner: (practitioner) => dispatch({ type: CREATE_PRACTITIONER, practitioner: practitioner })
+        saveNewPractitioner: (practitioner) => dispatch({ type: CREATE_PRACTITIONER, practitioner: practitioner }),
+        storeCities: cities => dispatch({ type: STORE_CITIES, cities})
     };
 }
 
