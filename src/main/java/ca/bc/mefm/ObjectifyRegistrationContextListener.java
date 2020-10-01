@@ -22,7 +22,7 @@ import ca.bc.mefm.data.RecommendationAction;
 import ca.bc.mefm.data.Specialty;
 import ca.bc.mefm.data.User;
 import ca.bc.mefm.data.UserRole;
-import ca.bc.mefm.VersionManager.EntityVersion;
+import ca.bc.mefm.data.EntityVersion;
 
 /**
  * Registers all entity classes with the Objectify service
