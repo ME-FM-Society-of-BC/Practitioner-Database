@@ -6,13 +6,13 @@ import * as actions from './locationActions';
 const initialState = {
     provinces: [],
     citiesMap: {},
-    idToProvinceMap: {},
-    provinceNameToIdMap: {}
+    idToProvinceMap: {}
 }
 
 const locationReducer = (state = initialState, action) => {
     switch (action.type) {
         case actions.STORE_PROVINCES:
+            console.log(actions.STORE_PROVINCES)
             const provinces = action.provinces.map(province => {
                 return province.name
             })
@@ -20,19 +20,15 @@ const locationReducer = (state = initialState, action) => {
                 idToProvinceMap[province.id] =  province;
                 return idToProvinceMap;
             }, {})
-            const provinceNameToIdMap = action.provinces.reduce((provinceNameToIdMap, province) => {
-                provinceNameToIdMap[province.name] =  province.id;
-                return provinceNameToIdMap;
-            }, {})
             return {
                 ...state,
                 provinces,
-                idToProvinceMap,
-                provinceNameToIdMap
+                idToProvinceMap
             }
  
         case actions.STORE_CITIES:
-            if (action.cities.length === 0){
+            console.log(actions.STORE_CITIES)
+            if (!action.cities || action.cities.length === 0){
                 return {
                     ...state,
                     citiesMap: []
