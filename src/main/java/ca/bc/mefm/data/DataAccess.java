@@ -22,7 +22,9 @@ public class DataAccess {
 	private static final Logger log = Logger.getLogger(DataAccess.class.getName());
 
 	public <T> List<T> getAll(Class<T> clazz){
+		log.info("Get all " + clazz.getSimpleName());
 		List<T> list = ofy().load().type(clazz).list();
+		log.info("Found " + list.size());
 		return list;
 	}
 	
@@ -55,11 +57,7 @@ public class DataAccess {
 		return count;
 	}
 	
-	/**
-	 * Saves a list of City entities
-	 * @param list
-	 */
-	public void put(List<City> list){
+	public void put(List list){
 		ofy().save().entities(list).now();
 	}
 	
@@ -99,8 +97,15 @@ public class DataAccess {
 	}
 	
 	public <T> T findByQuery(Class<T> clazz, String field, String value) {
+		log.info("Query one " + clazz.getSimpleName() + " : " + field + "=" + value);
 		T o = ofy().load().type(clazz).filter(field, value).first().now();
 		return o;
+	}
+	
+	public <T> List<T> findAllByQuery(Class<T> clazz, String field, String value) {
+		log.info("Quaery all " + clazz.getSimpleName() + " : " + field + "=" + value);
+		List<T> list = ofy().load().type(clazz).filter(field, value).list();
+		return list;
 	}
 	
 	@Data
