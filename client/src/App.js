@@ -28,6 +28,7 @@ import * as userActions from './store/userActions';
 import * as evaluationActions from './store/evaluationActions';
 import * as locationActions from './store/locationActions';
 import axios from 'axios';
+import { fetchStaticEntities } from './entityFetcher';
 
 /**
  * The root component of the application. It displays the menu, whose
@@ -82,7 +83,6 @@ class App extends Component {
         this.onCloseWarning = this.onCloseWarning.bind(this);
         this.showUrlPopup = this.showUrlPopup.bind(this);
         this.hideUrlPopup = this.hideUrlPopup.bind(this);
-        this.storeThem = this.storeThem.bind(this);
         
         this.state.loading = true;
     }
@@ -108,46 +108,8 @@ class App extends Component {
     }
 
     componentDidMount() {
-        Promise.all([
-            axios.get('/specialties'),
-            axios.get('/provinces'),
-            axios.get('/moderators'),
-            axios.get('/questions'),
-            axios.get('/questionchoices'),
-            axios.get('/questiongroups'),
-            axios.get('/users'),
-            axios.get('/practitioners')
-           ])
-        .then(([
-            specialties, 
-            provinces, 
-            moderators, 
-            questions,    
-            questionchoices, 
-            questiongroups, 
-            users,
-            practitioners
-            ]) => {
-            this.storeThem({
-                specialties, 
-                provinces, 
-                moderators, 
-                questions,    
-                questionchoices, 
-                questiongroups, 
-                users,
-                practitioners
-            });
-        })
-        .then( () => {      
-            // This is a "moot" request if no moderators
-            const provinceIds = this.getAllProvinceIds(Object.values(this.props.moderators));
-            return axios.get('/cities?provinces=' + provinceIds)
-        })
-        .then( response => {
-            this.props.storeCities(response.data);
-        })
-        .then(() => {
+        fetchStaticEntities(this.props)
+        .then( () => {
             this.setState({loading: false});
             this.props.history.replace('/home');
         })
@@ -156,37 +118,6 @@ class App extends Component {
             console.log(error);
         })        
     }
-    
-    storeThem(all){
-        this.props.storeSpecialties    (all.specialties.data);
-        this.props.storeProvinces      (all.provinces.data);
-        this.props.storeModerators     (all.moderators.data);
-        this.props.storeQuestions      (all.questions.data);
-        this.props.storeQuestionChoices(all.questionchoices.data);
-        this.props.storeQuestionGroups (all.questiongroups.data);
-        this.props.storeUsers          (all.users.data);
-        this.props.storePractitioners  (all.practitioners.data);
-    }
-
-    // Given the moderators array, create a string of province ids separated by '|'
-    getAllProvinceIds(moderators){
-        // Determine to which provinces moderators are assigned
-        // (Multiple moderators can be assigned to a given province)
-        if (moderators.length === 0){
-            return '';
-        }
-        let provinceNames = moderators.reduce((names, moderator) => {
-            names[moderator.province] = '';
-            return names;
-        }, {});
-        // Create a string if ids delimited by "|"
-        provinceNames= Object.getOwnPropertyNames(provinceNames);
-        const provinceIds = provinceNames.reduce((ids, name) => {
-            return ids + this.props.provinceNameToIdMap[name] + '|';
-        }, '');
-        return provinceIds.substring(0, provinceIds.length - 1);
-    }
-
     static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
         return { hasError: true };
@@ -395,8 +326,7 @@ const navbarHeight = {
 const mapStateToProps = state => {
     return {
         loggedInUser: state.userReducer.loggedInUser,
-        moderators: state.userReducer.moderators,
-        provinceNameToIdMap: state.locationReducer.provinceNameToIdMap
+        moderators: state.userReducer.moderators
     }
 }
 
