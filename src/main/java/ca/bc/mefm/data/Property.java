@@ -5,6 +5,9 @@ import com.googlecode.objectify.annotation.Id;
 
 import lombok.Data;
 
+/**
+ * A property key-value pair seeded in the database
+ */
 @Entity
 @Data
 public class Property {
