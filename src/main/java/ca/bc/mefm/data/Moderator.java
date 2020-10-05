@@ -4,7 +4,6 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-import ca.bc.mefm.data.User.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

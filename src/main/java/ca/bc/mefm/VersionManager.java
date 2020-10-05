@@ -1,25 +1,11 @@
 package ca.bc.mefm;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
-
-import ca.bc.mefm.data.City;
 import ca.bc.mefm.data.DataAccess;
 import ca.bc.mefm.data.DatastoreVersion;
 import ca.bc.mefm.data.EntityVersion;
-import ca.bc.mefm.data.Province;
-import ca.bc.mefm.data.Question;
-import ca.bc.mefm.data.QuestionChoice;
-import ca.bc.mefm.data.QuestionGroup;
-import ca.bc.mefm.data.Specialty;
-import ca.bc.mefm.data.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 public class VersionManager {
 	
