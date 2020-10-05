@@ -24,8 +24,18 @@ class Search extends Component {
         province: '',
         specialty: '',
         specialtyId: '',
-        cityOptions: []
+        cityOptions: [],
+        MEorFM: undefined        
     };
+    CHOICE_EITHER = 'Either ME or FM'
+    CHOICE_ME = 'Specifically ME'
+    CHOICE_FM = 'Specifically FM'
+
+    MEFM_CHOICES = [
+        this.CHOICE_EITHER,
+        this.CHOICE_ME,
+        this.CHOICE_FM
+    ]
 
     constructor(props){
         super(props);
@@ -89,6 +99,9 @@ class Search extends Component {
             specialtyId: event.value
         })
     }
+    onSelectMEorFM(event){
+        this.setState({MEorFM: event.value})
+    }
 
     // Search by criteria
     searchFull(){
@@ -97,7 +110,7 @@ class Search extends Component {
             return;
         }
         this.setState({errorMessage: null});
-        let searchParams = this.assembleSearchString(['lastName', 'firstName', 'city', 'province', 'specialtyId']);
+        let searchParams = this.assembleSearchString();
         
         if (searchParams.length === 0){
             if (this.state.postalCode){
@@ -110,16 +123,25 @@ class Search extends Component {
             }
         }
         else {
-            // Remove trailing '|';
-            searchParams = encodeURI(searchParams.substring(0, searchParams.length - 1));
+            searchParams = encodeURI(searchParams);
             this.performSearch(searchParams);
         }
     }
 
-    assembleSearchString(fieldsToCheck){
-        return fieldsToCheck.reduce((string, fieldName) => {
+    assembleSearchString(){
+        const fieldsToCheck = ['lastName', 'firstName', 'city', 'province', 'specialtyId']
+        let searchString = fieldsToCheck.reduce((string, fieldName) => {
             return string.concat(this.state[fieldName] ? fieldName + '=' + this.state[fieldName] +  '|' : '');
         }, '');
+        const MEorFM = this.state.MEorFM
+        const value = MEorFM ? MEorFM === this.CHOICE_EITHER ? null : MEorFM === this.CHOICE_ME ? 'ME' : 'FM' : null
+        if (value){
+            searchString += 'meorfm=' + value
+        }
+        if (searchString.endsWith('|')){
+            searchString = searchString.substr(0, searchString.length - 1)
+        }
+        return searchString
     }
 
     /**  
@@ -367,6 +389,13 @@ class Search extends Component {
                         : null} 
                     placeholder='Select after province...'
                     onChange =  {(event) => this.onSelectCity(event)}
+                    />
+                <Selector  
+                    label='Knows About' valueClass='info-field' labelClass='info-label' name='disease' 
+                    options={this.MEFM_CHOICES}
+                    value={this.state.MEorFM ? {label: this.state.MEorFM, value: this.state.MEorFM} : null} 
+                    placeholder='Either ME or FM'
+                    onChange =  {(event) => this.onSelectMEorFM(event)}
                     />
                 <Button className='button-large' onClick={this.searchFull}>Full Search</Button>
                 {
