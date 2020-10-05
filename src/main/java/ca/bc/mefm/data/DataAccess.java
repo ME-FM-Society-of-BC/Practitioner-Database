@@ -3,12 +3,12 @@ package ca.bc.mefm.data;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
-
 
 import lombok.Data;
 
@@ -37,6 +37,15 @@ public class DataAccess {
 		return list;
 	}
 	
+	public <T> List<T> getAllByKeyFilter(Class<T> clazz, List<Long> idList){
+		List<Key<T>> keys = idList.stream().map( id -> {
+			return Key.create(clazz, id);
+		}).collect(Collectors.toList());
+		Query<T> query = ofy().load().type(clazz).filterKey("in", keys);
+		List<T> list = query.list();
+		return list;
+	}
+	
 	public <T> int deleteAll(Class<T> clazz) {
 		int count = 0;
 		Query<T> query = ofy().load().type(clazz).limit(100);
@@ -57,7 +66,7 @@ public class DataAccess {
 		return count;
 	}
 	
-	public void put(List list){
+	public <T> void put(List<T> list){
 		ofy().save().entities(list).now();
 	}
 	
@@ -103,11 +112,11 @@ public class DataAccess {
 	}
 	
 	public <T> List<T> findAllByQuery(Class<T> clazz, String field, String value) {
-		log.info("Quaery all " + clazz.getSimpleName() + " : " + field + "=" + value);
+		log.info("Query all " + clazz.getSimpleName() + " : " + field + "=" + value);
 		List<T> list = ofy().load().type(clazz).filter(field, value).list();
 		return list;
 	}
-	
+
 	@Data
 	public static class Filter {
 		public String 	expression;
