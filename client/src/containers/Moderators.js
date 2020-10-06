@@ -1,5 +1,6 @@
 /**
- * An administrator uses this view to assign moderators to a region (e.g. in Canada, a province)
+ * An administrator uses this view to assign moderators to regions (e.g. in Canada, a province,)
+ * and to disable a moderator. Only one active (non suspended) moderator is allowed per province 
  */
 import React, { Component } from 'react';
 import { PanelGroup, Panel } from 'react-bootstrap';
@@ -48,9 +49,7 @@ class Moderators extends Component {
     }
 
     selectProvince = (event) => {
-        this.setState({
-            moderator: {province: event.value}
-        });
+        this.setState({moderator: {province: event.value}});
     }
 
     createModerator(){
@@ -72,6 +71,9 @@ class Moderators extends Component {
                 const moderator = {...this.state.moderator, userId: response.data, status: 'ENABLED'}
                 this.props.saveNewModerator(moderator);
                 
+                // Remove the moderator's province from the province list
+                const availableProvinces = this.state.availableProvinces.filter( province => province.name !== moderator.province)
+
                 this.setState({
                     user: {
                         username: '',
@@ -82,7 +84,8 @@ class Moderators extends Component {
                     },
                     moderator: {
                         province: ''
-                    }
+                    },
+                    availableProvinces
                 });
                 // When a moderator is created, the cities must be refetched. Otherwise, the browser
                 // used by the admin to create the moderator will have no cities until a chaange to the
@@ -92,9 +95,44 @@ class Moderators extends Component {
         })
     }
 
+    /** Switches a moderator status between ENABLED and SUSPENDED */
     switchStatus = (moderator) => {
-        moderator.status = moderator.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-        this.props.changeModeratorStatus(moderator);
+        const status = moderator.status === 'ENABLED' ? 'SUSPENDED' : 'ENABLED'
+        this.props.changeModeratorStatus({...moderator, status})
+
+        // if (moderator.status === 'SUSPENDED'){
+        //     // If the corresponding province is not selectable for assigment, it means another 
+        //     // moderator for the same province has already been assigned
+        //     this.state.availableProvinces.forEach( province => {
+        //         if (province === moderator.province) {
+        //             // The moderator's province is available for assignment
+        //             this.props.changeModeratorStatus({...moderator, status: 'ACTIVE'});
+        //             return
+        //         }
+        //     })
+        //     // The moderator's province is unavailable, meaning since the suspension
+        //     // another moderator has been created 
+        //     this.setState({alreadyExistsMessage: "There already exists a moderator for " + moderator.province});
+        // }
+        // else {
+        //     this.props.changeModeratorStatus({...moderator, status: 'SUSPENDED'})
+        //     this.setState({  alreadyExistsMessage: null  });
+        // }        
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        // Restrict the province list to those for whom there is not an active moderator
+        let availableProvinces = [...props.provinces];
+        Object.keys(props.moderators).forEach( key => {
+            const moderator = props.moderators[key]
+            if (moderator.status === 'ENABLED'){
+                availableProvinces = availableProvinces.filter( province => province !== moderator.province ) 
+            }
+        })
+        return { 
+            ...state,
+            availableProvinces
+        }
     }
 
     render(){
@@ -125,7 +163,7 @@ class Moderators extends Component {
                             confirmPassword={this.state.user.confirmPassword} 
                             email={this.state.user.email} 
                             province={this.state.moderator.province}
-                            provinces={this.props.provinces}
+                            provinces={this.state.availableProvinces}
                             onCreate={this.createModerator}
                             onChange = {this.onChange}
                             onSelect ={this.selectProvince}
@@ -134,10 +172,12 @@ class Moderators extends Component {
                 </Panel>
             </PanelGroup>
             <Panel>
+            <div className='vertical-group'>
                 <Instructions width='20em'>Moderator List</Instructions>
                 <Panel.Body>
                     <ModeratorList moderators = {this.props.moderators} users = {this.props.allUsers} switchStatus = {this.switchStatus}/>
                 </Panel.Body>
+            </div>
             </Panel>
             </>
         )
