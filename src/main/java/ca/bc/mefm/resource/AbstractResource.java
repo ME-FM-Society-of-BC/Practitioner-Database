@@ -91,6 +91,16 @@ public abstract class AbstractResource {
     }
     
     /**
+     * Creates a 400 Bad Request Error response  
+     * @return the Response
+     */
+    protected Response responseBadRequest(String message){
+    	ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST)
+    		.entity(message);
+    	return builder.build();
+    }
+
+    /**
      * Creates a 500 Internal Server Error response with no body 
      * @return the Response
      */
