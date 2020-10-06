@@ -1,6 +1,8 @@
 package ca.bc.mefm.resource;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,7 +34,12 @@ public class ModeratorResource extends AbstractResource{
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll(){
         DataAccess da = new DataAccess();
+        
         List<Moderator> list = da.getAll(Moderator.class);
+        list = list.stream().filter(moderator -> {
+        	return moderator.getStatus() == Moderator.Status.ENABLED;
+        }).collect(Collectors.toList());
+        
         return responseOkWithBody(list);
     }
 
@@ -61,6 +68,9 @@ public class ModeratorResource extends AbstractResource{
         DataAccess da = new DataAccess();
         
         Moderator moderator = da.find(id, Moderator.class);
+        if (moderator == null) {
+        	return this.responseBadRequest("No Moderator with id " + id);
+        }
         moderator.setStatus(status);
         da.put(moderator);
         
