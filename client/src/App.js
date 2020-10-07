@@ -61,11 +61,17 @@ class App extends Component {
         }, error => {
             this.restartSessionTimer(this.SESSION_MINUTES);
             console.log(error);
-            if (error.response.status !== 401 && error.response.status !== 403){
+            if (error.response){
+                if (error.response.status !== 401 && error.response.status !== 403){
                 alert('An error has occurred. Please report this information:\n'
                     + 'Status = ' + error.response.status
                     + '\nURL = ' + this.state.requestUrl
                     + '\ndata = ' + JSON.stringify(this.state.requestData));
+                }
+            }
+            else {
+                alert('There was a problem connecting to the server\n'
+                    + 'Try closing your browser and try again');
             }
             return Promise.reject(error);
         });
