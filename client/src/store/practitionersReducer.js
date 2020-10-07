@@ -3,13 +3,14 @@
  * practitioner evaluations and practitioner comments
  */
 import * as actions from './practitionerActions';
-import { mapIdsToIndices } from '../common/utilities';
+import { mapIdsToIndices, mapIdsToEntities } from '../common/utilities';
 
 const initialState = {
     allPractitioners: [],
     specialties: null,
     matchingPractitioners: [],
     idsToIndices: {},
+    idToPractitioner: {}
 }
 
 const practitionersReducer = (state = initialState, action) => {
@@ -34,12 +35,13 @@ const storePractitioners = (state, practitioners) => {
         }
     });
     // Create a map of practitioner ids to their index in the practitioners array
-    const idsToIndices = mapIdsToIndices(practitioners);
+    const idToPractitioner = mapIdsToIndices(allPractitioners);
 
     return {
         ...state,
         allPractitioners,
-        idsToIndices
+        idsToIndices: mapIdsToIndices(allPractitioners),
+        idToPractitioner: mapIdsToEntities(allPractitioners)
     }
 }
 
@@ -62,6 +64,7 @@ const createPractitioner = (state, practitioner) => {
     let newState = { ...state };
     newState.allPractitioners.push(practitioner);
     newState.idsToIndices[practitioner.id] = newState.allPractitioners.length - 1;
+    newState.idToPractitioner[practitioner.id] = practitioner;
     return newState;
 }
 
