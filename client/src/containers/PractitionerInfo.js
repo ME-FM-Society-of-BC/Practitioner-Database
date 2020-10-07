@@ -321,7 +321,6 @@ const mapStateToProps = state => {
     return {
         practitioners: state.practitionersReducer.allPractitioners,
         specialties: state.practitionersReducer.specialties,
-        idToIndex: state.practitionersReducer.practitionerIdsToIndices,
         moderators: state.userReducer.moderators,
         loggedInUser: state.userReducer.loggedInUser,
         allProvinces: state.locationReducer.provinces,
