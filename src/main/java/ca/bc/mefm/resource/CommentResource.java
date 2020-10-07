@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import ca.bc.mefm.data.Comment;
 import ca.bc.mefm.data.DataAccess;
+import ca.bc.mefm.data.Moderator;
 import ca.bc.mefm.data.DataAccess.Filter;
 import ca.bc.mefm.data.Practitioner;
 import ca.bc.mefm.data.RecommendationAction;
@@ -50,6 +51,14 @@ public class CommentResource extends AbstractResource{
         		RecommendationAction.ActionType.COMMENT
         		);
         da.put(action);
+
+		User user = da.find(comment.getUserId(), User.class);
+		Practitioner practitioner = da.find(comment.getPractitionerId(), Practitioner.class);
+		Moderator moderator = da.findByQuery(Moderator.class, "province", practitioner.getProvince());
+		String moderatorEmail = da.find(moderator.getUserId(), User.class).getEmail();
+		
+		CommentWrapper wrapper = new CommentWrapper(user, practitioner, comment);
+		MailSender.sendCommentNotification(moderatorEmail, wrapper, "posted");
         
         return responseCreated(comment.getId());
     }
@@ -64,6 +73,16 @@ public class CommentResource extends AbstractResource{
         Comment comment = da.find(commentId, Comment.class);
         comment.setStatus(status);
         da.put(comment);
+        
+        if (status == Comment.Status.FLAGGED) {
+			User user = da.find(comment.getUserId(), User.class);
+			Practitioner practitioner = da.find(comment.getPractitionerId(), Practitioner.class);
+			Moderator moderator = da.findByQuery(Moderator.class, "province", practitioner.getProvince());
+			String moderatorEmail = da.find(moderator.getUserId(), User.class).getEmail();
+			
+			CommentWrapper wrapper = new CommentWrapper(user, practitioner, comment);
+			MailSender.sendCommentNotification(moderatorEmail, wrapper, "flagged");
+        }
     	
     	return responseNoContent();
     }
@@ -89,8 +108,8 @@ public class CommentResource extends AbstractResource{
     		if (comment.getStatus().equals(Comment.Status.BLOCKED)) {
     			User user = da.find(comment.getUserId(), User.class);
     			Practitioner practitioner = da.find(comment.getPractitionerId(), Practitioner.class);
-    			BlockedComment blockedComment = new BlockedComment(user, practitioner, comment);
-    			MailSender.sendBlockedNotification(moderator.getEmail(), blockedComment);
+    			CommentWrapper commentWrapper = new CommentWrapper(user, practitioner, comment);
+    			MailSender.sendBlockedNotification(moderator.getEmail(), commentWrapper);
     		}
     	});
         return responseNoContent();
@@ -167,7 +186,7 @@ public class CommentResource extends AbstractResource{
      */
     @Data
     @AllArgsConstructor
-    public class BlockedComment {
+    public class CommentWrapper {
     	private User			user;
     	private Practitioner 	practitioner;
     	private Comment			comment;
