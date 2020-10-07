@@ -19,7 +19,10 @@ const practitionerListItem = (props) => {
     return (
         <tr>
             <td>{formatName(props.practitioner)}</td>
-            <td>{formatAddress(props.practitioner)}</td> 
+            <td>{props.practitioner.address}</td> 
+            <td>{props.practitioner.city}</td> 
+            <td>{props.practitioner.province}</td> 
+            <td>{props.practitioner.postalCode}</td> 
             <td>{props.practitioner.phone}</td> 
             <td>{props.practitioner.specialty}</td>
             {props.practitioner.distance ? <td>{props.practitioner.distance.humanReadable}</td> : ''} 

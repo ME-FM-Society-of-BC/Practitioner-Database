@@ -108,6 +108,13 @@ class PractitionerList extends Component {
                             Name{this.state.sortColumn === 'Name' ? <span className="fas fa-caret-down fa-lg"></span>:''}
                         </th>
                         <th id="Address">Address</th>
+                        <th id="City" onClick={this.sort}>
+                            City{this.state.sortColumn === 'City' ? <span className="fas fa-caret-down fa-lg"></span>:''}
+                        </th>
+                        <th id="Province" onClick={this.sort}>
+                            Province{this.state.sortColumn === 'Province' ? <span className="fas fa-caret-down fa-lg"></span>:''}
+                        </th>
+                        <th id="Code"></th>
                         <th id="Phone" onClick={this.sort}>
                             Phone{this.state.sortColumn === 'Phone' ? <span className="fas fa-caret-down fa-lg"></span>:''}
                         </th>
