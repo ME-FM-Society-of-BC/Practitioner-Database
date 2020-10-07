@@ -281,10 +281,11 @@ only screen and (max-width: 768px)  {
 	
 	td { 
 		/* Behave  like a "row" */
+		padding: 0.02em;
 		border: none;
 		border-bottom: 1px solid #eee; 
 		position: relative;
-		padding-left: 30%; 
+		padding-left: 20%; 
 	}
 	
 	td:before { 
@@ -302,15 +303,6 @@ only screen and (max-width: 768px)  {
 		margin-top: 20px;
 		margin-left: 15px;
 	}
-	
-	/* To convert a table, the column labels must be duplicated here */
-	/* TODO: This technique should be replaced with a flex solution */
-
-	#practitioner-list td:nth-of-type(1):before { content: "Name"; }
-	#practitioner-list td:nth-of-type(2):before { content: "Address"; }
-	#practitioner-list td:nth-of-type(3):before { content: "Phone"; }
-	#practitioner-list td:nth-of-type(4):before { content: "Specialty"; }
-
 }
 
 
