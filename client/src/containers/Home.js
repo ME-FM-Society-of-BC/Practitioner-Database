@@ -74,6 +74,9 @@ class Home extends Component {
                 healthcare professionals. Moderators will remove any offending comments.
                 </p>
                 <p className='bold' style={{marginTop: '1.2em'}}>
+                If you have any questions about the site, or are having trouble registering, send us an email: <a href="mailto:support@healthfinedr4me.org">support@healthfinedr4me.org</a>               
+                </p>
+                <p className='bold' style={{marginTop: '1.2em'}}>
                 To learn more about ME and fibromyalgia: <a href="https://www.mefm.bc.ca/" target="_blank" rel="noopener noreferrer">https://www.mefm.bc.ca/ </a>               
                 </p>
                 <div className='header'>About the ME/FM Society of BC</div>
