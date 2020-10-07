@@ -85,8 +85,9 @@ class PendingCommentBlock extends Component {
     }
 
     render(){
-        const commentsToDisplay = this.nextBlock();
-        const allResolved = commentsToDisplay.length === 0;
+        const commentsToDisplay = this.nextBlock()
+        const allResolved = commentsToDisplay.length === 0
+        const idToPractitioner = this.props.idToPractitioner
 
         const panelStyle = {
             width:'90%',
@@ -112,12 +113,13 @@ class PendingCommentBlock extends Component {
                 {
                     commentsToDisplay.map((comment) => {
                         return <PendingComment
-                            key = {comment.id}
-                            id = {comment.id} 
-                            username={this.props.allUsers[comment.userId].username} 
+                            key={comment.id}
+                            id={comment.id} 
+                            username={this.props.allUsers[comment.userId].username}
+                            practitioner={idToPractitioner[comment.practitionerId].firstName + ' ' + idToPractitioner[comment.practitionerId].lastName} 
                             text={comment.text} 
                             actionLabel={this.state.actionLabel}
-                            onAction = {this.onAction}
+                            onAction={this.onAction}
                             />
                     })
                 }
@@ -146,7 +148,8 @@ class PendingCommentBlock extends Component {
 const mapStateToProps = state => {
     return {
         allUsers: state.userReducer.allUsers,
-        loggedInUser: state.userReducer.loggedInUser
+        loggedInUser: state.userReducer.loggedInUser,
+        idToPractitioner: state.practitionersReducer.idToPractitioner
     }
 }
 

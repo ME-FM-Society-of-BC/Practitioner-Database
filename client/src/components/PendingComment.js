@@ -11,6 +11,9 @@ const pendingComment = props => {
             <div style={username}>
                 {props.username}
             </div>
+            <div style={practitioner}>
+                {props.practitioner}
+            </div>
             <div style={text}>
                 {props.text}
             </div>
@@ -41,18 +44,32 @@ const username = {
         flexBasis: '20%'
     }    
 }
+const practitioner = {
+	display: 'inline',
+	marginRight: 'auto',
+	textAlign: 'left',
+	flexBasis: '10%',
+	borderRight: '1px solid #dce4ec',
+	padding: '0 5px',
+    '@media (max-width: 1024px)': {
+        flexBasis: '15%'
+    },    
+    '@media (max-width: 768px)': {
+        flexBasis: '20%'
+    }    
+}
 const text = {
 	display: 'inline',
 	marginRight: 'auto',
 	textAlign: 'left',
-	flexBasis: '83%',
+	flexBasis: '73%',
 	borderRight: '1px solid #dce4ec',
 	padding: '0 5px',
     '@media (max-width: 1024px)': {
-        flexBasis: '75%'
+        flexBasis: '65%'
     },    
     '@media (max-width: 768px)': {
-        flexBasis: '65%'
+        flexBasis: '55%'
     }    
 }
 const action = {
