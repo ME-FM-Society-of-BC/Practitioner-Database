@@ -30,7 +30,7 @@ const evalHeaderFooter = (props) => {
         'padding': '5px',
         'fontWeight': 'normal'
     };
-    
+
     const createMyEvaluationButton = (
         <Button type="button" key='1' className='' onClick={props.enableEvaluation}>
             Add your own evaluation
@@ -49,9 +49,13 @@ const evalHeaderFooter = (props) => {
     const viewAllUserIncluded = (
         <div style={headerStyle} key='4' >
             <Instructions>
-            <p>Below are summarized all the evaluations of this practitioner.</p>
+            <p>Below is a summary of all the evaluations of this practitioner.</p>
+            {props.loggedInUser ? 
+                <p><span className='bold'>To add your own evaluation</span> click on the button below. </p>
+                : ''
+            }
             <p>For the purposes of the following form:</p>
-            <ul>
+            <ul className='list'>
                 <li>
                     ME refers to myalgic encephalomyelitis. 
                     ME is also known as ME/CFS, chronic fatigue syndrome, systemic exertion intolerance disease (SEID). 
@@ -65,9 +69,20 @@ const evalHeaderFooter = (props) => {
             </Instructions>
         </div>
     )
+
     const anyYouWant = (
-        <div style={introStyle} key='5' >
-            Answer any questions you want. You can add or change them later. 
+        <div key='5' >
+        <ul className='list'>
+            <li>
+                <span className='bold'>You do not need to answer every question.</span> Only answer the questions you know the answers to or feel comfortable answering.
+            </li>
+            <li>
+                You can always return and do another evaluation, adding new information.
+            </li>
+            <li>
+                Don’t forget to <span className='bold'>save your evaluation.</span>
+            </li>
+        </ul>
         </div>
     )
     
