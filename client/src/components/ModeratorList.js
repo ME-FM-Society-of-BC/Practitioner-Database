@@ -25,6 +25,7 @@ const moderatorList = props => {
                     <th>Province</th>
                     <th>Username</th>
                     <th>Email</th>
+                    <th>URL</th>
                     <th></th>
                 </tr>
             </thead>
@@ -36,6 +37,7 @@ const moderatorList = props => {
                             <td>{moderator.province}</td>
                             <td>{moderator.username}</td>
                             <td>{moderator.email}</td>
+                            <td><a href={moderator.url} target="_blank" rel="noopener noreferrer">{moderator.url}</a></td>
                             <td><input style={{'width': '6em'}} type='button' name={moderator.id} value={action} onClick={() => props.switchStatus({...moderator})}></input></td>
                         </tr>
                     )

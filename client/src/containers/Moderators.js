@@ -22,7 +22,8 @@ class Moderators extends Component {
         super(props);
 
         this.state.moderator = {
-            province: ''
+            province: '',
+            url: ''
         }
         this.state.user = {
             username: '',
@@ -41,11 +42,21 @@ class Moderators extends Component {
     onChange = (event) => {
         this.setState({errorMessage: null});
         const {name, value} = event.target;
-        const user = {...this.state.user}
-        user[name] = value;
-        this.setState({
-            user
-        });
+        if (name === 'url'){
+            const moderator = { ...this.state.moderator }
+            moderator[name] = value;
+            this.setState({
+                moderator
+            });
+
+        }
+        else {
+            const user = { ...this.state.user }
+            user[name] = value;
+            this.setState({
+                user
+            });
+        }
     }
 
     selectProvince = (event) => {
@@ -83,7 +94,8 @@ class Moderators extends Component {
                         role: 'MODERATOR'
                     },
                     moderator: {
-                        province: ''
+                        province: '',
+                        url: ''
                     },
                     availableProvinces
                 });
@@ -163,6 +175,7 @@ class Moderators extends Component {
                             confirmPassword={this.state.user.confirmPassword} 
                             email={this.state.user.email} 
                             province={this.state.moderator.province}
+                            url={this.state.moderator.url}
                             provinces={this.state.availableProvinces}
                             onCreate={this.createModerator}
                             onChange = {this.onChange}

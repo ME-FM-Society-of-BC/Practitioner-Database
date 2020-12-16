@@ -48,6 +48,14 @@ const newModerator = props => {
                             value={{label: props.province, value: props.province}} 
                             placeholder='Select ...'
                             onChange={props.onSelect}/>
+            
+            <EditableText   label='Information URL'
+                            type='url' 
+                            name='url'
+                            labelClass='info-label info-label-reg'
+                            valueClass='info-field info-field-reg'
+                            value={props.url}
+                            changeHandler={props.onChange} />
             <Button type='button' className='button-large' onClick={props.onCreate}>Create</Button>
             {
                 props.errorMessage ? <div className='error-message'>{props.errorMessage}</div> : ''
