@@ -217,15 +217,22 @@ class PractitionerInfo extends Component {
             <Panel.Body>
                 {this.state.mode === 'create' ?
                     <Instructions width='40em'>
-                        <p>
-                        Enter information for a new practitioner if you have checked that he or she is not already in the list.
-                        You must provide at least first and last names, province, city and telephone number.
-                        </p>
-                        <p>
-                        If you know it, please include the practitioner's postal code. 
-                        This helps patients to search for practitioners near them.
-                        Remember that you can return here later to add it or other information.   
-                        </p>
+                        <div className='bold red'>To add a new practitioner:</div>
+                        <ol className='list'>
+                            <li>
+                            Check to see if the practitioner is already on our list.
+                            </li>
+                            <li>
+                            Enter the information below. You must provide at least first and last names, province, city and telephone number.                            
+                            </li>
+                            <li>
+                            If you know it, please include the practitioner's postal code. This helps other users in their search for practitioners near them.                             
+                            </li>
+                            <li>
+                            Click on <span className='bold'>“Save Practitioner Information”. </span>                               
+                            </li>
+                        </ol>
+                        <span className='bold'>Note: </span>You can return here later to add other information.
                     </Instructions>
                     : ''
                 }

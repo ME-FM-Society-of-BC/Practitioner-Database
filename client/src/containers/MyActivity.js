@@ -70,7 +70,7 @@ class MyActivity extends Component {
             <Instructions width='80%'>
                 <p>Welcome to the My Activity page. Here you will see a record of all the actions you can perform, such as</p>
                 <div>
-                    <ul>
+                    <ul className='list'>
                         <li>Add a practitioner to the site</li>
                         <li>Edit practitioner information (address, phone, etc.) previously entered by you or another user</li>
                         <li>Rate a practitioner</li>
