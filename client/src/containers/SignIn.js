@@ -84,18 +84,28 @@ class SignIn extends Component {
             )
         }
 
-
+        const style1={width: '25em', textAlign: 'left', justifyContent: 'center', marginBottom: '0.7em'}
+                
         return (
             <>
             <Panel style={panelStyle}>
             <Panel.Body>
-                <Instructions width='40em'>
-                Welcome to the MEFM Database. If you are a registered user, sign in below.
-                If you are not registered, you are free to search for practitioners near you,
-                or view our complete list of practitioners
+                <Instructions width='55em'>
+                    <li>
+                        Registration is <span className='bold'>not required</span> to search for practitioners or to view our complete list of practitioners.
+                    </li>
+                    <li>
+                    <span className='bold'>Registration is free</span> and is required to add a new practitioner, to add your own evaluation, or to comment on a listing.
+                    </li>
                 </Instructions>
                 <div className='horizontal-group'>
                     <div className ='vertical-group'>
+                        <div style={style1}>
+                            <span className='bold red'>Login for registered users</span>
+                        </div>
+                        <div style={style1}>
+                            If you are a registered user, sign in below: 
+                        </div>
                         <EditableText   mode='edit'
                                         label='Username'
                                         name='username'
@@ -119,20 +129,19 @@ class SignIn extends Component {
                         {
                             this.state.errorMessage ? <div className='error-message'>{this.state.errorMessage}</div> : ''
                         }
-                        <Instructions width='30em' paddingTop='30px'>
-                        Forgot your username or password? <span className='execute' onClick={this.requestReset}>Click here</span>
+                        <Instructions width='30em'  paddingTop='0.5em' paddingBottom='2em'>
+                            Forgot your username or password? <span className='execute' onClick={this.requestReset}>Click here</span>
                         </Instructions>
+                        <div style={style1}>
+                            <span className='bold red'>Not registered?</span>
+                        </div>
+                        <div style={style1}>
+                            Sign up here if you want to recommend a practitioner, or 
+                            provide feedback on your experience with a practitioner 
+                        </div>
 
                     </div>
                 </div>
-            </Panel.Body>           
-            </Panel>
-            <Panel style={panelStyle}>
-            <Panel.Body>
-                <Instructions width='40em'>
-                    Not registered? Sign up here if you want to recommend a practitioner, or 
-                    provide feedback on your experience with a practitioner
-                </Instructions>
                 <Registration/>
             </Panel.Body>           
             </Panel>
