@@ -1,8 +1,6 @@
 package ca.bc.mefm.resource;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,13 +22,6 @@ public class VersionResource extends AbstractResource {
     public Response getVersions() {
 		DataAccess da = new DataAccess();
 		List<EntityVersion> entityVersions = da.getAll(EntityVersion.class);
-//		Map<String, String> versions = new HashMap<String, String>();
-//		
-//		entityVersions.forEach( version -> {
-//			versions.put(version.getEntityType(),  version.getVersion());
-//		});
-		
-//		return responseOkWithBody(versions);
 		return responseOkWithBody(entityVersions);
 	}
 }
